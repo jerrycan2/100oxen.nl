@@ -2,8 +2,7 @@
 # System Files
 .DS_Store
 Thumbs.db
-
-.idea
+\.idea
 butler_il2_files
 downloads
 gen
