@@ -1,0 +1,3912 @@
+'use strict';
+//	 z-index:
+//	 10	:	modal popups
+//	 8		:	coverall for modal popups & resizer
+//	 6		:	menu items
+//	 4		:   coverall for menu-items
+//	 2		:	non-modal popups
+//	 0		:	default everything else
+//	 < 0	: sent to back coverall
+
+// lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
+// the list xml (list.xml) is loaded by page1.html and available here and there
+/**********************************************************************/
+/*! global Objects:                                                   */
+/**********************************************************************/
+/**
+ * object jbNS
+ * Namespace object for global variables
+ */
+var jbNS = {
+    norm_window_width: 1920,
+
+    columns_config: [1, 1, 3, 0], // List/Page=bit0/bit1, Il/Od/Theo/W&D=1-4, GR/EN=bit0/bit1, Text/Help=bit0/bit1
+    width: [0, 0, 0, 0],
+    oldcolnum: 0,
+    prefixes: ["Il", "Od", "Th", "WD"], //bookmark prefix = prefixes[ columns_config[ 1 ] - 1 ]
+    filenames: [
+        ["list.html", ""],
+        ["greek_il.html", "greek_od.html", "hesiod_theo_greek.html", "hesiod_wd_greek.html"],
+        ["butler_il.html", "butler_od.html", "hesiod_theo_transl.html", "hesiod_wd_transl.html"],
+        ["textframe.html", "help.html"]
+    ],
+    perseus_names: [
+        ["1999.01.0133", "1999.01.0135", "1999.01.0129", "1999.01.0131"],//iliad, odyssey
+        ["1999.01.0134", "1999.01.0136", "1999.01.0130", "1999.01.0132"] //theo, wd
+    ],
+    perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
+
+    pages_local: [
+        ["xmltest/index.html", "editor"],
+        ["page1.html", "Proportional View"],
+        ["100oxen.html", "100 Oxen"],
+        ["gtb.html", "the Good, the True, the Beautiful"],
+        ["ring.html", "Ring Composition"],
+        ["smyrna.html", "Homer's Birthplace?"],
+        ["summary.html", "History"],
+        ["likenesses.html", "Likenesses"],
+        ["thegods.html", "The Gods"],
+        ["apollo.html", "Apollo"]
+    ],
+    pages_extern: [
+        ["", ""],
+        ["http://www.perseus.tufts.edu/hopper/", "Perseus"],
+        ["http://digital.library.northwestern.edu/homer/", "The Chicago Homer"]
+    ],
+    treeframe: $("#treeframe"),
+    pageframe: $("#pageframe"),
+    greekframe: $("#greekframe"),
+    butlerframe: $("#butlerframe"),
+    textframe: $("#textframe"),
+    pages_menu_expanded: false,
+    basic_fontsize: 16, //px
+    keepFontsize: false, //if true: fontsize remains same after window resize
+    OL_level: null,
+    LI_elements: null,
+    gr_beginLine: 0,
+    bu_beginLine: 0,
+    gr_previousLine: 0,
+    greekanchors: null,
+    butleranchors: null,
+    treetop_el_index: 0,
+    previous_goto: "",
+    lastscroll: "",
+    line_id_fits_text: false,
+    bookMarx: [
+        ["---Il:--"],
+        ["---Od:--"],
+        ["---Th:--"],
+        ["---WD:--"]
+    ],
+    parse_lineID: /((il|od|th|wd)?(\s|:)?)?(((\d+\.)|([a-zA-Z\u0391-\u03C9]))?(\d+))/i,
+    // "il 14.100" "od:a200" "wd 50" ":50" "50" etc $1=all, $2=text, $3=greek/eng, $4=lineNR ($6=chap, $7 = letter, $8=line)
+    nolocalstorage: false,
+    forcereload: true,
+    XML: null, //here comes the XML parsetree
+    xml_loaded: false,
+    xmlstring: "",
+    bm_to_goto: "",
+    selectBtnMessages: [
+        [""],
+        ["???"],
+        ["Goto gr.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Greek", "English"],
+        ["Goto eng.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Greek", "English"],
+        ["Goto"],
+        ["Find gr.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Word Study"],
+        ["Find eng."]
+    ],
+    selectBtnActions: [
+        [showAndGotoAnyLine, null, perseusLookup, perseusLookup],
+        [textsearch, null, perseus_WS_search]
+    ],
+    selectBtnChoice: 0,
+    showonlyselection: false,
+    swcoldown: false,
+    exp_state: "11",
+    editing: false,
+    scrollspeed: 600,
+    untouchable: true,
+    touchcancel: false,
+    dontSetColumns: false,
+    colResizeStep: 96,
+    currentLevel: 2,
+    currentPage: ""
+};
+/**
+ * object LatinGreek
+ * Iliad chapter lengths and latin-greek letterindexes
+ */
+var LatinGreek = {
+    chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
+    greek: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
+    latin: 'ABGDEZHQIKLMNCOPRSTUFXYWabgdezhqiklmncoprstufxyw',
+    greek2index: function (letter) {
+        return this.greek.indexOf(letter);
+    },
+    latin2index: function (letter) {
+        return this.latin.indexOf(letter);
+    },
+    index2greek: function (letter) {
+        return this.greek.charAt(letter);
+    },
+    index2latin: function (letter) {
+        return this.latin.charAt(letter);
+    },
+    convertG_L: function (letter) {
+        var a = this.greek.indexOf(letter);
+        return a < 0 ? letter : this.latin.charAt(a);
+    },
+    convertL_G: function (letter) {
+        var a = this.latin.indexOf(letter);
+        return a < 0 ? letter : this.greek.charAt(a);
+    },
+    greek_charcode: function (letter) {
+        return this.greek.charCodeAt(letter);
+    },
+    getchaplen: function (x) {
+        return typeof x === "number" ? this.chaplength[x - 1] : this.chaplength[this.greek2index(x)];
+    },
+    repl_03: [0x03AC, 0x03AD, 0x03AE, 0x03AF, 0x03B0, 0x03CC, 0x03CD, 0x03CE, 0x0386, 0x0388, 0x0389, 0x0390, 0x038A, 0x03B0, 0x038E, 0x038C, 0x038F, 0x00B4],
+    repl_1F: [0x1F71, 0x1F73, 0x1F75, 0x1F77, 0x1FE3, 0x1F79, 0x1F7B, 0x1F7D, 0x1FBB, 0x1FC9, 0x1FCB, 0x1FD3, 0x1FDB, 0x1FE3, 0x1FEB, 0x1FF9, 0x1FFB, 0x1FFD],
+    norm_1F_to_03: function (c) { // c is charcode
+        var i = LatinGreek.repl_1F.indexOf(c);
+        if (i >= 0) {
+            c = LatinGreek.repl_03[i]; //normalize
+        }
+        return c;
+    },
+    conv_03_to_1F: function (c) { // c is charcode
+        var i = LatinGreek.repl_03.indexOf(c);
+        if (i >= 0) {
+            c = LatinGreek.repl_1F[i]; //de-normalize
+        }
+        return c;
+    }
+};
+
+/**********************************************************************/
+/**********************************************************************/
+/* FUNCTION DECL.                                                     */
+/**********************************************************************/
+
+/**********************************************************************/
+/**
+ * function getelementnode
+ * test if xml node n is an element-node. If not, test its nextsibling
+ * @param {Object} n - xml node
+ * @returns {Object} n - xml node
+ */
+function getelementnode(n) {
+    while (n && n.nodeType !== 1) {
+        n = n.nextSibling;
+    }
+    return n;
+}
+
+/**
+ * function getlinenr
+ * go down tree until "line" node, then take its ltr and nr attributes
+ * @param {Object} node - xml node
+ * @returns {string} - "booknr.linenr" string or ""
+ */
+function getlinenr(node) {
+    while (node.nodeName !== "line") {
+        node = getelementnode(node.firstChild);
+        if (node === null) {
+            break;
+        }
+    }
+    return node ? node.getAttribute("lnr") : "";
+}
+
+/**
+ * function createTreeFromXML
+ * callback from $.ajax() which has already done the parsing
+ * creates the 'struct' html-tree without Greek text
+ * @param {Object} xml - xml node: the iliad xml tree, parsed
+ * @param {string} target - "struct" or "edit"
+ */
+function createTreeFromXML(xml) {
+    $("#list").find("ol:first").remove().end()
+        .append(createlist(xml.firstChild));
+    setnodeattributes();
+}
+
+/**
+ * function getcolorstyle
+ * turn the xmlnode attributes into a html style decl.
+ * @param {Object} node - xml node
+ * @returns {string} htmlstring
+ */
+function getcolorstyle(node) {
+    var bg, htmlstring, fg, alpha;
+    bg = node.getAttribute("c"); //if xml has color info, put it in
+    htmlstring = "";
+    if (bg && parseInt(bg, 16)) {
+        fg = node.getAttribute("f") || "000000"; //errors in xml file
+        alpha = 1;
+        if (bg === "ffffff") {
+            alpha = 0;
+            fg = "000000";
+        }
+        htmlstring = "style='color: #" + fg + "; background-color: #" + bg + "; opacity: " + alpha + "'";
+    }
+    return htmlstring;
+}
+
+/**
+ * function createlist
+ * create the html for the OL in treeframe, from the XML tree
+ * only rootnode is traversed, not any siblings
+ * (rootnode may be any node in the xml tree)
+ * @param {Object} rootnode - xml node
+ * @param {string} target  - string, target div id "struct" or "edit"
+ * @param {boolean} include_greek - if in edit, choose to display greek text
+ * @returns {string} htmltxt - html as string
+ */
+function createlist(rootnode) {
+    var htmltxt;
+    htmltxt = ""; //html-string to be constructed
+    if (rootnode) {
+        htmltxt = build_html_string(rootnode);
+    }
+    return htmltxt;
+
+    /**
+     * function build_html_string
+     * depth-first pre-order traversal of xnode and all of its children
+     * @param {Object} xnode - xml node
+     * @return {string} html - html text
+     */
+    function build_html_string(xnode) {
+        var html, child, rem;
+        html = "<ol class='" + xnode.nodeName + "'>";
+        do {
+            rem = xnode.getAttribute("rem");
+            if (rem) {
+                rem = rem.replace(/'/g, '&#39').replace(/"/g, '&quot;');
+                html += "<li data-rem='" + rem + "'><div class='hasrem'>&oast;</div>";
+            }
+            else { // struct && no remark
+                html += "<li>";
+            }
+            //all html nodes have a line nr (chap.line)
+            html += "<span class='ln'>" + getlinenr(xnode) + "</span>";
+            //main text of inner node:
+            // if "d" is empty, xnode must be a greek text line (leaf)
+            html += "<span class='lt' " + getcolorstyle(xnode) + ">" + xnode.getAttribute("d") + "</span>";
+            child = getelementnode(xnode.firstChild);
+            if (child && child.nodeName !== "line") {
+                html += build_html_string(child);
+            }
+
+            html += "</li>";
+            if (xnode === rootnode) {
+                break; //don't do siblings of the start xnode
+            }
+            xnode = getelementnode(xnode.nextSibling);
+        } while (xnode); //do siblings of any other xnode
+        html += "</ol>";
+        return html;
+    }
+}
+
+/**
+ * function setlevel($node, level)
+ * recursive traversal of OL-tree
+ * adjusting + and - expansion buttons and level data-attribute
+ * and determine highest available level
+ *
+ * @param {Object} $node - rootnode (jQuery)
+ * @param {number} level - recursion level
+ * @param {number} highest
+ * @returns {number} highest
+ */
+function setlevel($node, level, highest) {
+    if ($node.children("li").length) {
+        $node.find("span.plm").remove();
+        $node.children("li").children("ol").each(function (i, el) {
+            var $el = $(el);
+            $el.filter(":visible").siblings("span:last").after("<span class='plm'>&ominus;</span>");
+            $el.filter(":hidden").siblings("span:last").after("<span class='plm'>&oplus;</span>");
+        });
+
+        $node.data("level", level);
+        $node.attr("class", "v" + level);
+        if (level > highest) {
+            highest = level;
+        }
+        $node.children("li").each(function () {
+            var $ol = $(this).find("ol:first"); //only 1
+            if ($ol.length !== 0) {
+                highest = setlevel($ol, level + 1, highest);
+            }
+        });
+    }
+    return highest;
+}
+
+/**
+ * function setnodeattributes
+ * loop through all OL nodes
+ * 1: set the proper + and - signs in tree after expand/collapse
+ * 2: determine level of each node and store in data attr
+ * 3: store highest&lowest
+ * @param {string} target
+ */
+function setnodeattributes() {
+    var highest = setlevel($("#list").find("ol:first"), 0, 0);
+    //disableButtons(highest);
+}
+
+
+/**********************************************************************/
+/*! Utilities:                                                        */
+
+/**********************************************************************/
+
+/**
+ * function cover
+ * apply a covering div to the whole screen (to catch events)
+ * @param z : number // integer z-index default = 8
+ * @param a : number // 0-1 opacity default = 0.4
+ */
+function cover(z, a) { // z-index, a=opacity
+    if (z === undefined) {
+        z = 12;
+    }
+    if (a === undefined) {
+        a = 0.3;
+    }
+    $("#coverall").css({
+        "background": "rgba(128, 128, 128, " + a + ")",
+        "z-index": z
+    });
+}
+
+/**
+ * function fademsg
+ * fadeout messagebox
+ */
+function fademsg() {
+    $("#msgbox").fadeOut(3000);
+}
+
+/**
+ * function myAlert
+ * display alert box that can simulate modal (but isn't blocking)
+ * NB no modal result can be returned: use the okExec function
+ * @param txt : string // to be displayed
+ * @param modal : boolean // (optional) true=wait for user click OK/CANCEL, false=disappear in 3 sec
+ * @param okExec : function  // (optional) to execute on 'OK' click
+ */
+function myAlert(txt, modal, okExec) {
+    var $box;
+
+    $box = $("#msgbox");
+    $box.fadeIn(400).on("mousedown", function (e) {
+        var off_x, off_y,
+            $this = $(this);
+        off_x = $this.offset().left - e.pageX;
+        off_y = $this.offset().top - e.pageY;
+        $this.on("mousemove", function (e) {
+            $this.offset({
+                left: e.pageX + off_x,
+                top: e.pageY + off_y
+            });
+        });
+        $this.one("mouseup", function () {
+            $this.off("mousemove"); // Unbind events from popup
+        });
+        e.preventDefault(); // disable selection
+
+    });
+    //$box.find("h5")[0].innerHTML = txt;
+    $box.find("h5").text(txt);
+    if (modal) {
+        cover(8, 0.3);
+        $("#ok, #cancel").show().one("click", function (e) {
+            e.stopPropagation();
+            if ($(this).attr("id") === "ok") {
+                if (okExec) {
+                    okExec();
+                }
+            }
+            cover(-8, 0.3);
+            $box.fadeOut(1000);
+        });
+    } else {
+        $("#ok, #cancel").hide();
+        setTimeout(fademsg, 1000);
+    }
+    return false;
+}
+
+/**
+ * functions iliad_loaded, textframe_loaded
+ * return true if item loaded
+ * @returns {boolean}
+ */
+function wd_loaded() {
+    return jbNS.columns_config[1] === 4;
+}
+
+/**
+ * function showhelp
+ * show help column. Add a column if necessary
+ * @param event //menu-click
+ */
+function showhelp(event) {
+    event.stopImmediatePropagation();
+    //$(".btn1 ul").removeClass("menuActive");
+    jbNS.textframe[0].src = jbNS.filenames[3][1];
+    configColumns(3, 2, true);
+}
+
+/**********************************************************************/
+/*! Perseus:                                                           */
+
+/**********************************************************************/
+/**
+ * function perseusLookup
+ * goto perseus site and load the relevant text. also set columns
+ * @param language //  0=greek, 1=english
+ */
+function perseusLookup(language) {
+    var i, n1, n2, text, textindex, url1, parse, s, line;
+
+    s = $("#textinput").val();
+    parse = s.match(jbNS.parse_lineID);
+    if (parse[4]) {
+        line = lineID_2_lineNR_obj(parse[4]);
+        n1 = line.c;
+        n2 = line.l;
+    }
+    else {
+        return;
+    }
+    text = parse[2].toLowerCase();
+    textindex = -1;
+    for (i = 0; i < jbNS.prefixes.length; i += 1) {
+        if (jbNS.prefixes[i].toLowerCase() === text) {
+            textindex = i;
+            break;
+        }
+    }
+    url1 = jbNS.perseus_url;
+    if (textindex >= 0) {
+        url1 += jbNS.perseus_names[language][textindex];
+    }
+    else {
+        return;
+    }
+    if (textindex < 2) { // il, od
+        url1 = url1 + ":book=" + n1 + ":card=" + n2;
+    }
+    else {
+        url1 = url1 + ":card=" + n2;
+    }
+    //url1 = encodeURI( url1 ); ??
+    $("#pageframe")[0].src = url1;
+    configColumns(0, 2, true);
+    try {
+        history.pushState(null, "", url1);
+    } catch (ignore) {
+    }
+}
+
+/**
+ * goto perseus word-study with word in #textinput
+ */
+function perseus_WS_search() {
+    var result, url;
+
+    result = $.trim($("#textinput").val());
+    result = uni2beta(result, true);
+    if (result === "") {
+        myAlert("no selection!", false, null);
+        return;
+    }
+    result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
+    result = result.replace(/hi/, "h|"); //(->Perseus beta code)
+    url = 'http://www.perseus.tufts.edu/hopper/morph?l=' + result + '&la=greek';
+    $("#pageframe")[0].src = url;
+    try {
+        history.pushState(null, "", url);
+    } catch (ignore) {
+    }
+    configColumns(0, 2, true);
+}
+
+/**********************************************************************/
+/*! scroll:                                                           */
+
+/**********************************************************************/
+/**
+ * function scrollgreek
+ * scroll #greekframe to the line in jbNS.gr_beginLine
+ */
+function scrollgreek() {
+    var begin, $top;
+
+    begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
+    if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
+        return;
+    }
+    $top = jbNS.greekanchors.eq(begin).parent().prev();
+    if ($top.is("a")) {
+        $top[0].scrollIntoView();
+    } else {
+        jbNS.greekanchors[begin].scrollIntoView();
+    }
+}
+
+/**
+ * function gotoAnchor (only in textframe)
+ * scroll #textframe to a named anchor
+ * @param aname : string // name of anchor
+ * @param hovering : boolean // true if not clicked->no scroll
+ */
+function gotoAnchor(aname, hovering) { /* in textframe */
+    var anchor;//, hdr;
+
+    anchor = jbNS.textframe.contents().find('a[target="' + aname + '"]');
+    if (anchor.length) {
+        if (!hovering) {
+            anchor[0].scrollIntoView();
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * function loadAndGotoTextframeAnchor
+ * scroll #textframe to a named anchor. Load textframe if needed
+ * @param name : string // name of anchor
+ */
+function loadAndGotoTextframeAnchor(name) {
+    if (jbNS.columns_config[3] !== 1) {
+        jbNS.textframe.one("load", function () {
+            gotoAnchor(name, false);
+        });
+        jbNS.textframe[0].src = jbNS.filenames[3][0];
+        configColumns(3, 1, true);
+    }
+    else {
+        gotoAnchor(name, false);
+    }
+}
+
+/**********************************************************************/
+/*! Finding linenrs IN THE TEXT                                       */
+
+/**********************************************************************/
+/**
+ * function checklastletter
+ * for Hesiod text: check if last char of a linenumber is a letter
+ * if so, convert it to a decimal fraction (hack for compare_Butler_Anchors)
+ * @param lineID : string
+ * @returns {number}
+ */
+function checklastletter(lineID) {
+    var n, ix;
+
+    n = lineID.substr(-1, 1);
+    ix = "abcdefghijklmnopqrst".indexOf(n) + 1;
+    return (ix * 0.01); //rtns 0 if not a letter
+}
+
+/**
+ * function lineID_2_lineNR_obj : convert lineID in 1 of the greek/butler texts to standard object
+ * @param lineID : string // line number as shown onscreen in 1 of 4 formats
+ * @returns {object} : object // linenumber object: ( c:chapter, l:line ) = {number, number}
+ */
+function lineID_2_lineNR_obj(lineID) { // in: lineID, out: object { chapter, linenr }; chapter = 1 for Hesiod texts
+    var i, n, chap, lnr;
+    // 3 formats: letter number, number.number, number
+    i = lineID.indexOf(".");
+    if (i < 0) {
+        lnr = n = parseInt(lineID, 10);
+        if (n) { // Hesiod greek
+            chap = 1;
+            if (wd_loaded()) {
+                if (n === 169) {
+                    n = 173.5;
+                } // hack: W&D lines out of order (169a etc. between 173 & 174)
+                lnr = n + checklastletter(lineID);
+            }
+        }
+        else { // Il or Od greek or latin
+            n = LatinGreek.greek2index(lineID.substr(0, 1));
+            if (n < 0) {
+                n = LatinGreek.latin2index(lineID.substr(0, 1));
+            }
+            if (n >= 0) { // n < 0: error
+                if (n > 23) {
+                    n -= 24;
+                }
+                chap = n + 1; // mustn't be 0
+                lnr = parseInt(lineID.substr(1), 10);
+            }
+        }
+    }
+    else { // Il or Od transl. "chapter.line"
+        chap = parseInt(lineID, 10);
+        lnr = parseInt(lineID.substr(i + 1), 10);
+    }
+    if (!(lnr && chap)) {
+        return null; // error condition
+    }
+    return {c: chap, l: lnr};
+}
+
+/**
+ * function compare_lineNRs
+ * compare_lineNRs after converting to linenumber objects
+ * @param t1 : string
+ * @param t2 : string
+ * @returns number : 0 if t1 === t2, > 1, < -1
+ */
+function compare_lineNRs(t1, t2) { // for binary search
+    var ch1, ln1, ch2, ln2, n1, n2;
+
+    n1 = lineID_2_lineNR_obj(t1);
+    if (!n1) {
+        myAlert("'" + t1 + "' is not a line number", false, null);
+    }
+    n2 = lineID_2_lineNR_obj(t2);
+    if (!n2) {
+        myAlert("'" + t2 + "' is not a line number", false, null);
+    }
+    if (!n1 || !n2) {
+        return 0;
+    }
+    ch1 = n1.c;
+    ch2 = n2.c;
+    ln1 = n1.l;
+    ln2 = n2.l;
+    if (ch1 < ch2) {
+        return -1;
+    }
+    if (ch1 > ch2) {
+        return 1;
+    }
+    if (ln1 < ln2) {
+        return -1;
+    }
+    if (ln1 > ln2) {
+        return 1;
+    }
+    return 0;
+}
+
+/**
+ * function compare_lineIDs : lineID = (text language chapter line), lineNR = (chapter line)
+ * compare 2 lineID strings
+ * @param t1 : lineID
+ * @param t2 : lineID
+ * @returns {number} // 1, -1 or 0
+ */
+function compare_lineIDs(t1, t2) {
+    var parsebm, id1, id2, lang1, lang2;
+
+    if (!t1 || t1[0] === "-") {
+        return -1;
+    }
+    if (!t2 || t2[0] === "-") {
+        return 1;
+    }
+
+    parsebm = t1.match(jbNS.parse_lineID);
+    id1 = parsebm[4];
+    lang1 = parsebm[3];
+    parsebm = t2.match(jbNS.parse_lineID);
+    id2 = parsebm[4];
+    lang2 = parsebm[3];
+    if (lang1 !== lang2) {
+        return (lang1 === " " ? -1 : 1); //diff. languages: greek first
+    }
+    return compare_lineNRs(id1, id2);
+}
+
+/**
+ * function compare_Butler_Anchors
+ * compare linenumbers( x.y or y ) in the butler text (not all butlerlines are numbered)
+ * -> is 'item' in the section between this (found1) and next (found2)
+ * @param Aindex : number // index in global array jbNS.butleranchors
+ * @param item : string // item to search for ( x.y etc )
+ * @param which : number // flag: if which == 2 count back 1 line (for selecting up to, not including, next section
+ * @returns : number // flag : 0 if t1 === t2, > 1, < -1
+ */
+function compare_Butler_Anchors(Aindex, item, which) { //which: see bm_butler_search
+    var found1, found2, target, this1, this2, nxt1, nxt2, it1, it2, it, fnd, nxt, s;
+
+    if (Aindex >= jbNS.butleranchors.length - 1) {
+        if (item === jbNS.butleranchors.eq(Aindex).text()) {
+            return (0);
+        }
+        return (1);
+    } // item & lineID actually are lineNRs here
+    s = jbNS.butleranchors.eq(Aindex).text();
+    found1 = lineID_2_lineNR_obj(s) || myAlert("'" + s + "' is not a line number", false, null);
+    this1 = found1.c; // found beginline of section
+    this2 = found1.l;
+
+    s = jbNS.butleranchors.eq(Aindex + 1).text();
+    found2 = lineID_2_lineNR_obj(s) || myAlert("'" + s + "' is not a line number", false, null);
+    nxt1 = found2.c; // beginline of next section
+    nxt2 = found2.l;
+
+    target = lineID_2_lineNR_obj(item) || myAlert("'" + item + "' is not a line number", false, null);
+    it1 = target.c;
+    it2 = target.l;
+    if (which === 2) { //second linenumber: move back 1 iliad line
+        if (it2 > 1) { //second is never [1.1]
+            it2 -= 1;
+        } else {
+            it1 -= 1;
+            it2 = LatinGreek.getchaplen(it1); // last line of prev book
+        }
+    }
+    it = (it1 * 1000) + it2;
+    fnd = (this1 * 1000) + this2;
+    nxt = (nxt1 * 1000) + nxt2;
+
+    if (it === fnd) {
+        return 0;
+    }
+    if (it > fnd && it < nxt) {
+        return 0;
+    }
+    if (it < fnd) {
+        return 1;
+    }
+    return -1;
+}
+
+/**********************************************************************/
+/*! Bookmark management                                               */
+
+/**********************************************************************/
+
+/**
+ * function cleanupBookMarx
+ * delete empty entries in bookmarx[][] array, also write them to the <select> options
+ */
+function cleanupBookMarx() {
+    var i, n, opt, txt, tmp, bm;
+
+    opt = document.getElementById("BMselector");
+    opt.options.length = 0;
+    n = 0;
+    for (txt = 0; txt < 4; txt += 1) {
+        jbNS.bookMarx[txt].sort(compare_lineIDs);
+        for (i = 0; i < jbNS.bookMarx[txt].length; i += 1) {
+            bm = jbNS.bookMarx[txt][i];
+            if (bm !== "") {
+                opt.options[n] = new Option(bm);
+                opt.options[n].name = txt; // store the index of the text, to know which text the bm is in
+                if (bm.substr(0, 1) === "-") {
+                    opt.options[n].disabled = true;
+                    opt.options[n].style.backgroundColor = "#aaaaaa";
+                }
+                n += 1;
+            }
+        }
+        jbNS.bookMarx[txt].length = 0;
+    }
+    // clean up bookmarx
+    txt = 0;
+    for (i = 0; i < opt.options.length; i += 1) {
+        tmp = opt.options[i].text;
+        if (i > 0 && tmp.substr(0, 1) === "-") {
+            txt += 1;
+        }
+        jbNS.bookMarx[txt][jbNS.bookMarx[txt].length] = tmp;
+    }
+}
+
+/**
+ * function adjustBMselector
+ * if txt = "": set selectedIndex of bookmark selector to proper text (Il, Od, Theo, WD)
+ * if txt = bookmark, set selectedIndex to that bm
+ */
+function adjustBMselector(txt) {
+    var i, sel;
+
+    sel = $("#BMselector")[0];
+    if (txt === "") {
+        txt = jbNS.bookMarx[jbNS.columns_config[1] - 1][0];
+    }
+    for (i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === txt) {
+            sel.selectedIndex = i;
+        }
+    }
+}
+
+/**
+ * function bm_greek_search
+ * binary search for <a> with text 'lineID' in #greekframe
+ * @param lineNR : string // linenumber (also bookmark) to search for (4 formats)
+ * @param scroll : boolean // if true, scroll to there
+ * @param mark : number // flag: 0: don't color, give error if target doesn't exist; 1: toggle color, no error; 2: no color, no error
+ * @returns {number} : index to jbNS.greekanchors or -1
+ */
+function bm_greek_search(lineNR, scroll, mark) {
+    var step, max, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
+
+    $lines = jbNS.greekanchors; // $("a") array
+    if ($lines.length) {
+        i = $lines.length - 1;
+    } else {
+        return -1;
+    }
+    max = i;
+    step = i >> 1;
+    stepcount = 0;
+    while (true) {
+        if (step === 1) {
+            stepcount += 1;
+        }
+        if (stepcount > 15) {
+            if (mark === 0) {
+                myAlert("Can't find '" + lineNR + "'!", false, null);
+            }
+            return -1;
+        }
+        // this routine does not enter the line into the bookmarx[] array
+        tl = $lines[i];    //but it can toggle the BM color
+        groter = compare_lineNRs(tl.textContent, lineNR);
+        // if(jbNS.columns_config[1] > 2) { // Hesiod: not every line has a nr
+        if (i < $lines.length - 1) {
+            groter2 = compare_lineNRs($lines[i + 1].textContent, lineNR);
+            if (groter === -1 && groter2 === 1) {
+                groter = 0;
+            }
+        }
+        if (groter === 0) {
+            if (mark === 1) {
+                if (tl.className === "bmcolor") {
+                    tl.className = "";
+                }
+                else {
+                    jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
+                    tl.className = "bmcolor";
+                }
+            }
+            if (scroll) {
+                jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
+                scrollgreek();
+            }
+            break;
+        }
+        if (groter === -1) {
+            i += step;
+        } else {
+            i -= step;
+        }
+        if (step > 1) {
+            step >>= 1;
+        }
+        if (i < 0) {
+            i = 0;
+        }
+        if (i > max) {
+            i = max;
+        }
+    }
+    return i; //return index to jbNS.greekanchors or -1
+}
+
+function gotoline(bookmark) { //used in scrolls.js
+    bm_greek_search(bookmark, true, 0);
+}
+
+/**
+ * function bm_butler_search
+ * binary search for linenumber (bookmark) in butler text
+ * @param item : string // linenumber as string
+ * @param which : number //see compareanchors
+ * @returns : number // index in array of anchors
+ */
+function bm_butler_search(item, which) {   // which===1 or 2: beginline or "beginline of next section"
+    var i, step, max, groter, stepcount;   // 2 is only used for coloring
+
+    if (!item || !jbNS.butleranchors.length) {
+        return -1;
+    }
+    i = jbNS.butleranchors.length - 1;
+    max = i;
+    step = i >> 1;
+    stepcount = 0;
+    while (true) {
+        if (step === 1) {
+            stepcount += 1;
+        }
+        if (stepcount > 15) {
+            //if (mark === 0) alert("Can't find '" + LineID + "'!");
+            return -1;
+        }
+        groter = compare_Butler_Anchors(i, item, which);
+        if (groter === 0) {
+            break;
+        }
+        if (groter === -1) {
+            i += step;
+        } else {
+            i -= step;
+        }
+        if (step > 1) {
+            step >>= 1;
+        }
+        if (i < 0) {
+            i = 0;
+        }
+        if (i > max) {
+            i = max;
+        }
+    }
+    return i;
+}
+
+/**
+ * function butlerGotoBM
+ * scroll to given butler linenumber
+ * @param lineNR : string
+ */
+function butlerGotoBM(lineNR) {
+    var lineindex;
+
+    lineindex = bm_butler_search(lineNR, 1);
+    if (lineindex >= 0) {
+        if ($("#butlerframe:visible").length) {
+            jbNS.butleranchors[lineindex].scrollIntoView();
+        }
+    }
+    else {
+        myAlert("Butler bookmark not found", false, null);
+    }
+    return lineindex;
+}
+
+/**
+ * function setUnsetBookMark
+ * Create bookmark from a lineNR, set/unset bookmark marking & combobox select options
+ * @param bookmark : string // line number as string
+ * @param toggle : boolean // do/don't toggle bookmark (XOR / OR), do if alt-click, don't if 'select' by combobox
+ * @param greek : boolean // if true: greek bookmark, false: butler
+ * @return boolean // false if too many bookmarks
+ */
+function setUnsetBookMark(bookmark, toggle, greek) {
+    var linenr, i, $target, currtxt, bms, hascolon, parsebm;
+    /* bookmark = lineID = [prefix +] lineNR */
+    currtxt = jbNS.columns_config[1] - 1;
+    if (currtxt < 0) {
+        return false;
+    }
+    parsebm = bookmark.match(jbNS.parse_lineID); //$1=lineID, $2=text, $3=greek/eng, $4=lineNR ($6=chap, $7 = letter, $8=line
+    linenr = parsebm[4];
+    if (!linenr) {
+        return false;
+    }
+    if (parsebm[3]) {
+        hascolon = parsebm[3] === ":"; //possible switch to other language
+    }
+    else {
+        hascolon = !greek;
+    }
+    if (!parsebm[2]) {
+        bookmark = jbNS.prefixes[currtxt] + (hascolon ? ":" : " ") + linenr;
+    }
+
+    if (greek && !hascolon) {
+        $target = jbNS.greekanchors.eq(bm_greek_search(linenr, false, 2));
+    }
+    else if (!greek && hascolon) {
+        $target = $(jbNS.butlerframe).contents().find("a:contains('" + linenr + "'):first");
+    }
+    else {
+        return false;
+    }
+    bms = jbNS.bookMarx[currtxt];
+    i = $.inArray(bookmark, bms);
+    if (i >= 0) {
+        if (toggle) {
+            $target.removeClass("bmcolor");
+            bms[i] = "";
+        }
+        else {
+            $target.addClass("bmcolor");
+        }
+    } else {
+        $target.addClass("bmcolor");
+        if (bms.length > 1000) {
+            return true;
+        }
+        bms[bms.length] = bookmark;
+    }
+    cleanupBookMarx();
+    adjustBMselector("");
+    return false;
+}
+
+/**
+ * function putbackBookmarks
+ * set bookmarks after switching text or reload
+ * @param greek
+ */
+function putbackBookmarks(greek) {
+    var currtxt, i, bm;
+
+    currtxt = jbNS.columns_config[1] - 1;
+    if (currtxt < 0) {
+        return;
+    }
+    bm = jbNS.bookMarx[currtxt];
+    for (i = 0; i < bm.length; ++i) {
+        if (bm[i].substr(0, 1) !== "-") {
+            jbNS.gr_previousLine = 0;
+            setUnsetBookMark(bm[i], false, greek);
+        }
+    }
+    adjustBMselector("");
+}
+
+function del_all_bm() {
+    var i;
+
+    for (i = 0; i < 4; ++i) {
+        jbNS.bookMarx[i].length = 1;
+    }
+    cleanupBookMarx();
+    jbNS.greekanchors.removeClass("bmcolor");
+    jbNS.butleranchors.removeClass("bmcolor");
+    adjustBMselector("");
+}
+
+/**
+ * function goto_BM_on_load
+ * read a global var on iframe load, if it's not empty, goto that bm
+ */
+function goto_BM_on_load() {
+    var bm, parsebm;
+
+    jbNS.gr_previousLine = 0;
+    if (!jbNS.bm_to_goto) {
+        return;
+    }
+    parsebm = jbNS.bm_to_goto.match(jbNS.parse_lineID);
+    if (!parsebm[4]) {
+        return;
+    } // 4 = lineID
+    bm = parsebm[4];
+    if (jbNS.columns_config[2] & 1) {
+        gotoline(bm);
+    }
+    if (jbNS.columns_config[2] & 2) {
+        butlerGotoBM(bm);
+    }
+    adjustBMselector(jbNS.bm_to_goto);
+    jbNS.bm_to_goto = "";
+}
+
+/**
+ * function showAndGotoAnyLine
+ * goto any lineID (bookmark), load text /switch language as needed
+ * @param bookmark // = lineID
+ */
+function showAndGotoAnyLine(bookmark) {
+    var i, textindex, prefix, parsebm, lang;
+
+    textindex = 0;
+    parsebm = bookmark.match(jbNS.parse_lineID);
+    if (!parsebm) {
+        myAlert(bookmark + ": Not a linenumber!", false, null);
+        return;
+    }
+    prefix = parsebm[2];
+    if (!prefix) {
+        textindex = jbNS.columns_config[1]; // same text
+    }
+    else {
+        prefix = prefix.toLowerCase();
+        for (i = 0; i < jbNS.prefixes.length; ++i) {
+            if (jbNS.prefixes[i].toLowerCase() === prefix) {
+                textindex = i + 1;
+                break;
+            }
+        }
+    }
+    if (textindex < 1) {
+        myAlert("Not a linenumber!", false, null);
+        return;
+    }
+    if (parsebm[3] === ":") {
+        lang = 2; //english
+    }
+    else if (parsebm[3] === " ") {
+        lang = 1; //greek
+    }
+    else {
+        lang = jbNS.columns_config[2];
+    } // same language
+
+    if (!lineID_2_lineNR_obj(parsebm[4])) {
+        myAlert("'" + parsebm[4] + "' is no linenumber!", false, null);
+        return;
+    }
+    jbNS.bm_to_goto = bookmark;
+    if (jbNS.columns_config[2] === 0) {
+        configColumns(2, lang, true);
+    }
+    if (textindex !== jbNS.columns_config[1]) { //
+        fetchTexts(textindex - 1);// callback also goes to goto_BM_on_load()
+        configColumns(1, textindex, true); // right text.
+    }
+    else {
+        goto_BM_on_load();
+    }
+}
+
+function nextbm(event) {
+    var i, $bmsel, bmsel;
+
+    event.stopImmediatePropagation();
+    $bmsel = $("#BMselector");
+    bmsel = $bmsel[0];
+    i = bmsel.selectedIndex;
+    if (i === -1) {
+        i = 0;
+    }
+    if (i + 1 >= bmsel.options.length || bmsel.options[i + 1].value[0] === "-") {
+        if (bmsel.options[i].value[0] === "-") {
+            return;
+        }
+        while (i > 0 && bmsel.options[i - 1].value[0] !== "-") {
+            i -= 1;
+        }
+    }
+    else {
+        i += 1;
+    }
+    bmsel.selectedIndex = i;
+    if (bmsel.options[i].value[0] !== "-") {
+        changebm(event);
+    }
+}
+
+function prevbm(event) {
+    var i, $bmsel, bmsel;
+
+    event.stopImmediatePropagation();
+    $bmsel = $("#BMselector");
+    bmsel = $bmsel[0];
+    i = bmsel.selectedIndex;
+    if (bmsel.options[i].value[0] === "-") {
+        return;
+    }
+    if (i - 1 < 1 || bmsel.options[i - 1].value[0] === "-") {
+        while (i < bmsel.options.length - 1 && bmsel.options[i + 1].value[0] !== "-") {
+            i += 1;
+        }
+    }
+    else {
+        i -= 1;
+    }
+    bmsel.selectedIndex = i;
+    if (bmsel.options[i].value[0] !== "-") {
+        changebm(event);
+    }
+}
+
+function changebm(event) {
+    event.stopImmediatePropagation();
+    showAndGotoAnyLine($("#BMselector").val());
+}
+
+/**********************************************************************/
+/*! Text searches:                                                    */
+
+/**********************************************************************/
+/**
+ * function getSelectedText
+ * get textcontent of user selection
+ * @param event
+ */
+function getSelectedText(event) {
+    var txt, rng, idoc, doc, ifr = false;
+    //find selected text, in an iframe or input/contenteditable element
+    txt = "";
+    if (event && event.view.name === "greekframe") {
+        doc = document.getElementById("greekframe");
+        ifr = true;
+    }
+    else if (event && event.view.name === "butlerframe") {
+        doc = document.getElementById("butlerframe");
+        ifr = true;
+    }
+    else if (event && event.view.name === "pageframe") {
+        doc = document.getElementById("pageframe");
+        ifr = true;
+    }
+    else if (event && event.view.name === "textframe") {
+        doc = document.getElementById("textframe");
+        ifr = true;
+    }
+    else {
+        doc = document;
+    }
+    idoc = doc || doc.contentDocument || doc.contentWindow.document;
+    if (window.getSelection) { //webkit
+        if (ifr) {
+            txt = $.trim(doc.contentWindow.getSelection().toString());
+        }
+        else {
+            txt = $.trim(doc.getSelection().toString());
+        }
+    } else if (document.getSelection) {
+        if (ifr) {
+            txt = $.trim(doc.contentWindow.getSelection().toString());
+        }
+        else {
+            txt = $.trim(idoc.getSelection().toString());
+        }
+    } else if (document.selection) { //IE?
+        rng = idoc.selection.createRange();
+        txt = $.trim(rng.text);
+    }
+    return txt;
+}
+
+function isNumberOrDot(c) {
+    return ((c >= "0" && c <= "9") || c === ".");
+}
+
+
+/**
+ * function ifrmouseup(event)
+ * iframe-mouseup. If clicked element contains a lineID, go there
+ * only used in in iframe-pages
+ * @param event
+ */
+function ifrmouseup(event) { //used in iframe pages
+    var doc, range, txt, bg, nd, ok, txtID, count, sel;
+
+    if (event.view.name === "pageframe") {
+        doc = document.getElementById("pageframe");
+    }
+    else if (event.view.name === "textframe") {
+        doc = document.getElementById("textframe");
+    }
+    sel = doc.contentWindow.getSelection();
+    if (sel && sel.rangeCount > 0) {
+        range = sel.getRangeAt(0);
+    }
+    else {
+        return;
+    }
+    bg = range.startOffset;
+    nd = range.endOffset;
+    txt = range.commonAncestorContainer.data; //element text excluding any child elements
+    ok = false;
+    count = 0;
+    //linenr: xx nn.nnn
+    while (!isNumberOrDot(txt[nd])) { //clicked left of nn.nnn
+        count += 1;
+        nd += 1;
+        bg = nd;
+        if (count > 3) {
+            return;
+        } // 3 letters: xx space. these are oprional
+    }
+    while (isNumberOrDot(txt[nd])) {
+        ok = true;
+        nd += 1;
+    } //clicked on nn.nnn
+    if (ok) {
+        ok = false;
+        while (bg > 0 && isNumberOrDot(txt[bg])) {
+            ok = true;
+            bg -= 1;
+        }
+    }
+    else {
+        return;
+    }
+
+    if (ok) {
+        bg -= 2;
+    }
+    else {
+        return;
+    }
+    txt = txt.substring(bg, nd);
+    txtID = txt.substr(0, 2).toLowerCase();
+    if (!(txtID === "il" || txtID === "od" || txtID === "wd" || txtID === "th")) {
+        txt = txt.substr(3);
+    }
+    if (txt.length > 1) {
+        showAndGotoAnyLine(txt);
+    }
+}
+
+/**
+ * function gr_bu_MouseDown(event)
+ * event-handler for mousedown/touchend on greek and butlertexts
+ * measures time until mouseup. if it's a 'hold', send selected text to textinput or notes
+ * @param event
+ */
+function gr_bu_MouseDown(event) {
+    var time1 = event.timeStamp;
+
+    $(event.delegateTarget).one("mouseup touchend", function (ev2) {
+        var notes, txt, time2, greek;
+
+        time2 = ev2.timeStamp - time1;
+
+        if (time2 < 500) {
+            gr_bu_MouseUp(ev2);
+        }
+        else { //'hold'
+            //ev2.preventDefault();
+            txt = getSelectedText(ev2);
+            greek = ev2.view.name === "greekframe";
+            if ($(ev2.target).is("a")) {
+                if (greek) {
+                    txt = " " + txt;
+                } else {
+                    txt = ":" + txt;
+                }
+                txt = jbNS.prefixes[jbNS.columns_config[1] - 1] + txt;
+            }
+
+            if (txt !== "") {
+                notes = $("#notes:visible");
+                if (notes.length) {
+                    notes.val(notes.val() + txt);
+                } else {
+                    if (txt.length < 100) {
+                        $("#textinput").val(txt);
+                        setSelButtonText();
+                    }
+                    else {
+                        $("#textinput").val("selection too large");
+                    }
+
+                }
+            }
+        }
+    });
+}
+
+/**
+ * function gr_bu_MouseUp
+ * clicked or selected in greek or butler text
+ * @param event
+ */
+function gr_bu_MouseUp(event) {// set in iframeload()
+    var n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
+
+    event.stopImmediatePropagation();
+    if (jbNS.touchcancel) {
+        jbNS.touchcancel = false;
+        return;
+    } // if it's a swipe, don't do anything here
+    click_lnr = false;
+    $t = $(event.target);
+    greek = event.view.name === "greekframe";
+    if ($t.is("a")) {
+        line = $t.text();
+        click_lnr = true;
+        /* click on linenr */
+    }
+    else if ($t.is("p")) { /* or on line itself */
+        for (n = 0; n < 5; ++n) { // in Hesiod greek there is an <a> once in 5 <p>
+            line = $t.children("a").text();
+            if (line) {
+                break;
+            }
+            $t = $t.prev("p");
+            if (!$t) {
+                return;
+            } //can't happen here
+        }
+    } // got lineNR. may not need it, if text selected
+    if (!line) {
+        return;
+    }
+    if (greek) {
+        bookmark = " " + line;
+    } else {
+        bookmark = ":" + line;
+    }
+    bookmark = jbNS.prefixes[jbNS.columns_config[1] - 1] + bookmark;
+    s = getSelectedText(event);
+    if (s === line) {
+        s = bookmark;
+    }
+    if (s !== "") { // if selected something: copy to notes or textinput
+        notes = $("#notes:visible");
+        if (notes.length) {
+            notes.val(notes.val() + s);
+        } else {
+            if (s.length < 100) {
+                $("#textinput").val(s);
+                setSelButtonText();
+            }
+            else {
+                $("#textinput").val("selection too large");
+            }
+
+        }
+    }
+    else {
+        if (click_lnr) {  // click on linenumber: let the other frame scroll there
+            jbNS.bm_to_goto = line;
+            if (greek) {
+                butlerGotoBM(line);
+            }
+            else {
+                gotoline(line);
+            }
+        }
+        else { //click in text, no selection: set bookmark
+            too_many_bm = setUnsetBookMark(bookmark, true, greek);
+            if (too_many_bm) {
+                myAlert("Too many bookmarks (max. 1000). BM not set.", false, null);
+            }
+        }
+    }
+}
+
+/**
+ * function isGreekCode
+ * in: string with greek chars. return 0: no greek chars, 1:greek, no diacritics, 2:extended unicode
+ * @param str : string
+ * @returns {number}
+ */
+function isGreekCode(str) { //
+    var i, code, c;
+
+    code = 0;
+    for (i = 0; i < str.length; i += 1) {
+        c = str.charCodeAt(i);
+        if (c === 0x1FBD) {
+            continue;
+        } // '
+        if (c >= 0x1F00) {
+            return 2;
+        }
+        if (c >= 0x300) {
+            if (c === 0x3CA || c === 0x3CB) {
+                return 2;
+            }
+            code = 1;
+        }
+    }
+    return code;
+}
+
+/**
+ * function clear_search()
+ * removes the <b></b> tags from greek text
+ * then rebuilds the anchors-array
+ */
+function clear_search() {
+    var bs, t;
+
+    bs = jbNS.greekframe.contents().find("b:first");
+    while (bs.length > 0) {
+        t = bs.parent().html();
+        while (t.indexOf("<b>") >= 0) {
+            t = t.replace("<b>", "");
+            t = t.replace("</b>", "");
+        }
+        bs.parent().html(t);
+        bs = jbNS.greekframe.contents().find("b:first");
+    }
+    jbNS.greekanchors = jbNS.greekframe.contents().find("a");
+}
+
+/**
+ * function textsearch()
+ * search for the text or lineID in #textinput, in greek + english
+ * it's counted greek if there is at least 1 greek char in it.
+ */
+function textsearch() {
+    var i, n, len, target, lines, flag, count, bmsel, inp, start, $frame, greekline, betaline, found, pos;
+
+    inp = $("#textinput").val();
+    if (inp.length < 1) {
+        myAlert("Select what?", false, null);
+        return;
+    }
+    del_all_bm();
+    clear_search();
+
+    count = 0;
+    flag = isGreekCode(inp);
+    $frame = $("#greekframe");
+    if (flag === 0) { //search in Butler text. No <b> tagging of found words here, only the bookmarks
+        $("#butlerframe").contents().find("p:contains('" + inp + "')").each(function (i, el) {
+            var bm;
+
+            bm = $(el).children("a:first").text();
+            count += 1;
+            if (setUnsetBookMark(bm, false, false)) {
+                myAlert("too many bookmarks! (max. 1000)", false, null);
+                //abort!
+            }
+        });
+
+    } else {
+        lines = $frame.contents().find("p");
+        len = lines.length;
+        for (i = 0; i < len; i += 1) {
+            greekline = lines.eq(i).html();
+            start = -1;
+            found = 0;
+            if (flag < 2) { // searching is done in betacode, without diacriticals
+                betaline = uni2beta(greekline, false);
+                target = uni2beta(inp, false);
+                while ((start = betaline.indexOf(target, start + 1)) >= 0) { //search in betacode
+                    pos = start + found * 7;
+                    greekline = greekline.substr(0, pos) + "<b>" + // replace in greek unicode
+                        greekline.substr(pos, inp.length) + "</b>" +
+                        greekline.substr(pos + inp.length);
+                    found += 1;
+                }
+            }
+            else { // search in Greek unicode
+                while ((start = greekline.indexOf(inp, start + 1)) >= 0) {
+                    greekline = greekline.substr(0, start) + "<b>" + inp + "</b>" + greekline.substr(start + inp.length);
+                    start += inp.length + 7;
+                    found += 1;
+                }
+            }
+            if (found > 0) {
+                lines.eq(i).html(greekline);
+                jbNS.greekanchors = $frame.contents().find("a");
+                n = i;
+                while (lines.eq(n).children().length === 0) {
+                    n -= 1;
+                    if (n < 0) {
+                        break;
+                    }
+                }
+                count += 1;
+                if (setUnsetBookMark(lines.eq(n).children(":first").text(), false, true)) {
+                    // 2nd parameter: don't toggle BM, just add
+                    myAlert("too many bookmarks! (max. 1000)", false, null);
+                    return; //abort!
+                }
+            }
+        }
+
+    }
+    cleanupBookMarx();
+    //updateCounter();
+    if (!count) {
+        myAlert("Nothing found!", false, null);
+    }
+    else {
+        bmsel = $("#BMselector");
+        $("#counter").css({
+            "left": bmsel.offset().left + bmsel.width() + 10,
+            "top": bmsel.offset().top
+
+        }).show().children(" div:last").text("" + count);
+        setTimeout(function () {
+            $("#counter").fadeOut(5000);
+        }, 1000);
+    }
+}
+
+/**
+ * function whatisPutIn
+ * decide what is in the #textinput: searchword (greek, extended greek or english) or linenr, for butler or greek text
+ * @returns {{txt: number, lnr: boolean, taal: number, code: number, kind: number}}
+ */
+function whatisPutIn() {
+    var txt, i = 0, s, coding, lang = 3, lnr = false, typ = 0, parseln, $inp;
+
+    $inp = $("#textinput");
+    s = $inp.val();
+    if (s.indexOf("mailto:") >= 0) {
+        typ = 2; // email addr
+    }
+    parseln = s.match(jbNS.parse_lineID);
+    if (parseln && lineID_2_lineNR_obj(parseln[4])) {
+        txt = parseln[2];
+        if (txt) {
+            for (i = 1; i <= 4; i += 1) {
+                if (txt.toLowerCase() === jbNS.prefixes[i - 1].toLowerCase()) {
+                    break;
+                }
+            }
+        }
+        else {
+            i = jbNS.columns_config[1];
+        }
+        lnr = true;
+        if (parseln[3] === " ") {
+            lang = 1;
+        }
+        else if (parseln[3] === ":") {
+            lang = 2;
+        }
+    }
+    else {
+        if (!isNaN(parseInt(s, 10))) {
+            //myAlert( "ill-formed line number", false, null );
+            typ = -1; // -1 = error
+        }
+        else {
+            coding = isGreekCode(s);
+        }
+    } //coding: text encoding 0=latin 1=greek 2=extended greek
+    if (i > 2 && (parseln[7] || parseInt(parseln[6]) > 1)) {
+        typ = -1;
+    }
+    return {txt: i, lnr: lnr, taal: lang, code: coding, kind: typ};
+}
+
+/**
+ * function setSelButtonText
+ * rewrite 'select' menu item
+ */
+function setSelButtonText() {
+    var what, i, msg = 0, sb, selbutt, m, s;
+
+    s = $("#textinput").val();
+    selbutt = $("#selectbtn");
+    what = whatisPutIn();
+    if (!what || !s) {
+        selbutt.find("ul").remove();
+        return;
+    }
+    else if (what.kind === -1) {
+        msg = 1; //"???";
+    }
+    else if (what.kind === 2) {
+        msg = 7;
+    }
+    else {
+        if (what.lnr) {
+            if (what.taal === 1) {
+                msg = 2; //"goto gr." + Perseus lookups
+            }
+            else if (what.taal === 2) {
+                msg = 3; //"goto eng." + Perseus lookups
+            }
+            else if (what.taal === 3) {
+                msg = 4; //"goto";
+            }
+        }
+        else {
+            if (what.code) { //which = 1 or 2
+                msg = 5; //"Find gr."; + Word Study lookup
+            }
+            else { // which = 0
+                msg = 6; //"Find eng.";
+            }
+        }
+    }
+    //rewrite:
+    jbNS.selectBtnChoice = msg;
+    sb = selbutt.find("ul");
+    if (!sb.length) {
+        selbutt.append("<ul id='selectlist'></ul>");
+        sb = selbutt.find("ul");
+    }
+    else {
+        sb.children().remove();
+    }
+    for (i = 0; i < jbNS.selectBtnMessages[msg].length; ++i) {
+        m = jbNS.selectBtnMessages[msg][i];
+        if (m) {
+            sb.append("<li>" + m + "</li>");
+        }
+    }
+    if (msg > 0) {
+        sb.show();
+    }
+    sb.on("mouseleave", function () {
+        this.style.display = "none";
+    });
+}
+
+/**
+ * function clrinp
+ * set #textinput to ""
+ */
+function clrinp(event) {
+
+    event.stopImmediatePropagation();
+    $("#textinput").val("");
+    setSelButtonText();
+}
+
+/**
+ * function enterInput
+ * enter a char/string in the chosen input, at cursor pos., if there is a selection, replace it
+ * @param str : string // string to be entered (normally 1 char)
+ * @param inputbox : object // textinput or notepad
+ * @param keep : boolean //false=discard true=keep selection
+ */
+function enterInput(str, inputbox, keep) {
+    var val, start, selend;
+
+    val = inputbox.value;
+    start = inputbox.selectionStart;
+    selend = inputbox.selectionEnd;
+    inputbox.value = val.slice(0, start) + str + val.slice(selend);
+    if (start === selend) {
+        inputbox.selectionStart = inputbox.selectionEnd = selend + 1;// Move the caret
+    }
+    else {
+        if (keep) {
+            inputbox.selectionStart = start;
+            inputbox.selectionEnd = start + str.length;
+        } else {
+            inputbox.selectionStart = inputbox.selectionEnd = start + str.length;
+        }
+    }
+    if (inputbox.id === "textinput") {
+        setSelButtonText();
+    }
+}
+
+function changeTextCoding(elem, accents) { // only allow input[type=text]/textarea
+    /**
+     * function changeTextCode
+     * switch the text in elem between greek and betacode
+     * @param elem : object // textinput or notepad
+     * @param accents : boolean // if false, discard breathings etc
+     * @returns {string}
+     */
+    var sel;
+
+    if (elem.id === "notes") {
+        sel = elem.value.substring(elem.selectionStart, elem.selectionEnd);
+        //sel = getSelectedText( null );
+        if (sel === "") { //no selection: replace whole text
+            sel = elem.value;
+            elem.select();
+        }
+    } else { //input
+        sel = elem.value;
+        elem.value = "";
+    }
+    if (isGreekCode(sel)) {
+        sel = uni2beta(sel, accents);
+    }
+    else {
+        sel = beta2uni(sel);
+    }
+    return sel;
+}
+
+/**
+ * function keyboardInput
+ * event handler: keyboard input to #textinput or notepad
+ * @param event : object // keypress
+ * @returns {boolean} // for propagation of event
+ */
+function keyboardInput(event) {
+    // focus must be on the "#textinput" input or "#notes" textarea element
+    var code, sel;
+
+    code = event.keyCode || event.charCode;
+    if (code < 48) {
+        return true;
+    }
+    sel = String.fromCharCode(code);
+    enterInput(sel, event.target, false);
+    return false;
+}
+
+/**
+ * function betaclick
+ * change textarea text into extended greek or vv.
+ * if nothing selected, the whole text. If mousebtn hold or shift-key: discard diacritics
+ * @param event : object // (click)
+ */
+function betaclick(event) {
+    var time1 = event.timeStamp;
+
+    event.stopImmediatePropagation();
+    $(event.currentTarget).one("mouseup", function (ev2) {
+        var time2, inp, keepdia;
+
+        event.stopImmediatePropagation();
+        time2 = ev2.timeStamp - time1;
+        keepdia = !(time2 > 500 || event.shiftKey); //click or hold
+        inp = $(event.target).parent().siblings(".input")[0];
+        //document.getElementById( "notes" );
+        enterInput(changeTextCoding(inp, keepdia), inp, true);
+    });
+}
+
+/**
+ * function executeBtnChoice
+ * execute selectbutton entry
+ * @param event
+ */
+function executeBtnChoice(event) {
+    var trg, index, s, $lst;
+
+    //event.stopImmediatePropagation();
+    $lst = $("#selectlist");
+    trg = $(event.target);
+    if (trg[0].id === "select") {
+        $lst.toggle(); //$lst.display === "none");
+        return;
+    }
+    index = trg.parent().children("li").index(trg);
+    s = $.trim($("#textinput").val());
+    if (index === 1) {
+        return;
+    }
+
+    switch (jbNS.selectBtnChoice) {
+        case 0: // empty
+            break;
+        case 1: // error (not used)
+            break;
+        case 2: // goto greek
+        case 3: // goto butler
+            if (index === 0) {
+                showAndGotoAnyLine(s);
+            }
+            else if (index === 2) {
+                perseusLookup(0);
+            }
+            else if (index === 3) {
+                perseusLookup(1);
+            }
+            break;
+        case 4: // goto both
+            showAndGotoAnyLine(s);
+            break;
+        case 5: // search greek
+        case 6:
+            jbNS.selectBtnActions[1][index]();
+            break;
+        case 7: //set email addr
+            setMailAdr();
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * function showAllLines
+ * unhide lines hidden by showSelOnly()
+ */
+function showAllLines() {
+    var i, len, headers;
+
+    headers = $("#greekframe").contents().find("h4");
+    len = headers.length;
+    for (i = 0; i < len; i += 1) {
+        headers[i].style.display = "";
+    }
+    len = jbNS.greekanchors.length;
+    for (i = 0; i < len; i += 1) {
+        jbNS.greekanchors[i].parentNode.style.display = "";
+    }
+}
+
+/**
+ * function showSelOnly
+ * Hide all greek lines that are not bookmarked (Il, Od only)
+ */
+function showSelOnly() {
+    var i, len, p, headers;
+
+    len = jbNS.greekanchors.length;
+    for (i = 0; i < len; i += 1) {
+        p = jbNS.greekanchors[i];
+        if (p.className !== "bmcolor") {
+            p.parentNode.style.display = "none";
+        }
+    }
+    headers = $("#greekframe").contents().find("h4");
+    len = headers.length;
+    for (i = 0; i < len; i += 1) {
+        headers[i].style.display = "none";
+    }
+}
+
+/**
+ * function toggleSelOnly
+ * toggle showSelOnly() - showAllLines + menu-entry
+ * @param event
+ */
+function toggleSelOnly(event) {
+    var a;
+
+    event.stopImmediatePropagation();
+    //$(".btn1 ul").removeClass("menuActive");
+    if (jbNS.columns_config[1] > 2) {
+        myAlert("sorry, Iliad or Odyssey only", false, null);
+        return;
+    }
+    a = $("#selonly");
+    if (jbNS.showonlyselection) {
+        a.text("Show only selection");
+        jbNS.showonlyselection = false;
+        showAllLines();
+    } else {
+        a.text("Show all lines");
+        jbNS.showonlyselection = true;
+        showSelOnly();
+    }
+}
+
+/**********************************************************************/
+/*! Blob & FileReader:                                                          */
+
+/**********************************************************************/
+/**
+ * function saveTextAsFile
+ * save string (notepad contents) to a file going to the download directory (blob)
+ * @param textToWrite ; string
+ */
+function saveTextAsFile(textToWrite) {
+    var textFileAsBlob, fileNameToSaveAs, downloadLink;
+
+    textFileAsBlob = new Blob([textToWrite], {type: 'text/html'});
+    fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+
+    if (!window.navigator.msSaveOrOpenBlob) {
+        downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        //}
+    } else { // IE 10+
+        window.navigator.msSaveOrOpenBlob(textFileAsBlob, fileNameToSaveAs);
+    }
+
+    downloadLink.click();
+}
+
+function saveBlob() {
+    saveTextAsFile(document.getElementById("notes").value);
+}
+
+function destroyClickedElement(event) {
+    document.body.removeChild(event.target);
+}
+
+/**
+ * function loadFileAsText
+ * create filereader to upload a text and store it in notepad
+ */
+function loadFileAsText() {
+    var fileToLoad, fileReader;
+
+    fileToLoad = document.getElementById("fileToLoad").files[0];
+    fileReader = new FileReader();
+    fileReader.onload = function (fileLoadedEvent) {
+        document.getElementById("notes").value = fileLoadedEvent.target.result;
+    };
+    fileReader.readAsText(fileToLoad, "UTF-8");
+}
+
+/**********************************************************************/
+/*! Notepad:                                                          */
+
+/**********************************************************************/
+/**
+ * function showNotes
+ * show notepad
+ * @param event
+ */
+function showNotes(event) {
+    event.stopImmediatePropagation();
+    //$(".btn1 ul").removeClass("menuActive");
+    $("#notediv, #notes").hide();
+    $("#notediv").show(300, "swing", function () {
+        $("#notes").slideDown(300, "swing");
+    });
+    $("body").off("keyup");
+}
+
+function setMailAdr() {
+    var $txt = $("#textinput");
+    localStorage.setItem("mailadr", $txt.val().substr(7));
+    $txt.val("");
+}
+
+function getMailAdr() {
+    var s = localStorage.getItem("mailadr");
+    if (s === "evernote") {
+        s = "jeroen1952.2a0d762@m.evernote.com";
+    }
+    return s;
+}
+
+/**
+ * function saveNotes
+ * save notepad contents to localstorage
+ */
+function saveNotes() {
+    var $n = $("#notes");
+    localStorage.setItem("Notes", $n.val());
+    localStorage.setItem("NotesHeight", $n.height());
+    localStorage.setItem("NotesWidth", $n.width());
+
+}
+
+/**
+ * function loadNotes
+ * load notepad contents from localstorage
+ */
+function loadNotes() {
+    var $n = $("#notes");
+    $n.val(localStorage.getItem("Notes") || "");
+    $n.height(localStorage.getItem("NotesHeight")); // not yet? because of Chrome bug
+    $n.width(localStorage.getItem("NotesWidth"));
+}
+
+/**
+ * function gotoclick
+ * (load and) scroll to prefixed bookmark (in notes)
+ */
+function gotoclick() {
+    var inp, str;
+
+    inp = document.getElementById("notes");
+    str = inp.value.substring(inp.selectionStart, inp.selectionEnd);
+    if (str) {
+        showAndGotoAnyLine(str);
+    }
+    inp.selectionStart = inp.selectionEnd;
+}
+
+/**
+ * function showAlfabet
+ * show / hide alfabet popup
+ * @param doit : boolean //true = show
+ */
+function showAlfabet(doit) {
+    if (doit) {
+        $("#alfabetdiv").show("slow", "swing");
+    } else {
+        $("#alfabetdiv").hide("slow", "swing");
+    }
+}
+
+/**********************************************************************/
+/*! Tree manipulation:                                                */
+
+/**********************************************************************/
+/**
+ * function setplusminus
+ * set the proper + and - signs in treeframe after expand/collapse
+ */
+function setplusminus() {
+    jbNS.OL_level.each(function () {
+        var $this = $(this);
+        if ($this.length) {
+            $this.children("li").each(function () {
+                var $that = $(this);
+                $that.children("ol:visible").prev("span").replaceWith("<span class='plm'>&ominus;</span>"); // its children
+                $that.children("ol:hidden").prev("span").replaceWith("<span class='plm'>&oplus;</span>");
+            });
+        }
+    });
+}
+
+/**
+ * function getindex
+ * find index of li-element in tree
+ * @param el : object
+ * @returns {number} : element index, 0 if not found
+ */
+function getindex(el) {
+    var i;
+
+    for (i = 0; i < jbNS.LI_elements.length; i += 1) {
+        if (jbNS.LI_elements[i] === el) {
+            return i;
+        }
+    }
+    return (0); //for scrolling to top even if not found
+}
+
+/**
+ * function scrolltree
+ * scroll tree to given element index
+ * @param el_index : number
+ */
+function scrolltree(el_index) {
+    if (jbNS.LI_elements.length) {
+        jbNS.LI_elements[el_index].scrollIntoView();
+    }
+}
+
+/**
+ * function klap
+ * expand/collapse list acc. to menu-choice
+ * @param level : number // 1-8
+ */
+function klap(level) { //expand/collapse list acc. to menu-choice (level)
+    var ols;
+
+    jbNS.currentLevel = level;
+    ols = jbNS.OL_level;
+    ols.each(function () {
+        var $this, val;
+
+        $this = $(this);
+        val = $this.data("level");
+        if (val > level) {
+            $this.slideUp(600);
+        } else {
+            $this.slideDown(600);
+        }
+    });
+    ols.promise().done(function () {
+        scrolltree(jbNS.treetop_el_index);
+        setplusminus();
+    });
+}
+
+/**
+ * function handleRemClick
+ * show the "rem' data-attribute text or hide it and save the text back to the DOM
+ * @param {*} $element - the clicked html element: either .hasrem or .norem
+ */
+function handleRemClick($element) {
+    var $parent, txtrem, newtext;
+    $parent = $element.parent();
+    if ($parent.has(".remtxt").length) { // if it's showing: hide it
+        txtrem = $parent.find(".remtxt:first");
+        txtrem.slideToggle(350, function () {
+            $(this).remove();
+        });
+    }
+    else { // show it by creating a temporary <div> element with the text
+        $element.nextAll("span:last")
+            .after("<div class='remtxt'>" + $element.closest("li").data("rem") || "" + "</div>");
+        $parent.find(".remtxt:first").slideToggle(350);
+    }
+
+}
+
+
+/**
+ * function tree_handleMouseEvents
+ * event handler: click on treeframe
+ * @param event
+ */
+function tree_handleMouseEvents(event) { //single click or mouseenter
+    var $trg, $prev, $ol, s, ids, bg, clsnm, lvl, hovering, found, anchor;
+
+    hovering = event.type !== "click";
+    $trg = $(event.target);
+
+    if (hovering) {
+        ids = element2lineIDs($trg);
+        bg = ids.beginning;
+        clsnm = $trg.parent().parent().attr("class").substring(1);
+        if (!clsnm) {
+            lvl = 8;
+        }
+        else {
+            lvl = parseInt(clsnm, 10) + 1;
+        }
+        anchor = lvl + ":" + bg;
+        found = gotoAnchor(anchor, hovering); // if hover, don't go, just return true if anchor found
+        if (found) {
+            $trg.css("background-color", "lightblue");
+        }
+
+    }
+    else if ($trg.is("span")) {
+        $prev = $trg.prev("span");
+        if ($prev && $prev.hasClass("ln")) { /*click on text part*/
+            if (hovering) {
+                return;
+            }
+            s = $prev.text();
+            showAndGotoAnyLine("il " + s);
+        }
+        else if (!hovering && $trg.is(".plm")) { /*click on + or - */
+
+            $ol = $trg.closest("li").eq(0).children("ol").eq(0);
+            $ol.slideToggle(400); //this = LI element
+            $ol.promise().done(setplusminus);
+        }
+    }
+    else if ($trg.is("div.hasrem")) {
+        handleRemClick($trg);
+    }
+}
+
+/**
+ * function lineIDmousedown
+ * timed mousedown event on lineID: click or hold (>500 ms)
+ * click: scroll textframe to anchor
+ * hold: set & remember scrolling top of tree
+ * @param event
+ */
+function lineIDmousedown(event) {
+    var time1 = event.timeStamp,
+        $trg = $(event.target);
+
+    $(event.currentTarget).one("mouseup", function (ev2) {
+        var ids, bg, clsnm, lvl, anchor, found, ix,
+            time2 = ev2.timeStamp - time1;
+
+        if (time2 < 500) { //'click'
+            ids = element2lineIDs($trg);
+            bg = ids.beginning;
+            clsnm = $trg.parent().parent().attr("class").substring(1);
+            if (!clsnm) {
+                lvl = 8;
+            }
+            else {
+                lvl = parseInt(clsnm, 10) + 1;
+            }
+            anchor = lvl + ":" + bg;
+            found = gotoAnchor(anchor, true); // check if target exists
+            if (found) {
+                $trg.css("background-color", "lightblue");
+                loadAndGotoTextframeAnchor(anchor);
+            }
+        }
+        else { // 'hold'
+            if (!$trg.hasClass("ln")) {
+                return;
+            }
+            ix = getindex($trg[0].parentNode);
+            if (jbNS.treetop_el_index === ix) {
+                ix = 0;
+            }
+            jbNS.treetop_el_index = ix;
+            scrolltree(ix);
+            localStorage.setItem("treetop", String(ix));
+        }
+    });
+}
+
+/**
+ * function tree_handleKey
+ * event handler: handle keypress when focus on treeframe. for now only '0'-'8'
+ * @param event
+ */
+function tree_handleKey(event) {
+    var key, trg;
+
+    trg = event.target;
+    if ($(trg).is("input")) {
+        return;
+    }
+    key = event.keyCode || event.charCode;
+    event.stopImmediatePropagation();
+
+    key -= 48;
+    if (key >= 0 && key <= 8) {
+        klap(key);
+    }
+}
+
+/**
+ * function element2lineIDs
+ * given a .ln-class element, search the beginning & end linenumbers
+ * of its section. (end = beginning of next section)
+ * @param $el : html element
+ * @returns object : {beginning, end}
+ */
+function element2lineIDs($el) {
+    var $parent, bg, nd;
+
+    bg = $el.text();
+    $parent = $el.parent("li");
+    //search closest parent which has a next sibling:
+    while ($parent.next('li').length === 0) {
+        $parent = $parent.parents('li').eq(0);
+        if ($parent.length === 0) { // no such parent
+            break;
+        }
+    }
+    if ($parent.length === 0) {
+        nd = "24.805"; // final li element
+    }
+    else {
+        nd = $parent.next("li").children(".ln").text(); // only 1 .ln child
+    }
+    return {beginning: bg, last: nd};
+}
+
+/**********************************************************************/
+/**********************************************************************/
+/* manage content columns                                             */
+/**********************************************************************/
+
+/**********************************************************************/
+/*! load content:                                                     */
+/**********************************************************************/
+function get_page_from_menu(ix){
+    var txt;
+
+    if (ix < jbNS.pages_local.length) {
+        txt = jbNS.pages_local[ix][0];
+    } else {
+        txt = jbNS.pages_extern[ix - jbNS.pages_local.length][0];
+    }
+    if (jbNS.pageframe[0].src !== txt) {
+        jbNS.pageframe[0].src = txt;
+    }
+}
+
+
+/**
+ * loadIframeToPage
+ * event handler: load external html into pageframe.
+ * @param event
+ */
+function loadIframeToPage(event) {
+    var ix;
+    ix = $("#filesmenu li").index($(event.target).parent());
+    event.stopImmediatePropagation();
+    get_page_from_menu(ix);
+    hidemenuitems();
+    configColumns(0, 2, true);
+}
+
+/**
+ * function mousedowncolresize
+ * mousedown event handler: column resize with mouse-drag (not on tablets)
+ * @param event : object
+ */
+function mousedowncolresize(event) {
+    var $resizer = $(event.delegateTarget),
+        $selected = $resizer.prev(".viewport"),
+        delta_X,
+        delta_W,
+        $viscols = $selected.nextAll('.viewport:visible'),
+        viscolnum = $viscols.length,
+        prevX = event.pageX, // initial x pos
+        $tmp,
+        $coverdiv = $("#coverall");
+    // create invisible cover for dragging resizer over iframes:
+    cover(8, 0); //brings #coverall forward
+
+    // clone resizer div  and detach it to make resizing visible
+    $tmp = $resizer.clone().css({
+        "position": "absolute",
+        "top": "6rem", //not necessary
+        "background": "rgba( 240, 240, 240, 0.2 )",
+        "z-index": 10,
+        "height": $resizer.height(),
+        "float": "none"
+    }).appendTo($coverdiv);
+    $(document).one("mouseup", function (e) { //evt handler disappears after use
+        $tmp.remove();
+        cover(-8, 0.3);
+        $("#coverall").off("mousemove");
+        //calc. position, width change
+        delta_X = e.pageX - prevX;
+        delta_W = Math.round(delta_X / viscolnum);
+        $selected.css("width", "+=" + delta_X);
+        $viscols.each(function (i) {
+            $(this).css({
+                //the first one takes all the x-move, the next columns' moves are diminished by the width-change
+                "left": "+=" + (delta_X - i * delta_W),
+                "width": "-=" + delta_W
+            });
+        });
+        scrollgreek();
+    });
+    $coverdiv.on("mousemove", function (e) {
+        $tmp.css("left", e.pageX);
+    });
+
+    event.preventDefault(); // disable mouse-selection
+}
+
+/**
+ * function adjustColWidth
+ * tweak the width of the rightmost viewport-column so it fits in window
+ */
+function adjustColWidth() {
+    var w, sum_w = 0;
+
+    $(".viewport:visible, .resizer:visible").each(function () {
+        sum_w += $(this).outerWidth(true);
+    });
+    sum_w += 8; //error margin (rounding?) was 4
+    w = $("#colwrap").width() - sum_w;
+    $(".viewport:visible:last").css("width", "+=" + w);
+}
+
+/**
+ * function createSplitter
+ * create div where the cursor shows 'splitter' shape & columns can be resized
+ * rightmost column doesn't get a splitter
+ */
+function createSplitter() {
+    $(".resizer").remove();
+    $(".viewport:visible").not(":last").after("<div class='resizer'></div>");
+    $(".resizer").each(
+        function () {
+            $(this).css({
+                "z-index": 10,
+                float: "left"
+            });
+        }).on("mousedown", mousedowncolresize);
+    adjustColWidth();
+}
+
+/**
+ * function setColumns
+ * set default visible column widths and show/hide them acc. to jbNS.columns_config
+ */
+function setColumns() {
+    var colwidth,
+        col_ix = 0,
+        w,
+        scr = $(window).width(),
+        col1, col2, col4,
+        which,
+        colnum = 0,
+        doresize,
+        left2, left4;
+
+    col2 = jbNS.columns_config[1]; //text choice: homer, hesiod
+    which = jbNS.columns_config[2]; //greek and/or translation (butler)
+    /* count visible frames. tree/pageframe has double width */
+    //pageframe - treeframe:
+    colnum += jbNS.columns_config[0] ? 1 : 0;
+    //if greek:
+    colnum += col2 && (which & 1 ? 1 : 0);
+    //if transl.:
+    colnum += col2 && (which & 2 ? 1 : 0);
+    //textframe - other:
+    colnum += jbNS.columns_config[3] ? 1 : 0;
+
+    if (colnum === jbNS.oldcolnum) {
+        doresize = false; //no resize after column switch if nr. of columns remains the same
+        $(".viewport:visible").each(function (i) {
+            jbNS.width[i] = $(this).width(); //store widths
+        });
+    }
+    else { //otherwise: resize to default widths
+        doresize = true;
+    }
+    jbNS.oldcolnum = colnum;
+    //pageframe - treeframe
+    col1 = jbNS.columns_config[0]; // list or page or none
+    jbNS.treeframe.hide();
+    jbNS.pageframe.hide();
+    if (col1 && colnum > 2) {
+        colwidth = (scr / (colnum + 1)) - 8; //8 for resizer
+    }
+    else {
+        colwidth = (scr / colnum) - 8;
+    }
+    if (doresize) {
+        if (colnum > 2) {
+            w = 2 * colwidth;
+        }
+        else {
+            w = colwidth;
+        }
+    }
+    else {
+        w = jbNS.width[col_ix];
+    }
+    if (col1 === 1) {
+        jbNS.treeframe.show().width(w);
+        col_ix++;
+    } else if (col1 === 2) {
+        jbNS.pageframe.show().width(w);
+        col_ix++;
+    }
+    //greekframe - butlerframe
+    jbNS.greekframe.hide();
+    jbNS.butlerframe.hide();
+    left2 = col1 ? colwidth + 8 : 0;
+    if (col2 && which) {
+        //left3 = left2 + ((which & 1) ? colwidth + 8 : 0);
+        w = doresize ? colwidth : jbNS.width[col_ix];
+        if (which & 1) {
+            //if(doresize) jbNS.greekframe.css("left", left2);
+            jbNS.greekframe.show().width(w);
+            col_ix++;
+        }
+        w = doresize ? colwidth : jbNS.width[col_ix];
+        if (which & 2) {
+            //if(doresize) jbNS.butlerframe.css("left", left3);
+            jbNS.butlerframe.show().width(w);
+            col_ix++;
+        }
+    }
+    // textframe
+    left4 = left2 + (col2 && (((which & 1) ? colwidth + 8 : 0) + ((which & 2) ? colwidth + 8 : 0)));
+    col4 = jbNS.columns_config[3];
+    jbNS.textframe.hide();
+
+    w = doresize ? colwidth : jbNS.width[col_ix];
+    if (col4) {
+        if (doresize) {
+            jbNS.textframe.css("left", left4);
+        }
+        jbNS.textframe.width(w).show();
+    }
+}
+
+/**
+ * function resizeLeftColumn
+ * for tablets: resize left column (swipe in header) and adapt the others
+ * @param amount : number //pixels, + or -
+ */
+function resizeLeftColumn(amount) {
+    var n, colnum, deltaX, columns;
+
+    colnum = jbNS.oldcolnum;
+    if (colnum < 1) {
+        return;
+    }
+    columns = $(".viewport:visible");
+    jbNS.width[0] = $(columns[0]).width() + amount;
+    deltaX = amount / (colnum - 1);
+    for (n = 1; n < colnum; n += 1) {
+        jbNS.width[n] = $(columns[n]).width() - deltaX;
+    }
+    for (n = 0; n < colnum; n += 1) {
+        columns[n].left += n * deltaX;
+        $(columns[n]).width(jbNS.width[n]);
+    }
+    scrollgreek();
+}
+
+function growLeftColumn() {
+    resizeLeftColumn(jbNS.colResizeStep);
+    return true;
+}
+
+function shrinkLeftColumn() {
+    resizeLeftColumn(-jbNS.colResizeStep);
+    return true;
+}
+
+/**
+ * function iFrameLoad
+ * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
+ * @param id : string // #id of iframe
+ * @param src : string //url
+ * @returns {*}
+ */
+function iFrameLoad(id, src) {
+    var deferred = $.Deferred(),
+        iframe = document.getElementById(id);
+    iframe.src = src;
+    $(iframe).load(deferred.resolve);
+
+    deferred.done(function () { //what to do after the individual frame has been loaded
+        var $frame, isgreek;
+
+        if (id === "greekframe") {
+            $frame = $("#greekframe");
+            isgreek = true;
+            $("#selonly").text("Show only selection");
+            jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
+            if (jbNS.gr_beginLine > 0) {
+                scrollgreek();
+            }
+        }
+        else {
+            $frame = $("#butlerframe");
+            isgreek = false;
+            jbNS.butleranchors = $frame.contents().find("a");
+        }
+        $frame.contents().find("body").on({
+            //"touchhold": gr_bu_hold,
+            "mousedown": gr_bu_MouseDown,
+            "touchmove": function () {
+                jbNS.touchcancel = true;
+            }
+        });
+        putbackBookmarks(isgreek); // false = butler, true = greek
+    });
+    return deferred.promise();
+}
+
+/**
+ * function fetchTexts
+ * fetch greek/butler texts acc. to columns_config
+ * @param filenr : number // index to filenames array
+ */
+function fetchTexts(filenr) {
+    $.when(
+        iFrameLoad("greekframe", jbNS.filenames[1][filenr]),
+        iFrameLoad("butlerframe", jbNS.filenames[2][filenr]))
+        .then(function () { //what to do after both frames have been loaded:
+            setColumns();
+            if (jbNS.untouchable) {
+                createSplitter();
+            }
+            adjustColWidth();
+            goto_BM_on_load();
+        });
+}
+
+/**
+ * function configColumns
+ * implement column-switching logic
+ * configure column[ colnr ] and set buttons accordingly (if set == true). Then set column width, font, scrollbar etc.
+ * @param colnr : number // column index (0-3)
+ * @param ix : number // index of buttons. if undefined (absent), set everything acc. to columns_config
+ * @param notoggle : boolean // if true: set, don't toggle default = false
+ */
+function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
+{	// NB: index has 1 added so [0] can be 'none'
+    var language_choice = 0, $allbuttons;
+
+    jbNS.dontSetColumns = false;
+
+    $allbuttons = $(".switch").eq(colnr).find("li");
+    //notoggle = (typeof notoggle !== "undefined");
+
+    if (typeof ix === "undefined") {
+        ix = jbNS.columns_config[colnr];
+        notoggle = true;
+        jbNS.dontSetColumns = true;
+    }
+    if (colnr === 2) { //language choice
+        language_choice = 1; // raise index by one, because of "⇔" button
+        if (notoggle) {
+            jbNS.columns_config[colnr] = ix;
+        }//language buttons can both be set (greek = bit0, engl. = bit1)
+        else {
+            if (ix > 1) {
+                ix = (ix === 2 ? 3 : 2);
+            }//make the middle button count as 3 (bit0 + bit1) so it performs a 'switch'
+            jbNS.columns_config[colnr] ^= ix;
+        }
+    }
+    else {						// the other btns: not both
+        if (notoggle) {
+            jbNS.columns_config[colnr] = ix;
+        }
+        else {
+            jbNS.columns_config[colnr] = (jbNS.columns_config[colnr] === ix ? 0 : ix);
+        }
+    }
+    $allbuttons.removeClass("switchselect");
+    if (colnr === 1) { //text select
+        if (jbNS.columns_config[1]) {
+            $allbuttons.eq(ix - 1).addClass("switchselect");
+            //fetchTexts( ix - 1 );
+            return; // because text in iframe is fetchText()-ed and setcolumns() etc is done by deferred callback
+        }
+    }
+    else {// textframe
+        if (jbNS.columns_config[colnr] & 1) {
+            $allbuttons.eq(0).addClass("switchselect");
+        }
+        if (jbNS.columns_config[colnr] & 2) {
+            $allbuttons.eq(1 + language_choice).addClass("switchselect");
+        }
+    }
+    if (jbNS.dontSetColumns) {
+        return;
+    }
+    setColumns(); //width, display
+    if (jbNS.untouchable) {
+        createSplitter();
+    }
+    if (colnr === 0 && ix === 0) {
+        scrolltree(jbNS.treetop_el_index);
+    }
+}
+
+/**
+ * function switchColMousedown
+ * event handler: mousedown on top-of-screen 'pop-down' menu.  on 'pages' > 1/2 sec. : show popup menu
+ * @param event
+ */
+function switchColMousedown(event) {
+    var time1 = event.timeStamp;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    $("#switchColumns").one("mouseup touchend", function (e) { //handler deleted after execution
+        var $trg, $par, colnr, ix, time2, t;
+
+        t = e.timeStamp;
+        time2 = (t - time1);
+        $trg = $(e.target);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if ($trg.is("nav") || $trg.is("ul")) {
+            swcol_up();
+            return;
+        }
+        $par = $trg.parents("li");
+        ix = $trg.index(); // content button index 0-1, but 0-3 if colnr == 1
+        colnr = $par.index(); // column index: 0=list/page, 1=Il,Od,Theo,WD 2=gr/transl 3=expl/? NOTE:colnr - 1 if left & right btns
+        // button clicked: show/hide/switch pages or texts
+        if (colnr > 0) {// button clicked: show/hide/switch pages or texts
+            if (colnr === 1) {
+                jbNS.gr_beginLine = 0;
+                fetchTexts(ix);
+            }
+            configColumns(colnr, ix + 1, false); //-1
+            if (colnr === 2) {
+                goto_BM_on_load();
+            }
+            else {
+                jbNS.bm_to_goto = "";
+            }
+            if (colnr === 3) {
+                jbNS.textframe[0].src = jbNS.filenames[3][ix];
+            }
+        }
+        else { // list/pages
+            if (jbNS.columns_config[0] === 2 && ix === 1) {
+
+                if ((!e.shiftKey && jbNS.untouchable) || (!jbNS.untouchable && time2 < 1500)) {
+                    if (jbNS.pageframe[0].src.split("/").pop() !== 'page1.html') {
+                        jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
+                    }
+                    else {
+                        //jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
+                        configColumns(0, 2, false);
+                    }
+                } else if (e.shiftKey || time2 > 1500) {
+                    jbNS.pages_menu_expanded = !jbNS.pages_menu_expanded;
+                    if (jbNS.pages_menu_expanded) {
+                        $("#filesmenu").animate({
+                            "left": "2rem",
+                            "opacity": "1"
+                        }, 800);
+                        cover(4, 0.35);
+                        $("#coverall").one("click", hidemenuitems);
+                    }
+                }
+            }
+            else {
+                configColumns(colnr, ix + 1, false);
+            }
+        }
+    });
+}
+
+/**
+ * function swcol_up, swcol_down
+ * jquery css animations for switchcol header
+ */
+function swcol_up() {
+    $("#switchColumns, #bm_nav").each(function () {
+        var $that = $(this);
+        $that.stop().animate({
+            "height": "0.6rem",
+            "font-size": "0.1rem",
+            "opacity": 0
+        }, 400, "swing", function () {
+            $that.hide();
+        });
+    });
+}
+
+function swcol_down(event) { // for click and mouseenter
+    var trg;
+
+    //event.stopImmediatePropagation();
+    $(event.target).show();
+    if (event.target.id === "columns") {
+        trg = "#switchColumns";
+    }
+    else {
+        trg = "#bm_nav";
+    }
+    $(trg).stop().show().animate({
+        "height": "6rem",
+        "font-size": "1rem",
+        "opacity": 1
+    }, 400, "swing");
+}
+
+/**********************************************************************/
+/*! fontsize-zoom:                                                    */
+
+/**********************************************************************/
+
+/**
+ * function setHeaderContents
+ * calc window width divided by fontsize, set header contents accordingly during resize / zoom
+ * @param size : number //fontsize in pixels
+ */
+function setHeaderContents(size) {
+    var m1, relwidth;
+
+    relwidth = window.innerWidth / size;
+    m1 = $("#menu1");
+    $(".lrpic, #hdpic1, #hdpic2").hide();
+    m1.css("width", "95%");
+    if (relwidth > 50) {
+        $(".lrpic").show();
+        m1.css("width", "75%");
+    }
+    if (relwidth > 60) {
+        $("#hdpic2").show();
+        m1.css("width", "60%");
+    }
+    if (relwidth > 80) {
+        $("#hdpic1").show();
+        m1.css("width", "50%");
+    }
+}
+
+/**
+ * function calcFontsizeDiff
+ * calc the fontsize relative to the window size (1920px ~ 14pt)
+ * @returns {number} fontsize difference in pt
+ */
+function calcFontsizeDiff() {
+    var winwidth, zoomX, res;
+
+    winwidth = window.innerWidth;
+    zoomX = (winwidth / jbNS.norm_window_width) * 100;
+    res = 0.7 * (0.5 + (10 - (zoomX + 5) / 10));
+    return (res); // < 0 if font larger
+}
+
+/**
+ * function setIframeFont
+ * try to set font size of iframe
+ */
+function setIframeFont(size) {
+    $("iframe:visible").each(function () {
+        try {
+            $(this).contents().find("html").css("font-size", size + "px");
+            //console.log(this.name);
+        }
+        catch (ignore) {
+        }
+    });
+}
+
+/**
+ * function setfont
+ * set basic fontsize of <html> and global var (and iframes)
+ * @param size : number // in pix
+ */
+function setfont(size) {
+    setHeaderContents(size);
+    $("html").css("font-size", size + "px");
+    $("#setfontsize")[0].value = Math.round(size);
+    setIframeFont(size);
+    scrollgreek();
+}
+
+/**
+ * function zoominout
+ * zoom whole page relative to window size
+ */
+function zoominout() {
+    var size, diff;
+
+    size = jbNS.basic_fontsize;
+    diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
+    setfont(size - diff);
+}
+
+/**********************************************************************/
+/*! initialize:                                                       */
+
+/**********************************************************************/
+/**
+ * function get_pages_list
+ * load list of available pages: (#filesmenu)
+ */
+function get_pages_list() {
+    var i, str, $pg;
+
+    $pg = $("#filesmenu");
+    $pg.find("li").remove();
+    str = "";
+    for (i = 0; i < jbNS.pages_local.length; ++i) {
+        str += "<li><a>" + jbNS.pages_local[i][1] + "</a></li>";
+    }
+    str += "<li class='grey'><span>---external links---</span></li>";
+    for (i = 1; i < jbNS.pages_extern.length; ++i) {
+        str += "<li><a>" + jbNS.pages_extern[i][1] + "</a></li>";
+    }
+    $pg.children("ul").eq(0).append(str);
+    $pg.find("li").addClass("menuitems").children("a").click(loadIframeToPage);
+    $pg.css({
+        "left": "-" + $pg.width(),
+        //"bottom" : "4rem",
+        "opacity": 0
+    });
+    $(".menuitems").on("mousedown touchstart", function (event) {
+        $(event.currentTarget).css("background-color", "red");
+    });
+}
+
+/**
+ * function hidemenuitems
+ * hide sliding menu
+ */
+function hidemenuitems() {
+    var $fm = $("#filesmenu");
+    $fm.animate({
+        "left": "-" + $fm.width(),
+        "opacity": "0"
+    }, 800);
+    cover(-8, 0.3);
+    jbNS.pages_menu_expanded = false;
+    //$("#switchColumns").on("mousedown touchstart", switchColMousedown);
+    $(".menuitems").css("background-color", "");
+}
+
+/**********************************************************************/
+/*! local storage & page state                                        */
+
+/**********************************************************************/
+/**
+ * function storeExpansionstate
+ * save expansion state of treeframe by creating a string of '0' and '1'
+ * 0 for an OL element that is collapsed, 1 for an expanded one. Save string to localstorage.
+ */
+function storeExpansionstate() {
+    var t;
+    jbNS.exp_state = "";
+    for (t = 0; t < jbNS.OL_level.length; t += 1) {
+        if (jbNS.OL_level[t].style.display === "none") {
+            jbNS.exp_state += "0";
+        }
+        else {
+            jbNS.exp_state += "1";
+        }
+    }
+    localStorage.setItem("exp_state", jbNS.exp_state);
+    localStorage.setItem("exp_level", jbNS.currentLevel);
+}
+
+/**
+ * function setExpansionstate
+ * read expansion state of treeframe by loading string from localstorage
+ * 0 : collapse OL element, 1 : expand it.
+ */
+function setExpansionstate() { // jbNS.OL_level[] must be created already
+    var t;
+
+    jbNS.exp_state = localStorage.getItem("exp_state") || "11";
+    for (t = 0; t < jbNS.OL_level.length; t += 1) {
+        if (t < jbNS.exp_state.length && jbNS.exp_state[t] === "1") {
+            jbNS.OL_level[t].style.display = "";
+        }
+        else {
+            jbNS.OL_level[t].style.display = "none";
+        }
+    }
+}
+
+function doReset() {
+    jbNS.forcereload = true;
+    localStorage.clear();
+    window.location.reload(true); //can't do anything after this! or the reload is aborted
+                                  //also: doesn't work on ipad
+}
+
+/**
+ * function savePageState
+ * save column config, bookmarks, scroll state, tree config to localStorage
+ */
+function savePageState() {
+    var s;
+    if (jbNS.forcereload) {
+        return;
+    }
+    //1: save column config
+    s = jbNS.columns_config.toString();
+    localStorage.setItem("colconf", s);
+    // 2: save bookmarks
+    s = jbNS.bookMarx.toString();
+    localStorage.setItem("bookmarks", s);
+    // 3: save list expansion state
+    storeExpansionstate();
+    // 4: save notes
+    saveNotes();
+    // 5: fontsize localStorage set locally
+    localStorage.setItem("keepfontsize", jbNS.keepFontsize ? "1" : "0");
+    localStorage.setItem("fontsize", jbNS.basic_fontsize);
+    //6: save current page in left iframe
+    localStorage.setItem("currentpage", jbNS.pageframe[0].src);
+}
+
+function read_in_Bookmarx(s) {
+    var arr, i, m, n, bm, nw;
+
+    jbNS.greekanchors = jbNS.greekframe.contents().find("a");
+    arr = s.split(",");
+    m = 0;
+    n = -1;
+    for (i = 0; i < arr.length; i += 1) {
+        bm = arr[i];
+        nw = false;
+        if (bm.substr(0, 1) === "!") {
+            continue;
+        }
+        if (bm.substr(0, 1) === "-") {
+            m = 0;
+            n += 1;
+            nw = true;
+        }
+        if (!nw) {
+            setUnsetBookMark(bm, false, (n === 0 || n === 2));
+        }
+        m += 1;
+    }
+    cleanupBookMarx();
+}
+
+/**
+ * function loadPageState
+ * load column config, bookmarks, scroll state, tree config from localStorage
+ */
+function loadPageState() {
+    var s, arr, i, tf, fs = 16;
+
+    s = localStorage.getItem("colconf") || "1,1,3,2";
+    //s = "0,0,1,2";
+    arr = s.split(",");
+    for (i = 0; i < 4; ++i) {
+        jbNS.columns_config[i] = parseInt(arr[i]);
+    }
+    fetchTexts(jbNS.columns_config[1] - 1);
+    tf = jbNS.columns_config[3];
+    if (tf) {
+        jbNS.textframe[0].src = jbNS.filenames[3][tf - 1];
+    }
+    for (i = 0; i < 4; ++i) {
+
+        //configColumns( i, undefined, undefined ); //, jbNS.columns_config[i], true); <-- this is wrong!
+        configColumns(i); //, jbNS.columns_config[i], true); <-- this is wrong!
+    }
+
+    s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";
+    read_in_Bookmarx(s);
+
+    jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
+    jbNS.currentLevel = parseInt(localStorage.getItem("exp_level")) || 1;
+
+    jbNS.keepFontsize = localStorage.getItem("keepfontsize") === "1";
+    jbNS.basic_fontsize = fs; //can be set different
+    if (window.location.href !== parent.location.href) { //?
+        jbNS.keepFontsize = false;
+    }
+    if (jbNS.keepFontsize) {
+        jbNS.basic_fontsize = parseInt(localStorage.getItem("fontsize")) || fs;
+    }
+    $("#keepfs")[0].checked = !jbNS.keepFontsize; //"auto"
+
+    loadNotes();
+
+    s = localStorage.getItem("splash") || "";
+    if (s !== "hide") {
+        $("#splash").show();
+    }
+    else {
+        $("#splash").hide();
+    }
+    setSelButtonText();
+    jbNS.currentPage = localStorage.getItem("currentpage") || "page1.html";
+    jbNS.pageframe[0].src = jbNS.currentPage;
+}
+
+/* End of function decl.                                              */
+
+/**********************************************************************/
+/*! ready:                                                            */
+/**********************************************************************/
+/**
+ * function ready
+ * startup function. Set global vars, bind event handlers, load contents
+ */
+$(document).ready(function () {
+
+    /* are we on a touch device? */
+    jbNS.untouchable = !(('ontouchstart' in window) ||
+        (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+
+    /* bind event handlers */
+    $("#switchColumns").on({
+        "mousedown touchstart": switchColMousedown
+        //"click": swcol_up
+    });
+    $("#bm_nav").on({
+        "click": swcol_up
+    });
+    $("body").on({
+        "keyup": tree_handleKey,
+        "click": tree_handleMouseEvents
+    });
+    $(window).on({
+        resize: function () {
+            var li;
+
+            li = $("#col4").find("li");
+            if (window.innerWidth < 500) {
+                li.eq(0).text("expl");
+                li.eq(1).text("help");
+            }
+            else {
+                li.eq(0).text("explanation");
+                li.eq(1).text("help");
+            }
+            zoominout();
+            jbNS.oldcolnum = -1;
+            setColumns();
+            adjustColWidth();
+            scrollgreek();
+        },
+        unload: savePageState
+    });
+
+    $("iframe").on("load", function () {
+        var diff;
+        try {
+            diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
+            $(this).contents().find("html").css("font-size",
+                (jbNS.basic_fontsize - diff) + "px");
+        }
+        catch (ignore) {
+        }
+    });
+
+    /* menu clicks */
+    if (!jbNS.untouchable) {
+        $(window, "#topdiv,#switchColumns,#bm_nav").on("swipeleft", shrinkLeftColumn);
+        $(window, "#topdiv,#switchColumns,#bm_nav").on("swiperight", growLeftColumn);
+    }
+    $("#BMselector").on({
+        "change": changebm,
+        "click": function (event) {
+            event.stopImmediatePropagation();
+            return false;
+        },
+        "focus": function () {
+            this.selectedIndex = -1;
+        }
+    });
+    $("#bmnext").on({"click": nextbm});
+    $("#bmprev").on({"click": prevbm});
+    $("#setlevel").on({
+        "click": function (event) {
+            event.stopImmediatePropagation();
+            var $targ = $(event.target);
+            var t = $targ.text();
+            $("#setlevel tr td").css("backgroundColor", "");
+            if (t !== "level:") {
+                klap(parseInt(t, 10));
+            }
+            if ($targ.is("td")) {
+                $targ.css("backgroundColor", "black");
+            }
+        }
+    });
+    $("#setfontsize").on({
+        "change": function () {
+            jbNS.basic_fontsize = this.value;
+            setfont(this.value);
+            $("#keepfs")[0].checked = false;
+            jbNS.keepFontsize = true;
+        },
+        "click": function (event) { // catch click
+            event.stopImmediatePropagation();
+        }
+    });
+    $("#keepfs").click(function (event) {
+        event.stopImmediatePropagation();
+        if (this.checked === false) { //not auto
+            jbNS.keepFontsize = true;
+            jbNS.basic_fontsize = $("#setfontsize")[0].value;
+            //localStorage.setItem( "fontsize", jbNS.basic_fontsize );
+        }
+        else {
+            jbNS.keepFontsize = false;
+            jbNS.basic_fontsize = 16;
+            zoominout();
+        }
+    });
+    $("#reset").click(function (event) {
+        event.stopImmediatePropagation();
+        //$(".btn1 ul").removeClass("menuActive");
+        myAlert("Reset all? settings will be lost", true, doReset);
+    });
+    $("#del_all_bm").click(function (event) {
+            event.stopImmediatePropagation();
+            del_all_bm();
+            clear_search();
+        }
+    );
+    $("#empty").on({
+        "click": function (event) {
+            event.stopImmediatePropagation();
+            jbNS.bookMarx[jbNS.columns_config[1] - 1].length = 1;
+            cleanupBookMarx();
+            jbNS.greekanchors.removeClass("bmcolor");
+            jbNS.butleranchors.removeClass("bmcolor");
+            adjustBMselector("");
+            clear_search();
+        }
+    });
+    $("#goback").click(function (event) {
+        var tmp;
+        event.stopImmediatePropagation();
+        tmp = jbNS.gr_beginLine;
+        jbNS.gr_beginLine = jbNS.gr_previousLine;
+        jbNS.gr_previousLine = tmp;
+        scrollgreek();
+    });
+    $("#to_pad").click(function () {
+        $("#shownotes").trigger("click");
+        var m = "!BM\n" + jbNS.bookMarx[0].join('\n') + '\n';
+        m += jbNS.bookMarx[1].join('\n') + '\n';
+        m += jbNS.bookMarx[2].join('\n') + '\n';
+        m += jbNS.bookMarx[3].join('\n') + '\n';
+        $("#notes")[0].value = m;
+
+    });
+    $("#from_pad").click(function () {
+        var s, arr;
+        event.stopImmediatePropagation();
+        //$("#shownotes").trigger("click");
+        arr = $("#notes")[0].value.split("\n");
+        s = arr.join(",");
+        read_in_Bookmarx(s);
+    });
+    $(".btn1 ul li").on({
+        "click": function (event) {
+            //event.stopImmediatePropagation();
+            //myAlert("notok", false);
+            $(".btn1 ul").hide();
+        }
+    });
+    $("#colwrap").on({
+        "click": function () {
+            $(".btn1 ul").hide(); // event is not caught, falls through to here
+        }
+    });
+    $(".btn1").on({
+        "mouseenter": function (e) { //correct menu position when screen is too narrow
+            var pos, b;
+            var menu = $(this).find("ul").eq(0);
+            menu.show().addClass("menuActive");
+            if ($(e.target).is("#tools")) {
+                $("#setlevel tr :nth-child(" + jbNS.currentLevel + ")").css("backgroundColor", "black");
+                pos = $(menu).position();
+                b = $("body").width();
+                if (pos.left + menu.width() > b) {
+                    menu.css({left: b - menu.width()});
+                } else {
+                    menu.css({left: $("#tools").last().position().left});
+                }
+            }
+        }
+    });
+    $(".btn1 ul").on({
+        "mouseleave": function (event) {
+            $(this).hide();
+        }
+    });
+    $(".btn1 img").on({
+        "mouseenter": function () {
+            $(this).css("outline", "1px solid red");
+        },
+        "mouseleave": function () {
+            $(this).css("outline", "0");
+        },
+        "click": function () {
+            $(".btn1 > ul").not($(this).parent().children("ul")).hide(); //0, function () {
+            //     $(this).parent().children("ul").css({"display": "block"});
+            // });
+        }
+    });
+    $(".btn1 #tools").on({
+        "tap": function () {
+            $(this).parent().children("ul").toggle(); //css({"display": "block"});
+            return true;
+        }
+    });
+    $("#selectbtn").click(executeBtnChoice);
+
+    $("#textinput").on({
+        "keypress": keyboardInput,
+        "keyup": setSelButtonText,
+        "paste": function () {
+            setTimeout(setSelButtonText, 100);
+        }, //delay because "paste" fires before the text is entered
+        "click": function (event) {
+            //event.stopImmediatePropagation();
+            return false;
+        },
+        "dblclick": clrinp
+    });
+    $("#selonly").click(toggleSelOnly);
+    $("#shownotes").click(showNotes);
+    $("#notediv").drags().find(".divhdr").on("click", function () {
+        saveNotes();
+        $("#notes").slideUp(300, "swing", function () {
+            $("#notediv").hide(300, "swing");
+        });
+        $("body").on({ // put back key handler
+            "keyup": tree_handleKey
+        });
+    });
+    $("#notes").on({
+        "keypress": keyboardInput
+    });
+    $("#showalf").click(function (event) {
+        event.stopImmediatePropagation();
+        //$(".btn1 ul").removeClass("menuActive");
+        showAlfabet(true);
+    });
+    $("#alfabetdiv").drags().find(".divhdr").on("click", function () {
+        showAlfabet(false);
+    });
+    $("#tr1").find("td").on({
+        "mouseup": function () {
+            enterInput($(this).text(), $("#notes:visible").length ? $("#notes")[0] : $("#textinput")[0], false);
+        }
+    });
+    $("#savestate").click(savePageState);
+    $("#loadstate").click(function () {
+        loadPageState();
+        setExpansionstate();
+    });
+    $("#beta, #betaswitch").on("mousedown", betaclick);
+    $("#betaswitch").click(function () {
+        return false;
+    });
+    $("#goto").click(gotoclick);
+    $("#who, #dunnit").click(function (event) {
+        event.stopImmediatePropagation();
+        $("#dunnit").fadeToggle(400);
+    });
+    $("#loadsavebtn").click(function () {
+        var ls = $("#loadsave");
+        ls.fadeToggle();
+    });
+    $("#clrpad").click(function () {
+        $("#notes")[0].value = "";
+    });
+    $("#send").click(function () {
+        $(location).attr('href', 'mailto:' + getMailAdr() + '?subject=' +
+            encodeURIComponent("homepage note") +
+            "&body=" +
+            encodeURIComponent($("#notes")[0].value)
+        );
+    });
+    $("#arktos").click(function (event) {
+        //event.stopImmediatePropagation();
+    });
+    $("#splash").click(function () {
+        $(this).fadeToggle(1000);
+    });
+    $("#nosplash").change(function () {
+        if (this.checked) {
+            localStorage.setItem("splash", "hide");
+        }
+    });
+    $("#editor").click(function () {
+        get_page_from_menu(0);
+        configColumns(0, 2, true);
+        configColumns(1, 0, true);
+        configColumns(2, 0, true);
+        configColumns(3, 0, true);
+    });
+    $("#showcolnav, #showbmnav").click(swcol_down);
+    $("#savefile").click(saveBlob);
+    $("#loadfile").click(loadFileAsText);
+    $("#swiffycontainer").click(function () {
+        showAndGotoAnyLine("il 6.146");
+    });
+    $("#messages button").click(function () {
+        $("#messages").slideUp(600);
+    });
+    $("#pageframe").on("load", function () {
+//        this.contentWindow.go_edit(jQuery);
+    });
+
+    /* initialize tree */
+    /* load tree */
+    $.ajax({
+        type: "GET",
+        url: "iliad.xml",
+        cache: !jbNS.forcereload,
+        dataType: "text",
+        success: function (xmlstring) {
+            try {
+                jbNS.XML = $.parseXML(xmlstring);
+            }
+            catch (e) {
+                myAlert(e, true, null);
+                return;
+            }
+            jbNS.forcereload = false;
+            jbNS.xml_loaded = true;
+            init_tree(xmlstring);
+            if (jbNS.untouchable) { //} && !jbNS.is_firefox) {
+                $("#treeframe").niceScroll({
+                    cursorcolor: "#888",
+                    cursorwidth: "7px",
+                    background: "rgba(0,0,0,0.1)",
+                    cursoropacitymin: 0.2,
+                    hidecursordelay: 0,
+                    zindex: 2,
+                    horizrailenabled: true
+                });
+            }
+            get_pages_list();
+            loadPageState(); // from localStorage
+            //zoominout();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+        }
+    });
+
+}); // end of doc ready
+
+function init_tree(xmlstring){
+    createTreeFromXML(jbNS.XML);
+    localStorage.setItem("list_xml", xmlstring);
+    localStorage.setItem("list_xml_loaded", "true");
+    /* initialize */
+    jbNS.OL_level = jbNS.treeframe.find('ol');
+    jbNS.LI_elements = jbNS.treeframe.find('li');
+    jbNS.treeframe.find(".ln").on({
+        "mouseenter": tree_handleMouseEvents,
+        "mouseleave": function (event) {
+            event.target.style.backgroundColor = "";
+        },
+        "mousedown": lineIDmousedown
+    });
+    setExpansionstate();
+    setplusminus();
+    scrolltree(jbNS.treetop_el_index);
+}
+
+/******************************************************************************************/
+/*                                   DRAGGABLE                                            */
+/******************************************************************************************/
+// Simple JQuery Draggable Plugin
+// https://plus.google.com/108949996304093815163/about
+// Usage: $(selector).drags();
+// Options:
+// handle            => your dragging handle.
+//                      If not defined, then the whole body of the
+//                      selected element will be draggable
+// cursor            => define your draggable element cursor type
+// draggableClass    => define the draggable class
+// activeHandleClass => define the active handle class
+//
+// Update: 26 February 2013 - Check the older version
+// 1. Move the `z-index` manipulation from the plugin to CSS declaration
+// 2. Fix the laggy effect, because at the first time I made this plugin,
+//    I just use the `draggable` class that's added to the element
+//    when the element is clicked to select the current draggable element. (Sorry about my bad English!)
+// 3. Move the `draggable` and `active-handle` class as a part of the plugin option
+
+(function ($) {
+    $.fn.drags = function (opt) {
+
+        opt = $.extend({
+            handle: ".dragme",
+            cursor: "move",
+            draggableClass: "draggable",
+            activeHandleClass: "active-handle"
+        }, opt);
+
+        var $selected;// = null;
+        var $elements = (opt.handle === "") ? this : this.find(opt.handle);
+
+        $elements.css('cursor', opt.cursor).on("mousedown touchstart", function (e) {
+            if (opt.handle === "") {
+                $selected = $(this);
+                $selected.addClass(opt.draggableClass);
+            } else {
+                $selected = $(this).parent();
+                $selected.addClass(opt.draggableClass).find(opt.handle).addClass(opt.activeHandleClass);
+            }
+            var drg_h = $selected.outerHeight(),
+                drg_w = $selected.outerWidth(),
+                pos_y = $selected.offset().top + drg_h - e.pageY,
+                pos_x = $selected.offset().left + drg_w - e.pageX;
+            $(document).on("mousemove", function (e) {
+                $selected.offset({
+                    top: e.pageY + pos_y - drg_h,
+                    left: e.pageX + pos_x - drg_w
+                });
+            }).on("mouseup touchend", function () {
+                $(this).off("mousemove"); // Unbind events from document
+                if ($selected !== null) {
+                    $selected.removeClass(opt.draggableClass);
+                    $selected = null;
+                }
+            });
+            e.preventDefault(); // disable selection
+        }).on("mouseup touchend", function () {
+            if (opt.handle === "") {
+                $selected.removeClass(opt.draggableClass);
+            } else {
+                $selected.removeClass(opt.draggableClass)
+                    .find(opt.handle).removeClass(opt.activeHandleClass);
+            }
+            $selected = null;
+        });
+
+        return this;
+
+    };
+})(jQuery);
+
+/******************************************************************************************/
+/*                                   BETACODE                                             */
+
+/******************************************************************************************/
+/**
+ * function beta2uni
+ * convert ASCI-string (betacode) to unicode extended-greek and normalize the greek
+ * @param string : string //one line to be converted
+ * @returns {string} //unicode string
+ */
+function beta2uni(string) { //beta code to unicode extended Greek
+    var vocals = "aehiouwr",
+        accents = "\\/=", accent,
+        iotas = "ahw", iota, //deze kunnen iota subscr. hebben
+        longs = "ahiuw", longvoc, //deze kunnen circumflexus hebben (lange vocalen)
+        offset,
+        vocal,
+        spirit,
+        hoofdletter,
+        str_index = 0,
+        unichar,
+        curr,
+        nextchar,
+        flags, has_spirit, has_acc, has_iota, has_umlaut,
+        uni_offset,
+        i, tmp,
+        result = "";
+
+    tmp = "";
+    for (i = 0; i < string.length; i += 1) {
+        tmp += LatinGreek.convertG_L(string[i]);
+    }
+    string = tmp;
+    while (str_index < string.length) {
+        uni_offset = 0;
+        spirit = -1;
+        has_spirit = 0;
+        has_acc = 0;
+        has_iota = 0;
+        has_umlaut = 0;
+        flags = hoofdletter = 0;
+
+        curr = string[str_index];
+        // 1: * or letter
+        if (curr === "*") { //hoofdletter, voorafgaand aan letter + tekens
+            hoofdletter = 8; //offset
+            i = 1;
+            do {
+                curr = string[str_index + i]; //scan ahead for the letter
+                i += 1;
+                if (str_index + i > string.length) {
+                    myAlert(string + "<br>Betacode error at position: " + str_index, true, null);
+                    return "";
+                }
+            } while (!(curr >= "a" && curr <= "z"));
+        } //curr is now the letter in question
+        offset = 0; //cumulative offset from string[str_index+1]
+
+        // 2: (vocals or "r") breathing? "(" or ")"
+        vocal = vocals.indexOf(curr); // "aehiouwr"
+        if (vocal >= 0) { //non-vocals on the 0x300 unicode page
+            nextchar = string[str_index + 1 + offset]; // breathing?
+            if (nextchar === ")") {
+                spirit = 0;
+            }
+            else if (nextchar === "(") {
+                spirit = 1;
+            }
+            if (spirit >= 0) { // breathing + ?accent?
+                has_spirit = 1; //bit 0
+                offset += 1;
+            }
+            nextchar = string[str_index + 1 + offset];
+            accent = accents.indexOf(nextchar); //accent can be -1
+            if (accent >= 0) {
+                offset += 1; //breathing + accent
+                has_acc = accent === 0 ? 2 : accent * 4; //bits 1,2,3
+            }
+
+            nextchar = string[str_index + 1 + offset]; //umlaut?
+            if (nextchar === "+") {
+                offset += 1;
+                has_umlaut = 16;
+            }
+            longvoc = longs.indexOf(curr);
+        }
+        if (hoofdletter) {
+            offset += 1;
+        }
+        nextchar = string[str_index + 1 + offset];
+        if (nextchar === "|") {//iota subscr before lowercase but AFTER capital
+            offset += 1;
+            has_iota = 32;
+            iota = iotas.indexOf(curr);
+        }
+        // we have the flags, now the calculations:
+        //spirit:1 acc:2,4,8 umlaut:16 iota:32
+        flags = has_spirit | has_acc | has_umlaut | has_iota;
+        if (flags) { //if extended Greek:
+            if (flags === 0x01 && curr === "r") {
+                if (!hoofdletter) {
+                    uni_offset = 0xE4 + spirit;
+                } else {
+                    uni_offset = 0xEC;
+                }
+            }
+            else if ((flags & 0x01) && (flags <= 0x09)) { // breathing[+acc]
+                uni_offset = (vocal * 16) + spirit + 2 * (accent + 1) + hoofdletter; // unicode 1F00 + (0-6F)
+            }
+            else if (flags === 2 || flags === 4) { //only grave or acute
+                if (hoofdletter) {
+                    if (longvoc >= 0) {
+                        uni_offset = 0xBA + longvoc * 16 + accent;
+                    }
+                    else if (curr === "e") {
+                        uni_offset = 0xC8 + accent;
+                    }
+                    else if (curr === "o") {
+                        uni_offset = 0xF8 + accent;
+                    }
+                }
+                else {
+                    uni_offset = 0x70 + vocal * 2 + accent; //0x70-7F
+                }
+            }
+            else if (((flags & 0x21) === 0x21) && ((flags ^ 0x21) <= 0x08)) { //iota+breathing[plus accent]
+                uni_offset = (8 + iota) * 16 + spirit + 2 * (accent + 1) + hoofdletter; //0x80-AF
+            }
+            else if (flags === 0x12 || flags === 0x22) { // \ plus iota or +
+                uni_offset = 0xB2 + longvoc * 16 + hoofdletter;
+            }
+            else if (flags === 0x20 || flags === 0x14) { // iota alone or / plus +
+                uni_offset = 0xB3 + longvoc * 16 +
+                    (hoofdletter ? 9 : 0);
+            }
+            else if (flags === 0x24) { // / plus iota
+                uni_offset = 0xB4 + longvoc * 16 + hoofdletter;
+            }
+            else if (flags === 0x08) { // = alone
+                uni_offset = 0xB6 + longvoc * 16 + hoofdletter;
+            }
+            else if (flags === 0x18 || flags === 0x28) { // = plus iota or +
+                uni_offset = 0xB7 + longvoc * 16 + hoofdletter;
+            }
+            else if (flags === 0x10) { // + alone
+                if (curr === "i") {
+                    uni_offset = -0x1C00 + 0xCA; //offset back to the 0x300 page
+                } else if (curr === "u") {
+                    uni_offset = -0x1C00 + 0xCB;
+                }
+            }
+            unichar = 0x1F00 + uni_offset;
+        }
+
+        offset += 1;
+        str_index += offset;
+
+        if (!flags) { //not extended greek
+            if (curr >= "a" && curr <= "z") {
+                unichar = LatinGreek.greek_charcode(LatinGreek.latin2index(curr) - 3 * hoofdletter); // i.e. -24 or 0
+                if (curr === "s" && !hoofdletter) {
+                    nextchar = string[str_index]; //next char
+                    if (str_index < string.length && ((nextchar >= "a" && nextchar <= "z") || nextchar === "'")) {
+                        unichar = "σ".charCodeAt(0);
+                    } else {
+                        unichar = "ς".charCodeAt(0);
+                    }
+                }
+            } else {
+                if (curr === "'") {
+                    unichar = 0x1FBD;
+                }
+                else {
+                    unichar = curr.charCodeAt(0); //as it is
+                }
+            }
+        }
+        unichar = LatinGreek.norm_1F_to_03(unichar); //normalize
+        result += String.fromCharCode(unichar);
+    }
+    return result;
+}
+
+/*
+ 0x300 range: "a.ehi.o.uwiabgdezhqiklmncopr.stufxywiuaehiuabgdezhqiklmncoprsstufxywiuouw" //386 - 3ce
+ 1Fxx range:
+ 16x a,e,h,i,o,u,w 0-6F
+ aaeehhiioouuww.. 70-7F
+ 16x a,h,w 80-AF
+ 16x a,h,i,u,w b0-ff
+ */
+/**
+ * function uni2beta
+ * convert unicode string to betacode (all lowercase)
+ * @param string //string to be converted
+ * @param accents //flag: if false delete all breathings, accents, uppercase markers etc.
+ * @returns {string} //betacode string
+ */
+function uni2beta(string, accents) {
+    var sindex,
+        code,
+        beta,
+        result,
+        acc,
+        capital,
+        iota,
+        ahiuwr = "ahiuwr",
+        ah,
+        ix, row, column,
+        beta0300 = "abgdezhqiklmncopr.stufxywiuaehiuabgdezhqiklmncoprsstufxywiuouw", //unicode ranges of Greek chars
+        beta1F00 = "aehiouw.ahwahiuw",
+        beta1F70 = "aaeehhiioouuww..",
+        beta_accents = [")", "(", ")\\", "(\\", ")/", "(/", ")=", "(="];
+
+    sindex = 0;
+    result = "";
+    while (sindex < string.length) {
+        capital = false;
+        acc = "";
+        iota = "";
+        code = string.charCodeAt(sindex);
+        code = LatinGreek.conv_03_to_1F(code); //change some 03-pagers to the 1F-page for ease of processing
+
+        if (code > 0x300 && code < 0x400) {
+            ix = code - 0x391;
+            beta = beta0300[ix];
+            if (accents && (code >= 0x391 && code <= 0x3A9)) {
+                capital = true;
+                acc = "*";
+            }
+            if (accents && (code === 0x3CA || code === 0x3CB)) {
+                acc = "+";
+            }
+        }
+        else if (code === 0x1FBD) {
+            beta = "'";
+        }
+        else if (code >= 0x1f00 && code < 0x2000) {
+            ix = code - 0x1F00;
+            row = Math.floor(ix / 16);
+            column = ix % 16;
+            if (row !== 7) {
+                beta = beta1F00[row];
+                if (row === 14 && (column === 4 || column === 5 || column === 12)) {
+                    beta = "r";
+                }
+            }
+            if (row === 7) {
+                beta = beta1F70[column];
+            }
+            if (accents) {
+                // if (row > 7 && row < 11) {
+                //     beta += "i";
+                // }
+                // if (row === 11 || row === 12 || row === 15) {
+                //     if (column === 2 || column === 3 || column === 4 ||
+                //         column === 7 || column === 12) {
+                //         beta += "i";
+                //     }
+                // }
+                //} else {
+                if (row < 7) {
+                    acc = beta_accents[column % 8];
+                } else if (row === 7) {
+                    if (column & 1) {
+                        acc = "/";
+                    } else {
+                        acc = "\\";
+                    }
+                } else if (row > 7 && row < 11) {
+                    acc = beta_accents[column % 8];
+                    iota = "|";
+                } else if (row >= 11) {
+                    ah = ahiuwr.indexOf(beta);
+                    if (column === 2) {
+                        acc = "\\";
+                        if (ah === 0 || ah === 1 || ah === 4) {
+                            iota = "|";
+                        } else if (ah === 2 || ah === 3) {
+                            acc += "+";
+                        }
+                    } else if (column === 3) {
+                        if (ah === 0 || ah === 1 || ah === 4) {
+                            iota = "|";
+                        } else if (ah === 2 || ah === 3) {
+                            acc = "/+";
+                        }
+                    } else if (column === 4) {
+                        if (ah === 0 || ah === 1 || ah === 4) {
+                            acc = "/";
+                            iota = "|";
+                        } else if (ah === 5) {
+                            acc = ")";
+                        }
+                    } else if (column === 5) {
+                        if (ah === 5) {
+                            acc = "("; // "ῤ or ῥ"
+                        }
+                    } else if (column === 6) {
+                        acc = "=";
+                    } else if (column === 7) {
+                        acc = "=";
+                        if (ah === 0 || ah === 1 || ah === 4) {
+                            iota = "|";
+                        } else if (ah === 2 || ah === 3) {
+                            acc += "+";
+                        }
+                    } else if (column === 8) {
+                        if (ah === 1 || ah === 4) {
+                            acc = "\\";
+                        }
+                    } else if (column === 9) {
+                        if (ah === 1 || ah === 4) {
+                            acc = "/";
+                        }
+                    } else if (column === 10) {
+                        acc = "\\";
+                    } else if (column === 11) {
+                        acc = "/";
+                    } else if (column === 12) {
+                        if (ix === 0xEC) {
+                            acc = ")"; // "Ῥ"
+                        } else {
+                            iota = "|";
+                        }
+                    }
+                }
+                if (row !== 7 && column >= 8) {
+                    if (ix === 0xBD) {
+                        beta = "'";
+                    } else {
+                        capital = true;
+                        acc = "*" + acc;
+                    }
+                }
+            }
+        }
+        else {
+            beta = String.fromCharCode(code);
+        }
+        if (capital) {
+            beta = acc + beta + iota;
+        }
+        else {
+            beta = beta + acc + iota;
+        }
+        sindex += 1;
+        result += beta;
+    }
+    return result;
+}

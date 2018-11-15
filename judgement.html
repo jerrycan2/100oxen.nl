@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="en-us">
+    <title>summary</title>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body class="latin">
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("html").niceScroll({
+            cursorcolor: "#888",
+            cursorwidth: "7px",
+            background: "rgba(0,0,0,0.1)",
+            cursoropacitymin: 0.2,
+            hidecursordelay: 0,
+            zindex: 2,
+            horizrailenabled: true
+        });
+        $(".showlist").click(function(){
+            parent.show_list();
+        });
+    });
+</script>
+
+</body>
+</html>
