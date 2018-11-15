@@ -1,32 +1,29 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-# System Files
-.DS_Store
-Thumbs.db
-\.idea
-butler_il2_files
-downloads
-gen
-new
-old
-sitemaps
-*.orig
-*.bak
-*.bup
-*.mind
-*.rtf
-*.txt
-*.test
-*.pdf
-**/\[originals\]
-*.ttf
-*.psd
-*.bat
-*.jar
-*.oud
-*.0
-list - oud Copy.xml
-scripts/temp.js
-*.odt
-*.odt#
-oih.html
-mybook*
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+.idea/
+butler_il2_files
+downloads
+gen
+new
+old
+sitemaps
+*.orig
+*.bak
+*.bup
+*.mind
+*.rtf
+*.txt
+*.test
+*.pdf
+**/\[originals\]
+*.ttf
+*.psd
+*.bat
+*.jar
+*.oud
+*.0
+list - oud Copy.xml
+scripts/temp.js
+*.odt
+*.odt#
+.DS_Store
+Thumbs.db

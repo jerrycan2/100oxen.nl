@@ -37,7 +37,7 @@ var jbNS = {
     perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
 
     pages_local: [
-        ["xmltest/index.html", "editor"],
+        ["xmltest/editor.html", "editor"],
         ["page1.html", "Proportional View"],
         ["100oxen.html", "100 Oxen"],
         ["gtb.html", "the Good, the True, the Beautiful"],
