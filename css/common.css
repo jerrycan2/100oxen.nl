@@ -198,11 +198,13 @@ div.panel p {
   display: table;
   width: 100%;
 }
+#thegods header #up {
+  margin-bottom: 1.5rem;
+}
 #thegods #zeus {
   height: 8rem;
   float: left;
   margin-left: 20%;
-  margin-bottom: 0.3rem;
 }
 #thegods #warrior {
   height: 6rem;

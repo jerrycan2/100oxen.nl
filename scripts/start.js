@@ -17,7 +17,7 @@
  * object jbNS
  * Namespace object for global variables
  */
-var jbNS = {
+let jbNS = {
     norm_window_width: 1920,
 
     columns_config: [1, 1, 3, 0], // List/Page=bit0/bit1, Il/Od/Theo/W&D=1-4, GR/EN=bit0/bit1, Text/Help=bit0/bit1
@@ -37,7 +37,7 @@ var jbNS = {
     perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
 
     pages_local: [
-        ["xmltest/editor.html", "editor"],
+        ["editor.html", "editor"],
         ["page1.html", "Proportional View"],
         ["100oxen.html", "100 Oxen"],
         ["gtb.html", "the Good, the True, the Beautiful"],
@@ -89,10 +89,10 @@ var jbNS = {
     selectBtnMessages: [
         [""],
         ["???"],
-        ["Goto gr.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Greek", "English"],
-        ["Goto eng.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Greek", "English"],
+        ["Goto gr.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
+        ["Goto eng.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
         ["Goto"],
-        ["Find gr.", "<img id='perseus' src='images/perseus_digital_lib.gif'> :", "Word Study"],
+        ["Find gr.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Word Study"],
         ["Find eng."]
     ],
     selectBtnActions: [
@@ -116,7 +116,7 @@ var jbNS = {
  * object LatinGreek
  * Iliad chapter lengths and latin-greek letterindexes
  */
-var LatinGreek = {
+let LatinGreek = {
     chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
     greek: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
     latin: 'ABGDEZHQIKLMNCOPRSTUFXYWabgdezhqiklmncoprstufxyw',
@@ -133,11 +133,11 @@ var LatinGreek = {
         return this.latin.charAt(letter);
     },
     convertG_L: function (letter) {
-        var a = this.greek.indexOf(letter);
+        let a = this.greek.indexOf(letter);
         return a < 0 ? letter : this.latin.charAt(a);
     },
     convertL_G: function (letter) {
-        var a = this.latin.indexOf(letter);
+        let a = this.latin.indexOf(letter);
         return a < 0 ? letter : this.greek.charAt(a);
     },
     greek_charcode: function (letter) {
@@ -149,14 +149,14 @@ var LatinGreek = {
     repl_03: [0x03AC, 0x03AD, 0x03AE, 0x03AF, 0x03B0, 0x03CC, 0x03CD, 0x03CE, 0x0386, 0x0388, 0x0389, 0x0390, 0x038A, 0x03B0, 0x038E, 0x038C, 0x038F, 0x00B4],
     repl_1F: [0x1F71, 0x1F73, 0x1F75, 0x1F77, 0x1FE3, 0x1F79, 0x1F7B, 0x1F7D, 0x1FBB, 0x1FC9, 0x1FCB, 0x1FD3, 0x1FDB, 0x1FE3, 0x1FEB, 0x1FF9, 0x1FFB, 0x1FFD],
     norm_1F_to_03: function (c) { // c is charcode
-        var i = LatinGreek.repl_1F.indexOf(c);
+        let i = LatinGreek.repl_1F.indexOf(c);
         if (i >= 0) {
             c = LatinGreek.repl_03[i]; //normalize
         }
         return c;
     },
     conv_03_to_1F: function (c) { // c is charcode
-        var i = LatinGreek.repl_03.indexOf(c);
+        let i = LatinGreek.repl_03.indexOf(c);
         if (i >= 0) {
             c = LatinGreek.repl_1F[i]; //de-normalize
         }
@@ -204,7 +204,6 @@ function getlinenr(node) {
  * callback from $.ajax() which has already done the parsing
  * creates the 'struct' html-tree without Greek text
  * @param {Object} xml - xml node: the iliad xml tree, parsed
- * @param {string} target - "struct" or "edit"
  */
 function createTreeFromXML(xml) {
     $("#list").find("ol:first").remove().end()
@@ -219,7 +218,7 @@ function createTreeFromXML(xml) {
  * @returns {string} htmlstring
  */
 function getcolorstyle(node) {
-    var bg, htmlstring, fg, alpha;
+    let bg, htmlstring, fg, alpha;
     bg = node.getAttribute("c"); //if xml has color info, put it in
     htmlstring = "";
     if (bg && parseInt(bg, 16)) {
@@ -240,12 +239,10 @@ function getcolorstyle(node) {
  * only rootnode is traversed, not any siblings
  * (rootnode may be any node in the xml tree)
  * @param {Object} rootnode - xml node
- * @param {string} target  - string, target div id "struct" or "edit"
- * @param {boolean} include_greek - if in edit, choose to display greek text
  * @returns {string} htmltxt - html as string
  */
 function createlist(rootnode) {
-    var htmltxt;
+    let htmltxt;
     htmltxt = ""; //html-string to be constructed
     if (rootnode) {
         htmltxt = build_html_string(rootnode);
@@ -259,7 +256,7 @@ function createlist(rootnode) {
      * @return {string} html - html text
      */
     function build_html_string(xnode) {
-        var html, child, rem;
+        let html, child, rem;
         html = "<ol class='" + xnode.nodeName + "'>";
         do {
             rem = xnode.getAttribute("rem");
@@ -306,7 +303,7 @@ function setlevel($node, level, highest) {
     if ($node.children("li").length) {
         $node.find("span.plm").remove();
         $node.children("li").children("ol").each(function (i, el) {
-            var $el = $(el);
+            let $el = $(el);
             $el.filter(":visible").siblings("span:last").after("<span class='plm'>&ominus;</span>");
             $el.filter(":hidden").siblings("span:last").after("<span class='plm'>&oplus;</span>");
         });
@@ -317,7 +314,7 @@ function setlevel($node, level, highest) {
             highest = level;
         }
         $node.children("li").each(function () {
-            var $ol = $(this).find("ol:first"); //only 1
+            let $ol = $(this).find("ol:first"); //only 1
             if ($ol.length !== 0) {
                 highest = setlevel($ol, level + 1, highest);
             }
@@ -332,10 +329,9 @@ function setlevel($node, level, highest) {
  * 1: set the proper + and - signs in tree after expand/collapse
  * 2: determine level of each node and store in data attr
  * 3: store highest&lowest
- * @param {string} target
  */
 function setnodeattributes() {
-    var highest = setlevel($("#list").find("ol:first"), 0, 0);
+    let highest = setlevel($("#list").find("ol:first"), 0, 0);
     //disableButtons(highest);
 }
 
@@ -381,11 +377,11 @@ function fademsg() {
  * @param okExec : function  // (optional) to execute on 'OK' click
  */
 function myAlert(txt, modal, okExec) {
-    var $box;
+    let $box;
 
     $box = $("#msgbox");
     $box.fadeIn(400).on("mousedown", function (e) {
-        var off_x, off_y,
+        let off_x, off_y,
             $this = $(this);
         off_x = $this.offset().left - e.pageX;
         off_y = $this.offset().top - e.pageY;
@@ -453,7 +449,7 @@ function showhelp(event) {
  * @param language //  0=greek, 1=english
  */
 function perseusLookup(language) {
-    var i, n1, n2, text, textindex, url1, parse, s, line;
+    let i, n1, n2, text, textindex, url1, parse, s, line;
 
     s = $("#textinput").val();
     parse = s.match(jbNS.parse_lineID);
@@ -499,7 +495,7 @@ function perseusLookup(language) {
  * goto perseus word-study with word in #textinput
  */
 function perseus_WS_search() {
-    var result, url;
+    let result, url;
 
     result = $.trim($("#textinput").val());
     result = uni2beta(result, true);
@@ -527,7 +523,7 @@ function perseus_WS_search() {
  * scroll #greekframe to the line in jbNS.gr_beginLine
  */
 function scrollgreek() {
-    var begin, $top;
+    let begin, $top;
 
     begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
     if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
@@ -548,7 +544,7 @@ function scrollgreek() {
  * @param hovering : boolean // true if not clicked->no scroll
  */
 function gotoAnchor(aname, hovering) { /* in textframe */
-    var anchor;//, hdr;
+    let anchor;//, hdr;
 
     anchor = jbNS.textframe.contents().find('a[target="' + aname + '"]');
     if (anchor.length) {
@@ -590,7 +586,7 @@ function loadAndGotoTextframeAnchor(name) {
  * @returns {number}
  */
 function checklastletter(lineID) {
-    var n, ix;
+    let n, ix;
 
     n = lineID.substr(-1, 1);
     ix = "abcdefghijklmnopqrst".indexOf(n) + 1;
@@ -603,7 +599,7 @@ function checklastletter(lineID) {
  * @returns {object} : object // linenumber object: ( c:chapter, l:line ) = {number, number}
  */
 function lineID_2_lineNR_obj(lineID) { // in: lineID, out: object { chapter, linenr }; chapter = 1 for Hesiod texts
-    var i, n, chap, lnr;
+    let i, n, chap, lnr;
     // 3 formats: letter number, number.number, number
     i = lineID.indexOf(".");
     if (i < 0) {
@@ -649,7 +645,7 @@ function lineID_2_lineNR_obj(lineID) { // in: lineID, out: object { chapter, lin
  * @returns number : 0 if t1 === t2, > 1, < -1
  */
 function compare_lineNRs(t1, t2) { // for binary search
-    var ch1, ln1, ch2, ln2, n1, n2;
+    let ch1, ln1, ch2, ln2, n1, n2;
 
     n1 = lineID_2_lineNR_obj(t1);
     if (!n1) {
@@ -689,7 +685,7 @@ function compare_lineNRs(t1, t2) { // for binary search
  * @returns {number} // 1, -1 or 0
  */
 function compare_lineIDs(t1, t2) {
-    var parsebm, id1, id2, lang1, lang2;
+    let parsebm, id1, id2, lang1, lang2;
 
     if (!t1 || t1[0] === "-") {
         return -1;
@@ -720,7 +716,7 @@ function compare_lineIDs(t1, t2) {
  * @returns : number // flag : 0 if t1 === t2, > 1, < -1
  */
 function compare_Butler_Anchors(Aindex, item, which) { //which: see bm_butler_search
-    var found1, found2, target, this1, this2, nxt1, nxt2, it1, it2, it, fnd, nxt, s;
+    let found1, found2, target, this1, this2, nxt1, nxt2, it1, it2, it, fnd, nxt, s;
 
     if (Aindex >= jbNS.butleranchors.length - 1) {
         if (item === jbNS.butleranchors.eq(Aindex).text()) {
@@ -775,7 +771,7 @@ function compare_Butler_Anchors(Aindex, item, which) { //which: see bm_butler_se
  * delete empty entries in bookmarx[][] array, also write them to the <select> options
  */
 function cleanupBookMarx() {
-    var i, n, opt, txt, tmp, bm;
+    let i, n, opt, txt, tmp, bm;
 
     opt = document.getElementById("BMselector");
     opt.options.length = 0;
@@ -813,7 +809,7 @@ function cleanupBookMarx() {
  * if txt = bookmark, set selectedIndex to that bm
  */
 function adjustBMselector(txt) {
-    var i, sel;
+    let i, sel;
 
     sel = $("#BMselector")[0];
     if (txt === "") {
@@ -835,7 +831,7 @@ function adjustBMselector(txt) {
  * @returns {number} : index to jbNS.greekanchors or -1
  */
 function bm_greek_search(lineNR, scroll, mark) {
-    var step, max, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
+    let step, max, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
 
     $lines = jbNS.greekanchors; // $("a") array
     if ($lines.length) {
@@ -912,7 +908,7 @@ function gotoline(bookmark) { //used in scrolls.js
  * @returns : number // index in array of anchors
  */
 function bm_butler_search(item, which) {   // which===1 or 2: beginline or "beginline of next section"
-    var i, step, max, groter, stepcount;   // 2 is only used for coloring
+    let i, step, max, groter, stepcount;   // 2 is only used for coloring
 
     if (!item || !jbNS.butleranchors.length) {
         return -1;
@@ -957,7 +953,7 @@ function bm_butler_search(item, which) {   // which===1 or 2: beginline or "begi
  * @param lineNR : string
  */
 function butlerGotoBM(lineNR) {
-    var lineindex;
+    let lineindex;
 
     lineindex = bm_butler_search(lineNR, 1);
     if (lineindex >= 0) {
@@ -980,7 +976,7 @@ function butlerGotoBM(lineNR) {
  * @return boolean // false if too many bookmarks
  */
 function setUnsetBookMark(bookmark, toggle, greek) {
-    var linenr, i, $target, currtxt, bms, hascolon, parsebm;
+    let linenr, i, $target, currtxt, bms, hascolon, parsebm;
     /* bookmark = lineID = [prefix +] lineNR */
     currtxt = jbNS.columns_config[1] - 1;
     if (currtxt < 0) {
@@ -1038,7 +1034,7 @@ function setUnsetBookMark(bookmark, toggle, greek) {
  * @param greek
  */
 function putbackBookmarks(greek) {
-    var currtxt, i, bm;
+    let currtxt, i, bm;
 
     currtxt = jbNS.columns_config[1] - 1;
     if (currtxt < 0) {
@@ -1055,7 +1051,7 @@ function putbackBookmarks(greek) {
 }
 
 function del_all_bm() {
-    var i;
+    let i;
 
     for (i = 0; i < 4; ++i) {
         jbNS.bookMarx[i].length = 1;
@@ -1068,10 +1064,10 @@ function del_all_bm() {
 
 /**
  * function goto_BM_on_load
- * read a global var on iframe load, if it's not empty, goto that bm
+ * read a global let on iframe load, if it's not empty, goto that bm
  */
 function goto_BM_on_load() {
-    var bm, parsebm;
+    let bm, parsebm;
 
     jbNS.gr_previousLine = 0;
     if (!jbNS.bm_to_goto) {
@@ -1098,7 +1094,7 @@ function goto_BM_on_load() {
  * @param bookmark // = lineID
  */
 function showAndGotoAnyLine(bookmark) {
-    var i, textindex, prefix, parsebm, lang;
+    let i, textindex, prefix, parsebm, lang;
 
     textindex = 0;
     parsebm = bookmark.match(jbNS.parse_lineID);
@@ -1151,7 +1147,7 @@ function showAndGotoAnyLine(bookmark) {
 }
 
 function nextbm(event) {
-    var i, $bmsel, bmsel;
+    let i, $bmsel, bmsel;
 
     event.stopImmediatePropagation();
     $bmsel = $("#BMselector");
@@ -1178,7 +1174,7 @@ function nextbm(event) {
 }
 
 function prevbm(event) {
-    var i, $bmsel, bmsel;
+    let i, $bmsel, bmsel;
 
     event.stopImmediatePropagation();
     $bmsel = $("#BMselector");
@@ -1216,7 +1212,7 @@ function changebm(event) {
  * @param event
  */
 function getSelectedText(event) {
-    var txt, rng, idoc, doc, ifr = false;
+    let txt, rng, idoc, doc, ifr = false;
     //find selected text, in an iframe or input/contenteditable element
     txt = "";
     if (event && event.view.name === "greekframe") {
@@ -1272,7 +1268,7 @@ function isNumberOrDot(c) {
  * @param event
  */
 function ifrmouseup(event) { //used in iframe pages
-    var doc, range, txt, bg, nd, ok, txtID, count, sel;
+    let doc, range, txt, bg, nd, ok, txtID, count, sel;
 
     if (event.view.name === "pageframe") {
         doc = document.getElementById("pageframe");
@@ -1339,10 +1335,10 @@ function ifrmouseup(event) { //used in iframe pages
  * @param event
  */
 function gr_bu_MouseDown(event) {
-    var time1 = event.timeStamp;
+    let time1 = event.timeStamp;
 
     $(event.delegateTarget).one("mouseup touchend", function (ev2) {
-        var notes, txt, time2, greek;
+        let notes, txt, time2, greek;
 
         time2 = ev2.timeStamp - time1;
 
@@ -1387,7 +1383,7 @@ function gr_bu_MouseDown(event) {
  * @param event
  */
 function gr_bu_MouseUp(event) {// set in iframeload()
-    var n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
+    let n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
 
     event.stopImmediatePropagation();
     if (jbNS.touchcancel) {
@@ -1468,7 +1464,7 @@ function gr_bu_MouseUp(event) {// set in iframeload()
  * @returns {number}
  */
 function isGreekCode(str) { //
-    var i, code, c;
+    let i, code, c;
 
     code = 0;
     for (i = 0; i < str.length; i += 1) {
@@ -1495,7 +1491,7 @@ function isGreekCode(str) { //
  * then rebuilds the anchors-array
  */
 function clear_search() {
-    var bs, t;
+    let bs, t;
 
     bs = jbNS.greekframe.contents().find("b:first");
     while (bs.length > 0) {
@@ -1516,7 +1512,7 @@ function clear_search() {
  * it's counted greek if there is at least 1 greek char in it.
  */
 function textsearch() {
-    var i, n, len, target, lines, flag, count, bmsel, inp, start, $frame, greekline, betaline, found, pos;
+    let i, n, len, target, lines, flag, count, bmsel, inp, start, $frame, greekline, betaline, found, pos;
 
     inp = $("#textinput").val();
     if (inp.length < 1) {
@@ -1531,7 +1527,7 @@ function textsearch() {
     $frame = $("#greekframe");
     if (flag === 0) { //search in Butler text. No <b> tagging of found words here, only the bookmarks
         $("#butlerframe").contents().find("p:contains('" + inp + "')").each(function (i, el) {
-            var bm;
+            let bm;
 
             bm = $(el).children("a:first").text();
             count += 1;
@@ -1610,7 +1606,7 @@ function textsearch() {
  * @returns {{txt: number, lnr: boolean, taal: number, code: number, kind: number}}
  */
 function whatisPutIn() {
-    var txt, i = 0, s, coding, lang = 3, lnr = false, typ = 0, parseln, $inp;
+    let txt, i = 0, s, coding, lang = 3, lnr = false, typ = 0, parseln, $inp;
 
     $inp = $("#textinput");
     s = $inp.val();
@@ -1658,7 +1654,7 @@ function whatisPutIn() {
  * rewrite 'select' menu item
  */
 function setSelButtonText() {
-    var what, i, msg = 0, sb, selbutt, m, s;
+    let what, i, msg = 0, sb, selbutt, m, s;
 
     s = $("#textinput").val();
     selbutt = $("#selectbtn");
@@ -1737,7 +1733,7 @@ function clrinp(event) {
  * @param keep : boolean //false=discard true=keep selection
  */
 function enterInput(str, inputbox, keep) {
-    var val, start, selend;
+    let val, start, selend;
 
     val = inputbox.value;
     start = inputbox.selectionStart;
@@ -1767,7 +1763,7 @@ function changeTextCoding(elem, accents) { // only allow input[type=text]/textar
      * @param accents : boolean // if false, discard breathings etc
      * @returns {string}
      */
-    var sel;
+    let sel;
 
     if (elem.id === "notes") {
         sel = elem.value.substring(elem.selectionStart, elem.selectionEnd);
@@ -1797,7 +1793,7 @@ function changeTextCoding(elem, accents) { // only allow input[type=text]/textar
  */
 function keyboardInput(event) {
     // focus must be on the "#textinput" input or "#notes" textarea element
-    var code, sel;
+    let code, sel;
 
     code = event.keyCode || event.charCode;
     if (code < 48) {
@@ -1815,11 +1811,11 @@ function keyboardInput(event) {
  * @param event : object // (click)
  */
 function betaclick(event) {
-    var time1 = event.timeStamp;
+    let time1 = event.timeStamp;
 
     event.stopImmediatePropagation();
     $(event.currentTarget).one("mouseup", function (ev2) {
-        var time2, inp, keepdia;
+        let time2, inp, keepdia;
 
         event.stopImmediatePropagation();
         time2 = ev2.timeStamp - time1;
@@ -1836,7 +1832,7 @@ function betaclick(event) {
  * @param event
  */
 function executeBtnChoice(event) {
-    var trg, index, s, $lst;
+    let trg, index, s, $lst;
 
     //event.stopImmediatePropagation();
     $lst = $("#selectlist");
@@ -1888,7 +1884,7 @@ function executeBtnChoice(event) {
  * unhide lines hidden by showSelOnly()
  */
 function showAllLines() {
-    var i, len, headers;
+    let i, len, headers;
 
     headers = $("#greekframe").contents().find("h4");
     len = headers.length;
@@ -1906,7 +1902,7 @@ function showAllLines() {
  * Hide all greek lines that are not bookmarked (Il, Od only)
  */
 function showSelOnly() {
-    var i, len, p, headers;
+    let i, len, p, headers;
 
     len = jbNS.greekanchors.length;
     for (i = 0; i < len; i += 1) {
@@ -1928,7 +1924,7 @@ function showSelOnly() {
  * @param event
  */
 function toggleSelOnly(event) {
-    var a;
+    let a;
 
     event.stopImmediatePropagation();
     //$(".btn1 ul").removeClass("menuActive");
@@ -1958,7 +1954,7 @@ function toggleSelOnly(event) {
  * @param textToWrite ; string
  */
 function saveTextAsFile(textToWrite) {
-    var textFileAsBlob, fileNameToSaveAs, downloadLink;
+    let textFileAsBlob, fileNameToSaveAs, downloadLink;
 
     textFileAsBlob = new Blob([textToWrite], {type: 'text/html'});
     fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
@@ -1991,7 +1987,7 @@ function destroyClickedElement(event) {
  * create filereader to upload a text and store it in notepad
  */
 function loadFileAsText() {
-    var fileToLoad, fileReader;
+    let fileToLoad, fileReader;
 
     fileToLoad = document.getElementById("fileToLoad").files[0];
     fileReader = new FileReader();
@@ -2021,13 +2017,13 @@ function showNotes(event) {
 }
 
 function setMailAdr() {
-    var $txt = $("#textinput");
+    let $txt = $("#textinput");
     localStorage.setItem("mailadr", $txt.val().substr(7));
     $txt.val("");
 }
 
 function getMailAdr() {
-    var s = localStorage.getItem("mailadr");
+    let s = localStorage.getItem("mailadr");
     if (s === "evernote") {
         s = "jeroen1952.2a0d762@m.evernote.com";
     }
@@ -2039,7 +2035,7 @@ function getMailAdr() {
  * save notepad contents to localstorage
  */
 function saveNotes() {
-    var $n = $("#notes");
+    let $n = $("#notes");
     localStorage.setItem("Notes", $n.val());
     localStorage.setItem("NotesHeight", $n.height());
     localStorage.setItem("NotesWidth", $n.width());
@@ -2051,7 +2047,7 @@ function saveNotes() {
  * load notepad contents from localstorage
  */
 function loadNotes() {
-    var $n = $("#notes");
+    let $n = $("#notes");
     $n.val(localStorage.getItem("Notes") || "");
     $n.height(localStorage.getItem("NotesHeight")); // not yet? because of Chrome bug
     $n.width(localStorage.getItem("NotesWidth"));
@@ -2062,7 +2058,7 @@ function loadNotes() {
  * (load and) scroll to prefixed bookmark (in notes)
  */
 function gotoclick() {
-    var inp, str;
+    let inp, str;
 
     inp = document.getElementById("notes");
     str = inp.value.substring(inp.selectionStart, inp.selectionEnd);
@@ -2095,10 +2091,10 @@ function showAlfabet(doit) {
  */
 function setplusminus() {
     jbNS.OL_level.each(function () {
-        var $this = $(this);
+        let $this = $(this);
         if ($this.length) {
             $this.children("li").each(function () {
-                var $that = $(this);
+                let $that = $(this);
                 $that.children("ol:visible").prev("span").replaceWith("<span class='plm'>&ominus;</span>"); // its children
                 $that.children("ol:hidden").prev("span").replaceWith("<span class='plm'>&oplus;</span>");
             });
@@ -2113,7 +2109,7 @@ function setplusminus() {
  * @returns {number} : element index, 0 if not found
  */
 function getindex(el) {
-    var i;
+    let i;
 
     for (i = 0; i < jbNS.LI_elements.length; i += 1) {
         if (jbNS.LI_elements[i] === el) {
@@ -2140,12 +2136,12 @@ function scrolltree(el_index) {
  * @param level : number // 1-8
  */
 function klap(level) { //expand/collapse list acc. to menu-choice (level)
-    var ols;
+    let ols;
 
     jbNS.currentLevel = level;
     ols = jbNS.OL_level;
     ols.each(function () {
-        var $this, val;
+        let $this, val;
 
         $this = $(this);
         val = $this.data("level");
@@ -2167,7 +2163,7 @@ function klap(level) { //expand/collapse list acc. to menu-choice (level)
  * @param {*} $element - the clicked html element: either .hasrem or .norem
  */
 function handleRemClick($element) {
-    var $parent, txtrem, newtext;
+    let $parent, txtrem, newtext;
     $parent = $element.parent();
     if ($parent.has(".remtxt").length) { // if it's showing: hide it
         txtrem = $parent.find(".remtxt:first");
@@ -2190,7 +2186,7 @@ function handleRemClick($element) {
  * @param event
  */
 function tree_handleMouseEvents(event) { //single click or mouseenter
-    var $trg, $prev, $ol, s, ids, bg, clsnm, lvl, hovering, found, anchor;
+    let $trg, $prev, $ol, s, ids, bg, clsnm, lvl, hovering, found, anchor;
 
     hovering = event.type !== "click";
     $trg = $(event.target);
@@ -2241,11 +2237,11 @@ function tree_handleMouseEvents(event) { //single click or mouseenter
  * @param event
  */
 function lineIDmousedown(event) {
-    var time1 = event.timeStamp,
+    let time1 = event.timeStamp,
         $trg = $(event.target);
 
     $(event.currentTarget).one("mouseup", function (ev2) {
-        var ids, bg, clsnm, lvl, anchor, found, ix,
+        let ids, bg, clsnm, lvl, anchor, found, ix,
             time2 = ev2.timeStamp - time1;
 
         if (time2 < 500) { //'click'
@@ -2286,7 +2282,7 @@ function lineIDmousedown(event) {
  * @param event
  */
 function tree_handleKey(event) {
-    var key, trg;
+    let key, trg;
 
     trg = event.target;
     if ($(trg).is("input")) {
@@ -2309,7 +2305,7 @@ function tree_handleKey(event) {
  * @returns object : {beginning, end}
  */
 function element2lineIDs($el) {
-    var $parent, bg, nd;
+    let $parent, bg, nd;
 
     bg = $el.text();
     $parent = $el.parent("li");
@@ -2338,7 +2334,7 @@ function element2lineIDs($el) {
 /*! load content:                                                     */
 /**********************************************************************/
 function get_page_from_menu(ix){
-    var txt;
+    let txt;
 
     if (ix < jbNS.pages_local.length) {
         txt = jbNS.pages_local[ix][0];
@@ -2357,11 +2353,12 @@ function get_page_from_menu(ix){
  * @param event
  */
 function loadIframeToPage(event) {
-    var ix;
+    let ix;
     ix = $("#filesmenu li").index($(event.target).parent());
     event.stopImmediatePropagation();
     get_page_from_menu(ix);
     hidemenuitems();
+    let [c1, c2, c3, c4] = jbNS.columns_config;
     configColumns(0, 2, true);
 }
 
@@ -2371,7 +2368,7 @@ function loadIframeToPage(event) {
  * @param event : object
  */
 function mousedowncolresize(event) {
-    var $resizer = $(event.delegateTarget),
+    let $resizer = $(event.delegateTarget),
         $selected = $resizer.prev(".viewport"),
         delta_X,
         delta_W,
@@ -2421,7 +2418,7 @@ function mousedowncolresize(event) {
  * tweak the width of the rightmost viewport-column so it fits in window
  */
 function adjustColWidth() {
-    var w, sum_w = 0;
+    let w, sum_w = 0;
 
     $(".viewport:visible, .resizer:visible").each(function () {
         sum_w += $(this).outerWidth(true);
@@ -2454,7 +2451,7 @@ function createSplitter() {
  * set default visible column widths and show/hide them acc. to jbNS.columns_config
  */
 function setColumns() {
-    var colwidth,
+    let colwidth,
         col_ix = 0,
         w,
         scr = $(window).width(),
@@ -2553,7 +2550,7 @@ function setColumns() {
  * @param amount : number //pixels, + or -
  */
 function resizeLeftColumn(amount) {
-    var n, colnum, deltaX, columns;
+    let n, colnum, deltaX, columns;
 
     colnum = jbNS.oldcolnum;
     if (colnum < 1) {
@@ -2590,13 +2587,13 @@ function shrinkLeftColumn() {
  * @returns {*}
  */
 function iFrameLoad(id, src) {
-    var deferred = $.Deferred(),
+    let deferred = $.Deferred(),
         iframe = document.getElementById(id);
     iframe.src = src;
     $(iframe).load(deferred.resolve);
 
     deferred.done(function () { //what to do after the individual frame has been loaded
-        var $frame, isgreek;
+        let $frame, isgreek;
 
         if (id === "greekframe") {
             $frame = $("#greekframe");
@@ -2653,7 +2650,7 @@ function fetchTexts(filenr) {
  */
 function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
 {	// NB: index has 1 added so [0] can be 'none'
-    var language_choice = 0, $allbuttons;
+    let language_choice = 0, $allbuttons;
 
     jbNS.dontSetColumns = false;
 
@@ -2719,13 +2716,13 @@ function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=
  * @param event
  */
 function switchColMousedown(event) {
-    var time1 = event.timeStamp;
+    let time1 = event.timeStamp;
 
     event.preventDefault();
     event.stopImmediatePropagation();
 
     $("#switchColumns").one("mouseup touchend", function (e) { //handler deleted after execution
-        var $trg, $par, colnr, ix, time2, t;
+        let $trg, $par, colnr, ix, time2, t;
 
         t = e.timeStamp;
         time2 = (t - time1);
@@ -2792,7 +2789,7 @@ function switchColMousedown(event) {
  */
 function swcol_up() {
     $("#switchColumns, #bm_nav").each(function () {
-        var $that = $(this);
+        let $that = $(this);
         $that.stop().animate({
             "height": "0.6rem",
             "font-size": "0.1rem",
@@ -2804,7 +2801,7 @@ function swcol_up() {
 }
 
 function swcol_down(event) { // for click and mouseenter
-    var trg;
+    let trg;
 
     //event.stopImmediatePropagation();
     $(event.target).show();
@@ -2832,7 +2829,7 @@ function swcol_down(event) { // for click and mouseenter
  * @param size : number //fontsize in pixels
  */
 function setHeaderContents(size) {
-    var m1, relwidth;
+    let m1, relwidth;
 
     relwidth = window.innerWidth / size;
     m1 = $("#menu1");
@@ -2858,7 +2855,7 @@ function setHeaderContents(size) {
  * @returns {number} fontsize difference in pt
  */
 function calcFontsizeDiff() {
-    var winwidth, zoomX, res;
+    let winwidth, zoomX, res;
 
     winwidth = window.innerWidth;
     zoomX = (winwidth / jbNS.norm_window_width) * 100;
@@ -2883,7 +2880,7 @@ function setIframeFont(size) {
 
 /**
  * function setfont
- * set basic fontsize of <html> and global var (and iframes)
+ * set basic fontsize of <html> and global let (and iframes)
  * @param size : number // in pix
  */
 function setfont(size) {
@@ -2899,7 +2896,7 @@ function setfont(size) {
  * zoom whole page relative to window size
  */
 function zoominout() {
-    var size, diff;
+    let size, diff;
 
     size = jbNS.basic_fontsize;
     diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
@@ -2915,7 +2912,7 @@ function zoominout() {
  * load list of available pages: (#filesmenu)
  */
 function get_pages_list() {
-    var i, str, $pg;
+    let i, str, $pg;
 
     $pg = $("#filesmenu");
     $pg.find("li").remove();
@@ -2944,7 +2941,7 @@ function get_pages_list() {
  * hide sliding menu
  */
 function hidemenuitems() {
-    var $fm = $("#filesmenu");
+    let $fm = $("#filesmenu");
     $fm.animate({
         "left": "-" + $fm.width(),
         "opacity": "0"
@@ -2965,7 +2962,7 @@ function hidemenuitems() {
  * 0 for an OL element that is collapsed, 1 for an expanded one. Save string to localstorage.
  */
 function storeExpansionstate() {
-    var t;
+    let t;
     jbNS.exp_state = "";
     for (t = 0; t < jbNS.OL_level.length; t += 1) {
         if (jbNS.OL_level[t].style.display === "none") {
@@ -2985,7 +2982,7 @@ function storeExpansionstate() {
  * 0 : collapse OL element, 1 : expand it.
  */
 function setExpansionstate() { // jbNS.OL_level[] must be created already
-    var t;
+    let t;
 
     jbNS.exp_state = localStorage.getItem("exp_state") || "11";
     for (t = 0; t < jbNS.OL_level.length; t += 1) {
@@ -3010,7 +3007,7 @@ function doReset() {
  * save column config, bookmarks, scroll state, tree config to localStorage
  */
 function savePageState() {
-    var s;
+    let s;
     if (jbNS.forcereload) {
         return;
     }
@@ -3032,7 +3029,7 @@ function savePageState() {
 }
 
 function read_in_Bookmarx(s) {
-    var arr, i, m, n, bm, nw;
+    let arr, i, m, n, bm, nw;
 
     jbNS.greekanchors = jbNS.greekframe.contents().find("a");
     arr = s.split(",");
@@ -3062,7 +3059,7 @@ function read_in_Bookmarx(s) {
  * load column config, bookmarks, scroll state, tree config from localStorage
  */
 function loadPageState() {
-    var s, arr, i, tf, fs = 16;
+    let s, arr, i, tf, fs = 16;
 
     s = localStorage.getItem("colconf") || "1,1,3,2";
     //s = "0,0,1,2";
@@ -3140,7 +3137,7 @@ $(document).ready(function () {
     });
     $(window).on({
         resize: function () {
-            var li;
+            let li;
 
             li = $("#col4").find("li");
             if (window.innerWidth < 500) {
@@ -3161,7 +3158,7 @@ $(document).ready(function () {
     });
 
     $("iframe").on("load", function () {
-        var diff;
+        let diff;
         try {
             diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
             $(this).contents().find("html").css("font-size",
@@ -3191,8 +3188,8 @@ $(document).ready(function () {
     $("#setlevel").on({
         "click": function (event) {
             event.stopImmediatePropagation();
-            var $targ = $(event.target);
-            var t = $targ.text();
+            let $targ = $(event.target);
+            let t = $targ.text();
             $("#setlevel tr td").css("backgroundColor", "");
             if (t !== "level:") {
                 klap(parseInt(t, 10));
@@ -3249,7 +3246,7 @@ $(document).ready(function () {
         }
     });
     $("#goback").click(function (event) {
-        var tmp;
+        let tmp;
         event.stopImmediatePropagation();
         tmp = jbNS.gr_beginLine;
         jbNS.gr_beginLine = jbNS.gr_previousLine;
@@ -3258,7 +3255,7 @@ $(document).ready(function () {
     });
     $("#to_pad").click(function () {
         $("#shownotes").trigger("click");
-        var m = "!BM\n" + jbNS.bookMarx[0].join('\n') + '\n';
+        let m = "!BM\n" + jbNS.bookMarx[0].join('\n') + '\n';
         m += jbNS.bookMarx[1].join('\n') + '\n';
         m += jbNS.bookMarx[2].join('\n') + '\n';
         m += jbNS.bookMarx[3].join('\n') + '\n';
@@ -3266,7 +3263,7 @@ $(document).ready(function () {
 
     });
     $("#from_pad").click(function () {
-        var s, arr;
+        let s, arr;
         event.stopImmediatePropagation();
         //$("#shownotes").trigger("click");
         arr = $("#notes")[0].value.split("\n");
@@ -3274,7 +3271,7 @@ $(document).ready(function () {
         read_in_Bookmarx(s);
     });
     $(".btn1 ul li").on({
-        "click": function (event) {
+        "click": function () {
             //event.stopImmediatePropagation();
             //myAlert("notok", false);
             $(".btn1 ul").hide();
@@ -3287,8 +3284,8 @@ $(document).ready(function () {
     });
     $(".btn1").on({
         "mouseenter": function (e) { //correct menu position when screen is too narrow
-            var pos, b;
-            var menu = $(this).find("ul").eq(0);
+            let pos, b;
+            let menu = $(this).find("ul").eq(0);
             menu.show().addClass("menuActive");
             if ($(e.target).is("#tools")) {
                 $("#setlevel tr :nth-child(" + jbNS.currentLevel + ")").css("backgroundColor", "black");
@@ -3303,7 +3300,7 @@ $(document).ready(function () {
         }
     });
     $(".btn1 ul").on({
-        "mouseleave": function (event) {
+        "mouseleave": function () {
             $(this).hide();
         }
     });
@@ -3334,7 +3331,7 @@ $(document).ready(function () {
         "paste": function () {
             setTimeout(setSelButtonText, 100);
         }, //delay because "paste" fires before the text is entered
-        "click": function (event) {
+        "click": function () {
             //event.stopImmediatePropagation();
             return false;
         },
@@ -3382,7 +3379,7 @@ $(document).ready(function () {
         $("#dunnit").fadeToggle(400);
     });
     $("#loadsavebtn").click(function () {
-        var ls = $("#loadsave");
+        let ls = $("#loadsave");
         ls.fadeToggle();
     });
     $("#clrpad").click(function () {
@@ -3409,7 +3406,7 @@ $(document).ready(function () {
     $("#editor").click(function () {
         get_page_from_menu(0);
         configColumns(0, 2, true);
-        configColumns(1, 0, true);
+        //configColumns(1, 0, true);
         configColumns(2, 0, true);
         configColumns(3, 0, true);
     });
@@ -3422,8 +3419,8 @@ $(document).ready(function () {
     $("#messages button").click(function () {
         $("#messages").slideUp(600);
     });
-    $("#pageframe").on("load", function () {
-//        this.contentWindow.go_edit(jQuery);
+    $("body").on("load", function () {
+        //this.contentWindow.ready();
     });
 
     /* initialize tree */
@@ -3516,8 +3513,8 @@ function init_tree(xmlstring){
             activeHandleClass: "active-handle"
         }, opt);
 
-        var $selected;// = null;
-        var $elements = (opt.handle === "") ? this : this.find(opt.handle);
+        let $selected;// = null;
+        let $elements = (opt.handle === "") ? this : this.find(opt.handle);
 
         $elements.css('cursor', opt.cursor).on("mousedown touchstart", function (e) {
             if (opt.handle === "") {
@@ -3527,7 +3524,7 @@ function init_tree(xmlstring){
                 $selected = $(this).parent();
                 $selected.addClass(opt.draggableClass).find(opt.handle).addClass(opt.activeHandleClass);
             }
-            var drg_h = $selected.outerHeight(),
+            let drg_h = $selected.outerHeight(),
                 drg_w = $selected.outerWidth(),
                 pos_y = $selected.offset().top + drg_h - e.pageY,
                 pos_x = $selected.offset().left + drg_w - e.pageX;
@@ -3570,7 +3567,7 @@ function init_tree(xmlstring){
  * @returns {string} //unicode string
  */
 function beta2uni(string) { //beta code to unicode extended Greek
-    var vocals = "aehiouwr",
+    let vocals = "aehiouwr",
         accents = "\\/=", accent,
         iotas = "ahw", iota, //deze kunnen iota subscr. hebben
         longs = "ahiuw", longvoc, //deze kunnen circumflexus hebben (lange vocalen)
@@ -3758,7 +3755,7 @@ function beta2uni(string) { //beta code to unicode extended Greek
  * @returns {string} //betacode string
  */
 function uni2beta(string, accents) {
-    var sindex,
+    let sindex,
         code,
         beta,
         result,
