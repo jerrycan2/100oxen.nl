@@ -43,7 +43,7 @@ $(document).ready(function () {
     }
 
     $("body").on("mouseup touchend", function (e) {
-        parent.ifrmouseup(e);
+        parent.site100oxen.iframe_mouseup(e);
     });
 
     $(".showlist").click(function () {

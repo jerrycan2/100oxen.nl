@@ -61,19 +61,19 @@ function saveXML(str) {
         pg1Namespace.XML = $.parseXML(str);
     }
     catch (e) {
-        window.parent.myAlert(e, true, null);
+        window.parent.site100oxen.myAlert(e, true, null);
         return;
     }
     localStorage.setItem("list_xml", str);
     localStorage.setItem("list_xml_loaded", "true");
-    if (parent.jbNS) {
-        parent.jbNS.XML = pg1Namespace.XML;
-        parent.jbNS.xml_loaded = true;
+    if (parent.site100oxen) {
+        parent.site100oxen.XML = pg1Namespace.XML;
+        parent.site100oxen.xml_loaded = true;
         pg1Namespace.xmlLoaded = true;
         /* create new collapsible list in parent page */
-        if (parent.global_flag_updating) {
-            parent.global_flag_updating = false;
-            parent.createlist(pg1Namespace.XML);
+        if (parent.site100oxen.global_flag_updating) {
+            parent.site100oxen.global_flag_updating = false;
+            parent.site100oxen.createlist(pg1Namespace.XML);
         }
     }
     createBlocks();
@@ -85,6 +85,13 @@ function createBlocks() {
 }
 
 
+function getelementnode(n) {
+    while (n && n.nodeType !== 1) {
+        n = n.nextSibling;
+    }
+    return n;
+}
+
 /**
  * function getlinenr
  * go down tree until "line" node, then take its ltr and nr attributes
@@ -93,14 +100,13 @@ function createBlocks() {
  */
 function getlinenr(node) {
     while (node.nodeName !== "line") {
-        node = parent.getelementnode(node.firstChild);
+        node = getelementnode(node.firstChild);
         if (node === null) {
             break;
         }
     }
     return node ? node.getAttribute("lnr") : "";
 }
-
 
 /**********************************************************************/
 /*! XML                                                               */
@@ -378,7 +384,7 @@ function columnclick(e) {
             });
         }
         if (parent) {
-            parent.showAndGotoAnyLine("il" + getlinenr($trg[0]));
+            parent.site100oxen.showAndGotoAnyLine("il" + getlinenr($trg[0]), false);
         }
         if (!$trg[0].firstChild || $trg[0].firstChild.nodeName === "line") {
             return;
@@ -399,7 +405,7 @@ function columnclick(e) {
         $node = $x.parent();
         if (parent) {
             if ($node.is("book")) {
-                parent.showAndGotoAnyLine("il1.1");
+                parent.site100oxen.showAndGotoAnyLine("il1.1", false);
             }
             else {
                 s = $node.attr("d");
@@ -408,13 +414,13 @@ function columnclick(e) {
                         $t = $t.parent();
                     }
                     booknr = $t.index() + 1;
-                    parent.showAndGotoAnyLine("il" + booknr + ".1");
+                    parent.site100oxen.showAndGotoAnyLine("il" + booknr + ".1", false);
                     return;
                 } else {
                     s = '[d="' + s + '"]';
                     $trg = $(pg1Namespace.XML).find(s);
                 }
-                parent.showAndGotoAnyLine("il" + getlinenr($node[0]));
+                parent.site100oxen.showAndGotoAnyLine("il" + getlinenr($node[0]), false);
             }
         }
         pg1Namespace.index = $node.children().index($x);//going back/right, which col2 subdiv is now in col1?
@@ -445,15 +451,15 @@ $(document).ready(function () {
     $("#wrap").on("click", columnclick);
     //$(document).ajaxComplete(createBlocks);
 
-    if (parent.jbNS) {
-        if (parent.jbNS.forcereload || !parent.jbNS.xml_loaded) {
+    if (parent.site100oxen) {
+        if (parent.site100oxen.forcereload || !parent.site100oxen.xml_loaded) {
             from = getXML("iliad.xml"); //fetch from the web (async, callback) or localStorage
             if (from === "local") {
                 createBlocks();
             }
         }
         else {
-            pg1Namespace.XML = parent.jbNS.XML;
+            pg1Namespace.XML = parent.site100oxen.XML;
             createBlocks();
         }
     }

@@ -530,7 +530,7 @@
      * @param xml {Object}
      * @param {string} linenr - only in "line" nodes
      * @param {string} text - "d" attribute
-     * @returns {?Object} result - xml node
+     * @returns {?Node} result - xml node
      */
     function find_xml_node(xml, linenr, text) {
         let result = null;
@@ -610,7 +610,7 @@
      * function reCreateStructTree
      * create an xml subtree from the root of the DOM-tree in #edit
      * then ask to substitute this subtree in the original XML (and remake the html in #struct)
-     * @param {Object} AllXML - complete XML tree as shown in #struct
+     * @param {Node} AllXML - complete XML tree as shown in #struct
      */
     function reCreateStructTree(AllXML) {
         const $domroot = $("#edit").find("ol:first");
@@ -633,10 +633,10 @@
                     $("#struct").find("ol:first").remove().addBack()  // addBack is to get the #struct element back
                         .append(createlist(AllXML.firstChild, "struct", false));
                     setnodeattributes("struct");
-                    if (parent.jbNS) {
-                        parent.jbNS.XML = AllXML;
+                    if (parent.site100oxen) {
+                        parent.site100oxen.XML = AllXML;
                         const txt = new XMLSerializer().serializeToString(AllXML);
-                        parent.init_tree(txt);
+                        parent.site100oxen.init_tree(txt);
                     }
                 });
             }
@@ -1710,8 +1710,8 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         });
     });
-    if (parent.jbNS) {
-        glob.XML = parent.jbNS.XML;
+    if (parent.site100oxen) {
+        glob.XML = parent.site100oxen.XML;
         createTreeFromXML(glob.XML, "struct");
         loadPageState(); // from localStorage
     } else {

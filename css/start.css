@@ -46,8 +46,6 @@ ul {
 /* header styles   */
 /********************/
 header {
-  display: -webkit-box;
-  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
   display: -ms-flexbox;
   /* TWEENER - IE 10 */
   display: -webkit-flex;
@@ -90,6 +88,11 @@ header img {
   width: 4rem;
   top: 2rem;
   cursor: pointer;
+}
+#switchColumns {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
 }
 /**********/
 /*main menu*/
