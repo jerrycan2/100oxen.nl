@@ -1,15 +1,9 @@
 'use strict';
-//	 z-index:
-//	 10	:	modal popups
-//	 8		:	coverall for modal popups & resizer
-//	 6		:	menu items
-//	 4		:   coverall for menu-items
-//	 2		:	non-modal popups
-//	 0		:	default everything else
-//	 < 0	: sent to back coverall
 
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
 // the list xml (list.xml) is loaded by page1.html and available here and there
+
+//region Site global
 var site100oxen = {
     nolocalstorage: false,
     forcereload: true,
@@ -20,16 +14,17 @@ var site100oxen = {
     showAndGotoAnyLine: null,
     init_tree: null,
     createlist: null,
-    iframe_mouseup: null
+    iframe_mouseup: null,
+    gr_beginLine: 0
 };
+//endregion Site global
 
-/**********************************************************************/
-/*! ready:                                                            */
-/**********************************************************************/
 /**
  * startup function. Set global vars, bind event handlers, load contents
  */
 (function ($) {
+
+    //region Page global (jbNS + LatinGreek)
     /**********************************************************************/
     /*! global Objects:                                                   */
     /**********************************************************************/
@@ -66,7 +61,8 @@ var site100oxen = {
             ["summary.html", "History"],
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
-            ["apollo.html", "Apollo"]
+            ["apollo.html", "Apollo"],
+            ["mybook.01.03.html", "τά τ᾽ ἐσσόμενα"]
         ],
         pages_extern: [
             ["", ""],
@@ -83,7 +79,6 @@ var site100oxen = {
         keepFontsize: false, //if true: fontsize remains same after window resize
         OL_level: null,
         LI_elements: null,
-        gr_beginLine: 0,
         bu_beginLine: 0,
         gr_previousLine: 0,
         greekanchors: null,
@@ -178,13 +173,87 @@ var site100oxen = {
             return c;
         }
     };
+    //endregion Page global
 
-    /**********************************************************************/
-    /**********************************************************************/
-    /* FUNCTION DECL.                                                     */
-    /**********************************************************************/
+    //region Utilities
 
-    /**********************************************************************/
+    /**
+     * function cover
+     * apply a covering div to the whole screen (to catch events)
+     * @param z : number // integer z-index default = 8
+     * @param a : number // 0-1 opacity default = 0.4
+     */
+    function cover(z, a) { // z-index, a=opacity
+        if (z === undefined) {
+            z = 12;
+        }
+        if (a === undefined) {
+            a = 0.3;
+        }
+        $("#coverall").css({
+            "background": "rgba(128, 128, 128, " + a + ")",
+            "z-index": z
+        });
+    }
+
+    /**
+     * function fademsg
+     * fadeout messagebox
+     */
+    function fademsg() {
+        $("#msgbox").fadeOut(3000);
+    }
+
+    /**
+     * function myAlert
+     * display alert box that can simulate modal (but isn't blocking)
+     * NB no modal result can be returned: use the okExec function
+     * @param txt : string // to be displayed
+     * @param modal : boolean // (optional) true=wait for user click OK/CANCEL, false=disappear in 3 sec
+     * @param okExec : function  // (optional) to execute on 'OK' click
+     */
+    function myAlert(txt, modal, okExec) {
+        let $box;
+
+        $box = $("#msgbox");
+        $box.fadeIn(400).on("mousedown", function (e) {
+            let off_x, off_y,
+                $this = $(this);
+            off_x = $this.offset().left - e.pageX;
+            off_y = $this.offset().top - e.pageY;
+            $this.on("mousemove", function (e) {
+                $this.offset({
+                    left: e.pageX + off_x,
+                    top: e.pageY + off_y
+                });
+            });
+            $this.one("mouseup", function () {
+                $this.off("mousemove"); // Unbind events from popup
+            });
+            e.preventDefault(); // disable selection
+
+        });
+        //$box.find("h5")[0].innerHTML = txt;
+        $box.find("h5").text(txt);
+        if (modal) {
+            cover(8, 0.3);
+            $("#ok, #cancel").show().one("click", function (e) {
+                e.stopPropagation();
+                if ($(this).attr("id") === "ok") {
+                    if (okExec) {
+                        okExec();
+                    }
+                }
+                cover(-8, 0.3);
+                $box.fadeOut(1000);
+            });
+        } else {
+            $("#ok, #cancel").hide();
+            setTimeout(fademsg, 1000);
+        }
+        return false;
+    }
+
     /**
      * function getelementnode
      * test if xml node n is an element-node. If not, test its nextsibling
@@ -213,6 +282,9 @@ var site100oxen = {
         }
         return node ? node.getAttribute("lnr") : "";
     }
+    //endregion Utilities
+
+    //region XML2HTML
 
     /**
      * function createTreeFromXML
@@ -349,89 +421,8 @@ var site100oxen = {
         let highest = setlevel($("#list").find("ol:first"), 0, 0);
         //disableButtons(highest);
     }
+    //endregion XML2HTML
 
-
-    /**********************************************************************/
-    /*! Utilities:                                                        */
-
-    /**********************************************************************/
-
-    /**
-     * function cover
-     * apply a covering div to the whole screen (to catch events)
-     * @param z : number // integer z-index default = 8
-     * @param a : number // 0-1 opacity default = 0.4
-     */
-    function cover(z, a) { // z-index, a=opacity
-        if (z === undefined) {
-            z = 12;
-        }
-        if (a === undefined) {
-            a = 0.3;
-        }
-        $("#coverall").css({
-            "background": "rgba(128, 128, 128, " + a + ")",
-            "z-index": z
-        });
-    }
-
-    /**
-     * function fademsg
-     * fadeout messagebox
-     */
-    function fademsg() {
-        $("#msgbox").fadeOut(3000);
-    }
-
-    /**
-     * function myAlert
-     * display alert box that can simulate modal (but isn't blocking)
-     * NB no modal result can be returned: use the okExec function
-     * @param txt : string // to be displayed
-     * @param modal : boolean // (optional) true=wait for user click OK/CANCEL, false=disappear in 3 sec
-     * @param okExec : function  // (optional) to execute on 'OK' click
-     */
-    function myAlert(txt, modal, okExec) {
-        let $box;
-
-        $box = $("#msgbox");
-        $box.fadeIn(400).on("mousedown", function (e) {
-            let off_x, off_y,
-                $this = $(this);
-            off_x = $this.offset().left - e.pageX;
-            off_y = $this.offset().top - e.pageY;
-            $this.on("mousemove", function (e) {
-                $this.offset({
-                    left: e.pageX + off_x,
-                    top: e.pageY + off_y
-                });
-            });
-            $this.one("mouseup", function () {
-                $this.off("mousemove"); // Unbind events from popup
-            });
-            e.preventDefault(); // disable selection
-
-        });
-        //$box.find("h5")[0].innerHTML = txt;
-        $box.find("h5").text(txt);
-        if (modal) {
-            cover(8, 0.3);
-            $("#ok, #cancel").show().one("click", function (e) {
-                e.stopPropagation();
-                if ($(this).attr("id") === "ok") {
-                    if (okExec) {
-                        okExec();
-                    }
-                }
-                cover(-8, 0.3);
-                $box.fadeOut(1000);
-            });
-        } else {
-            $("#ok, #cancel").hide();
-            setTimeout(fademsg, 1000);
-        }
-        return false;
-    }
 
     /**
      * functions iliad_loaded, textframe_loaded
@@ -442,21 +433,9 @@ var site100oxen = {
         return jbNS.columns_config[1] === 4;
     }
 
-    /**
-     * function showhelp
-     * show help column. Add a column if necessary
-     * @param event //menu-click
-     */
-    function showhelp(event) {
-        event.stopImmediatePropagation();
-        //$(".btn1 ul").removeClass("menuActive");
-        jbNS.textframe[0].src = jbNS.filenames[3][1];
-        configColumns(3, 2, true);
-    }
-
+    //region Perseus
     /**********************************************************************/
     /*! Perseus:                                                           */
-
     /**********************************************************************/
     /**
      * function perseusLookup
@@ -528,19 +507,18 @@ var site100oxen = {
         }
         configColumns(0, 2, true);
     }
+    //endregion Perseus
 
-    /**********************************************************************/
-    /*! scroll:                                                           */
 
-    /**********************************************************************/
+    //region scrolling & searching
     /**
      * function scrollgreek
-     * scroll #greekframe to the line in jbNS.gr_beginLine
+     * scroll #greekframe to the line in site100oxen.gr_beginLine
      */
     function scrollgreek() {
         let begin, $top;
 
-        begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
+        begin = site100oxen.gr_beginLine < 1 ? 0 : site100oxen.gr_beginLine - 1; //top = the previous line
         if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
             return;
         }
@@ -591,7 +569,6 @@ var site100oxen = {
 
     /**********************************************************************/
     /*! Finding linenrs IN THE TEXT                                       */
-
     /**********************************************************************/
     /**
      * function checklastletter
@@ -775,11 +752,9 @@ var site100oxen = {
         }
         return -1;
     }
+    //endregion scrolling & searching
 
-    /**********************************************************************/
-    /*! Bookmark management                                               */
-
-    /**********************************************************************/
+    //region Bookmarks
 
     /**
      * function cleanupBookMarx
@@ -883,12 +858,12 @@ var site100oxen = {
                         tl.className = "";
                     }
                     else {
-                        jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
+                        jbNS.gr_previousLine = site100oxen.gr_beginLine = i + 1;
                         tl.className = "bmcolor";
                     }
                 }
                 if (scroll) {
-                    jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
+                    jbNS.gr_previousLine = site100oxen.gr_beginLine = i + 1;
                     scrollgreek();
                 }
                 break;
@@ -1103,6 +1078,64 @@ var site100oxen = {
         jbNS.bm_to_goto = "";
     }
 
+    function nextbm(event) {
+        let i, $bmsel, bmsel;
+
+        event.stopImmediatePropagation();
+        $bmsel = $("#BMselector");
+        bmsel = $bmsel[0];
+        i = bmsel.selectedIndex;
+        if (i === -1) {
+            i = 0;
+        }
+        if (i + 1 >= bmsel.options.length || bmsel.options[i + 1].value[0] === "-") {
+            if (bmsel.options[i].value[0] === "-") {
+                return;
+            }
+            while (i > 0 && bmsel.options[i - 1].value[0] !== "-") {
+                i -= 1;
+            }
+        }
+        else {
+            i += 1;
+        }
+        bmsel.selectedIndex = i;
+        if (bmsel.options[i].value[0] !== "-") {
+            changebm(event);
+        }
+    }
+
+    function prevbm(event) {
+        let i, $bmsel, bmsel;
+
+        event.stopImmediatePropagation();
+        $bmsel = $("#BMselector");
+        bmsel = $bmsel[0];
+        i = bmsel.selectedIndex;
+        if (bmsel.options[i].value[0] === "-") {
+            return;
+        }
+        if (i - 1 < 1 || bmsel.options[i - 1].value[0] === "-") {
+            while (i < bmsel.options.length - 1 && bmsel.options[i + 1].value[0] !== "-") {
+                i += 1;
+            }
+        }
+        else {
+            i -= 1;
+        }
+        bmsel.selectedIndex = i;
+        if (bmsel.options[i].value[0] !== "-") {
+            changebm(event);
+        }
+    }
+
+    function changebm(event) {
+        event.stopImmediatePropagation();
+        showAndGotoAnyLine($("#BMselector").val(), true);
+    }
+
+    //endregion Bookmarks
+
     /**
      * function showAndGotoAnyLine
      * goto any lineID (bookmark), load text /switch language as needed
@@ -1177,66 +1210,6 @@ var site100oxen = {
         }
     }
 
-    function nextbm(event) {
-        let i, $bmsel, bmsel;
-
-        event.stopImmediatePropagation();
-        $bmsel = $("#BMselector");
-        bmsel = $bmsel[0];
-        i = bmsel.selectedIndex;
-        if (i === -1) {
-            i = 0;
-        }
-        if (i + 1 >= bmsel.options.length || bmsel.options[i + 1].value[0] === "-") {
-            if (bmsel.options[i].value[0] === "-") {
-                return;
-            }
-            while (i > 0 && bmsel.options[i - 1].value[0] !== "-") {
-                i -= 1;
-            }
-        }
-        else {
-            i += 1;
-        }
-        bmsel.selectedIndex = i;
-        if (bmsel.options[i].value[0] !== "-") {
-            changebm(event);
-        }
-    }
-
-    function prevbm(event) {
-        let i, $bmsel, bmsel;
-
-        event.stopImmediatePropagation();
-        $bmsel = $("#BMselector");
-        bmsel = $bmsel[0];
-        i = bmsel.selectedIndex;
-        if (bmsel.options[i].value[0] === "-") {
-            return;
-        }
-        if (i - 1 < 1 || bmsel.options[i - 1].value[0] === "-") {
-            while (i < bmsel.options.length - 1 && bmsel.options[i + 1].value[0] !== "-") {
-                i += 1;
-            }
-        }
-        else {
-            i -= 1;
-        }
-        bmsel.selectedIndex = i;
-        if (bmsel.options[i].value[0] !== "-") {
-            changebm(event);
-        }
-    }
-
-    function changebm(event) {
-        event.stopImmediatePropagation();
-        showAndGotoAnyLine($("#BMselector").val(), true);
-    }
-
-    /**********************************************************************/
-    /*! Text searches:                                                    */
-
-    /**********************************************************************/
     /**
      * function getSelectedText
      * get textcontent of user selection
@@ -2632,7 +2605,7 @@ var site100oxen = {
                 isgreek = true;
                 $("#selonly").text("Show only selection");
                 jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                if (jbNS.gr_beginLine > 0) {
+                if (site100oxen.gr_beginLine > 0) {
                     scrollgreek();
                 }
             }
@@ -2771,7 +2744,7 @@ var site100oxen = {
             // button clicked: show/hide/switch pages or texts
             if (colnr > 0) {// button clicked: show/hide/switch pages or texts
                 if (colnr === 1) {
-                    jbNS.gr_beginLine = 0;
+                    site100oxen.gr_beginLine = 0;
                     fetchTexts(ix);
                 }
                 configColumns(colnr, ix + 1, false); //-1
@@ -3348,8 +3321,8 @@ var site100oxen = {
     $("#goback").click(function (event) {
         let tmp;
         event.stopImmediatePropagation();
-        tmp = jbNS.gr_beginLine;
-        jbNS.gr_beginLine = jbNS.gr_previousLine;
+        tmp = site100oxen.gr_beginLine;
+        site100oxen.gr_beginLine = jbNS.gr_previousLine;
         jbNS.gr_previousLine = tmp;
         scrollgreek();
     });
@@ -3492,8 +3465,8 @@ var site100oxen = {
             encodeURIComponent($("#notes")[0].value)
         );
     });
-    $("#arktos").click(function (event) {
-        //event.stopImmediatePropagation();
+    $("#arktos").click(function () {
+        showAndGotoAnyLine("od 5.273", true);
     });
     $("#splash").click(function () {
         $(this).fadeToggle(1000);

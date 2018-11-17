@@ -1,12 +1,15 @@
 /**
  * Created by jeroe on 07-Aug-18.
  */
+
 (function($) {
     "use strict";
+
+    //region Global State Var
     /**
      * global state variables
-     * @type {{XML: Object, ButlerText: Object, GreekText: Object,
-     * Tstack: Array, hueb: Object, whichDiv: number, targetdiv: string, chaplength: Array}}
+     * @type {{XML: Object, ButlerText: Object, GreekText: Object, Tstack: Array, hueb: Object,
+     * whichDiv: number, targetdiv: string, chaplength: Array, showing_greek: boolean}}
      */
     let glob = {
         XML: null,  //complete Iliad XML tree
@@ -17,8 +20,12 @@
         hueb: null, // color picker
         whichDiv: 0, //trees showing: 0=both, 1=struct, 2=edit used by 'switch'
         targetdiv: "struct",  // tracks which tree has focus. used only for the expand level buttons
-        chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804]
+        chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
+        showing_greek: true
     };
+    //endregion Global State Var
+
+    //region Utilities
 
     /**
      * function cover
@@ -124,6 +131,26 @@
         return n;
     }
 
+    /**
+     * function maptree
+     * map function func() to an xml-tree
+     * where func returns false, recursion for the child-subtree is cut off,
+     * @param {Object} node - rootnode
+     * @param {Function} func - function to map
+     */
+    function maptree(node, func) {
+        if (node && func(node)) {
+            node = node.firstChild;
+            while (node) {
+                maptree(node, func);
+                node = node.nextSibling;
+            }
+        }
+    }
+
+    //endregion Utilities
+
+    //region HTML tree
     /**
      * function getlinenr
      * go down tree until "line" node, then take its ltr and nr attributes
@@ -300,28 +327,9 @@
         disableButtons(highest);
     }
 
-    /**
-     * function expand
-     * expand/collapse list acc. to buttonclick (level)
-     * @param {string} target - name of targetdiv
-     * @param {number} level - 1-9
-     * @returns {*} - promise
-     */
-    function expand(target, level) {
-        const ols = $("#" + target).find("ol");
-        ols.each(function () {
-            const $this = $(this);
-            const val = $this.data("level");
-            if (level <= 9 && val > level) {
-                $this.slideUp(600);
-            } else {
-                $this.slideDown(600);
-            }
-        });
-        return ols.promise().done(function () {
-            setnodeattributes(target);
-        });
-    }
+    //endregion HTML tree
+
+    //region UI
 
     /**
      * function disableButtons
@@ -370,6 +378,143 @@
             updateUndoSelect();
         }
 
+    }
+
+    /**
+     * function switchdivs
+     * switch screen display between: 0: half struct half edit, 1: only struct, 2: only edit
+     * @param {boolean} hueb_open - if colorpicker open, take away 350px for it
+     * @param {number} which_div
+     */
+    function switchdivs(hueb_open, which_div) {
+        const $struct = $("#struct");
+        const $ed = $("#edit");
+        let half, whole;
+        if (hueb_open) {
+            half = "calc((100% - 3rem - 350px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
+            whole = "calc(100% - 3rem - 350px)";
+        } else {
+            half = "50%";
+            whole = "100%";
+        }
+        const csshalf = {
+            display: "block",
+            "height": half
+        };
+        const cssnone = {
+            display: "none",
+            "height": "0"
+        };
+        if (which_div === 0) { // struct + edit
+            $struct.css(csshalf);
+            $ed.css(csshalf);
+            $("#showGreek").attr('disabled', false);
+            glob.targetdiv = "struct";
+            $("header>h5").text("Structure & Edit");
+        }
+        else if (which_div === 1) { // struct alone
+            $ed.css(cssnone);
+            $struct.css("height", whole);
+            $("#showGreek").attr('disabled', true);
+            glob.targetdiv = "struct";
+            $("header>h5").text("Structure");
+        }
+        else if (which_div === 2) { // edit alone
+            $struct.css(cssnone);
+            $ed.css({
+                "height": whole,
+                "display": "block"
+            });
+            $("#showGreek").attr('disabled', false);
+            glob.targetdiv = "edit";
+            $("header>h5").text("Edit");
+        }
+    }
+
+     /**
+     * function checkbox_clicked
+     * manage 'checked' property of #edit checkboxes
+     * @param {Object} $node - <input type="checkbox"> element (jQuery)
+     */
+    function checkbox_clicked($node) {
+        const $inputs = $node.closest("ol").children("li").find("label:first>input");
+        const $checked = $inputs.filter(":checked");
+        const $all = $("#edit").find("input:checked");
+        if ($checked.length > 1) { //more than 1 in same parent: check all in between
+            const firstsel = $inputs.index($checked.first());
+            const lastsel = $inputs.index($checked.last());
+            $inputs.filter(`:gt(${firstsel})`).prop("checked", true);
+            $inputs.filter(`:gt(${lastsel})`).prop("checked", false);
+            // NB this means you cannot uncheck a box between 2 checked siblings
+        }
+        else if ($all.length > 1) { //additional click in another parent
+            $all.prop("checked", false); //uncheck all
+            $node.prop("checked", true);  //except the one clicked
+            // this means you cannot multi-level select.
+        }
+    }
+
+    /**
+     * function expand
+     * expand/collapse list acc. to buttonclick (level)
+     * @param {string} target - name of targetdiv
+     * @param {number} level - 1-9
+     * @returns {*} - promise
+     */
+    function expand(target, level) {
+        const ols = $("#" + target).find("ol");
+        ols.each(function () {
+            const $this = $(this);
+            const val = $this.data("level");
+            const fold = !glob.showing_greek && $this.attr("class") === "line";
+            if (fold || (level <= 9 && val > level)) {
+                $this.slideUp(600);
+            } else {
+                $this.slideDown(600);
+            }
+        });
+        return ols.promise().done(function () {
+            setnodeattributes(target);
+        });
+    }
+
+    //endregion UI
+
+    //region Edit Tree manip
+
+    /**
+     * function copy_tree_to_edit
+     * copy the node identified by the click to the edit div
+     * @param {Object} $node - html node (jQuery)
+     */
+    function copy_tree_to_edit($node) {
+        const $subtree = $node.parent("li").clone(true, true);
+        let classname = $node.closest("ol").attr("class");
+        if (classname === "lvl0") {
+            classname = "book";
+        }
+        const txt = $subtree.find(".lt:first").text(); // set editing subtree NB it's XML!
+        const targets = $(glob.XML).find(classname + '[d="' + txt + '"]');
+
+        let found = null;
+        if (targets.length > 0) {
+            targets.each(function (i, el) {
+                if ($subtree.find(".ln:first").text() === getlinenr(el)) {
+                    found = el;
+                }
+                return found === null;
+            });
+        }
+        if (!found) {
+            myAlert("nothing found!", false); //shouldn't be possible
+        } else {
+            $("#showGreek").text("Hide Greek");
+            glob.showing_greek = true;
+            glob.targetdiv = "edit";
+            $("#edit").find("ol:first").remove().end()   //create html in the edit div
+                .append(createlist(found, "edit", true));
+            setnodeattributes("edit");
+        }
     }
 
     /**
@@ -522,6 +667,9 @@
             setnodeattributes("edit");
         }
     }
+    //endregion Edit Tree manip
+
+    //region HTML 2 XML
 
     /**
      * function find_xml_node
@@ -642,92 +790,12 @@
             }
         }
     }
+    //endregion HTML2XML
 
-    /**
-     * function switchdivs
-     * switch screen display between: 0: half struct half edit, 1: only struct, 2: only edit
-     * @param {boolean} hueb_open - if colorpicker open, take away 350px for it
-     * @param {number} which_div
-     */
-    function switchdivs(hueb_open, which_div) {
-        const $struct = $("#struct");
-        const $ed = $("#edit");
-        let half, whole;
-        if (hueb_open) {
-            half = "calc((100% - 3rem - 350px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
-            whole = "calc(100% - 3rem - 350px)";
-        } else {
-            half = "50%";
-            whole = "100%";
-        }
-        const csshalf = {
-            display: "block",
-            "height": half
-        };
-        const cssnone = {
-            display: "none",
-            "height": "0"
-        };
-        if (which_div === 0) { // struct + edit
-            $struct.css(csshalf);
-            $ed.css(csshalf);
-            $("#showGreek").attr('disabled', false);
-            glob.targetdiv = "struct";
-            $("header>h5").text("Structure & Edit");
-        }
-        else if (which_div === 1) { // struct alone
-            $ed.css(cssnone);
-            $struct.css("height", whole);
-            $("#showGreek").attr('disabled', true);
-            glob.targetdiv = "struct";
-            $("header>h5").text("Structure");
-        }
-        else if (which_div === 2) { // edit alone
-            $struct.css(cssnone);
-            $ed.css({
-                "height": whole,
-                "display": "block"
-            });
-            $("#showGreek").attr('disabled', false);
-            glob.targetdiv = "edit";
-            $("header>h5").text("Edit");
-        }
-    }
-
-    /**
-     * function openclose_hueb
-     * set div heights and display for showing/hiding colorpicker
-     */
-    function openclose_hueb(openit) {
-        if (typeof openit === "undefined") {
-            openit = $("div#colors").css("display") === "none";
-        }
-        if (!openit) { //if color picker showing
-            glob.hueb.close();
-            $("#openhueb").text("show colors");
-            $("#wrapper").css("height", "calc(100% - 3rem)");
-            switchdivs(false, glob.whichDiv);
-            $("#colors, #pick").each(function (i, el) {
-                $(el).css({"display": "none"});
-            });
-        }
-        else {
-            glob.hueb.open();
-            $("#openhueb").text("hide colors");
-            $("#wrapper").css("height", "calc(100% - 3rem)");
-            switchdivs(true, glob.whichDiv);
-            $("#colors, #pick").each(function (i, el) {
-                $(el).css({
-                    "height": "auto",
-                    "display": "inline-flex"
-                });
-            });
-        }
-    }
+    //region Blob and Filereader
 
     /**********************************************************************/
     /*! Blob & FileReader:                                                */
-
     /**********************************************************************/
     /**
      * function saveTextAsFile
@@ -786,154 +854,9 @@
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
+    //endregion Blob and Filereader
 
-    /**
-     * function copy_tree_to_edit
-     * copy the node identified by the click to the edit div
-     * @param {Object} $node - html node (jQuery)
-     */
-    function copy_tree_to_edit($node) {
-        const $subtree = $node.parent("li").clone(true, true);
-        let classname = $node.closest("ol").attr("class");
-        if (classname === "lvl0") {
-            classname = "book";
-        }
-        const txt = $subtree.find(".lt:first").text(); // set editing subtree NB it's XML!
-        const targets = $(glob.XML).find(classname + '[d="' + txt + '"]');
-        //====
-        // const lnr = $subtree.find(".ln:first").text();
-        // const xsltProcessor = new XSLTProcessor();
-        // xsltProcessor.importStylesheet(glob.XSL);
-        // xsltProcessor.setParameter(null, "depth", 5);
-        // xsltProcessor.setParameter(null, "showgreek", 1);
-        // xsltProcessor.setParameter(null, "line", lnr);
-        // xsltProcessor.setParameter(null, "txt", txt);
-        // let XSLdocument = document.implementation.createDocument("", "", null);
-        // XSLdocument = xsltProcessor.transformToFragment(glob.XML, XSLdocument);
-        // const serializer = new XMLSerializer();
-        // const transformed = serializer.serializeToString(XSLdocument);
-        // //saveTextAsFile(transformed, "xsltest.xml");
-        // $("#edit").append($(transformed));
-        // return;
-
-
-        //=====
-        let found = null;
-        if (targets.length > 0) {
-            targets.each(function (i, el) {
-                if ($subtree.find(".ln:first").text() === getlinenr(el)) {
-                    found = el;
-                }
-                return found === null;
-            });
-        }
-        if (!found) {
-            myAlert("nothing found!", false); //shouldn't be possible
-        } else {
-            $("#showGreek").text("Ἱδε Γρεεκ");
-            glob.targetdiv = "edit";
-            $("#edit").find("ol:first").remove().end()   //create html in the edit div
-                .append(createlist(found, "edit", true));
-            setnodeattributes("edit");
-        }
-    }
-
-    /**
-     * function checkbox_clicked
-     * manage 'checked' property of #edit checkboxes
-     * @param {Object} $node - <input type="checkbox"> element (jQuery)
-     */
-    function checkbox_clicked($node) {
-        const $inputs = $node.closest("ol").children("li").find("label:first>input");
-        const $checked = $inputs.filter(":checked");
-        const $all = $("#edit").find("input:checked");
-        if ($checked.length > 1) { //more than 1 in same parent: check all in between
-            const firstsel = $inputs.index($checked.first());
-            const lastsel = $inputs.index($checked.last());
-            $inputs.filter(`:gt(${firstsel})`).prop("checked", true);
-            $inputs.filter(`:gt(${lastsel})`).prop("checked", false);
-            // NB this means you cannot uncheck a box between 2 checked siblings
-        }
-        else if ($all.length > 1) { //additional click in another parent
-            $all.prop("checked", false); //uncheck all
-            $node.prop("checked", true);  //except the one clicked
-            // this means you cannot multi-level select.
-        }
-    }
-
-    /**
-     * function savePageState
-     * save bm to localStorage
-     */
-    function savePageState() {
-        const bm = $("#bookmarx tbody").html();
-        localStorage.setItem("bookmarx", bm);
-        localStorage.setItem("hueb_open", $("div#colors").css("display"));
-    }
-
-    /**
-     * function loadPageState
-     * load bm from localStorage
-     */
-    function loadPageState() {
-        const bm = localStorage.getItem("bookmarx");
-        if (bm) {
-            $("#bookmarx tbody").append(bm);
-        }
-        // const hueb = localStorage.getItem("hueb_open");
-        //if (hueb) {
-            openclose_hueb(false); //hueb !== "none"
-        //}
-    }
-
-    /**
-     * function handleRemClick
-     * show the "rem' data-attribute text or hide it and save the text back to the DOM
-     * @param {*} $element - the clicked html element: either .hasrem or .norem
-     */
-    function handleRemClick($element) {
-        const $parent = $element.parent();
-        if ($parent.has(".remtxt").length) { // if it's showing: hide it
-            const txtrem = $parent.find(".remtxt:first");
-            const newtext = txtrem.text();
-            if (is_edit_tree($element)) { // save it back on closing
-                $element.closest("li").data("rem", newtext);
-                $element.removeClass();
-                if (newtext) {
-                    $element.addClass("hasrem").text("⊛");
-                } else {
-                    $element.addClass("norem").text("░");
-                }
-
-            }
-            txtrem.slideToggle(350, function () {
-                $(this).remove();
-            });
-        }
-        else { // show it by creating a temporary <div> element with the text
-            $element.nextAll("span:last")
-                .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
-            $parent.find(".remtxt:first").slideToggle(350);
-        }
-
-    }
-
-    /**
-     * function maptree
-     * map function func() to an xml-tree
-     * where func returns false, recursion for the child-subtree is cut off,
-     * @param {Object} node - rootnode
-     * @param {Function} func - function to map
-     */
-    function maptree(node, func) {
-        if (node && func(node)) {
-            node = node.firstChild;
-            while (node) {
-                maptree(node, func);
-                node = node.nextSibling;
-            }
-        }
-    }
+    //region Checks and Tests
 
     /**
      * function lineNrDiff
@@ -1101,6 +1024,9 @@
         });
         return [Lcount, Hcount];
     }
+    //endregion Checks and Tests
+
+    //region Events
 
     /**********************************************************************************************/
     /*********************************** EVENTS ***************************************************/
@@ -1202,13 +1128,15 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             el.stopImmediatePropagation();
             if (glob.whichDiv !== 1) {
                 const lines = $("#edit").find("ol.line");
-                if (el.target.textContent === "Show Greek") {
-                    el.target.textContent = "Ἱδε Γρεεκ";
+                if (glob.showing_greek === false) {
+                    el.target.textContent = "Hide Greek";
                     lines.slideDown(600);
+                    glob.showing_greek = true;
                 }
                 else {
                     el.target.textContent = "Show Greek";
                     lines.slideUp(600);
+                    glob.showing_greek = false;
                 }
                 lines.promise().done(function () {
                     setnodeattributes("edit");
@@ -1410,6 +1338,52 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         }
     });
 
+    $("#b_ed").on('change', function () {
+        if ($(this).prop("checked")) {
+            $("#edit .remtxt, #edit .en, #edit ol ol li .ed").css({
+                "-webkit-user-modify": "read-write",
+                "-moz-user-modify": "read-write",
+                "user-modify": "read-write"
+            });
+        } else {
+            $("#edit .remtxt, #edit .en, #edit ol ol li .ed").css({
+                "-webkit-user-modify": "read-only",
+                "-moz-user-modify": "read-only",
+                "user-modify": "read-only"
+            });
+        }
+    });
+
+
+    /**
+     * click on clear button on top
+     * determines what to do if a span.lt is clicked
+     * show english/show greek/copy to #edit/clear shown text
+     */
+    $("#b_clr").on('click', function () {
+        $(".iltxt,.remtxt").slideToggle(350, function () {
+            $(this).remove();
+        });
+    });
+
+    /**
+     * transparent button click
+     * like a swatch, but makes the background transparent and the color black
+     */
+    $("#transparent").on('click', function () {
+        $("#edit").find(":checked").each(function (i, el) {
+                $(el).closest("li").find("span:first").css({
+                    "background-color": "rgba(0,0,0,0)",
+                    "color": "black"
+                });
+            }
+        );
+    });
+
+    //endregion Events
+
+    //region Tree Events
+
     /**
      * function findTextByLinenr
      * @param xml - butlertext.xml or greek_il.xml, parsed
@@ -1482,33 +1456,37 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         }
     }
 
-    $("#b_ed").on('change', function () {
-        if ($(this).prop("checked")) {
-            $("#edit .remtxt, #edit .en, #edit ol ol li .ed").css({
-                "-webkit-user-modify": "read-write",
-                "-moz-user-modify": "read-write",
-                "user-modify": "read-write"
-            });
-        } else {
-            $("#edit .remtxt, #edit .en, #edit ol ol li .ed").css({
-                "-webkit-user-modify": "read-only",
-                "-moz-user-modify": "read-only",
-                "user-modify": "read-only"
+    /**
+     * function handleRemClick
+     * show the "rem' data-attribute text or hide it and save the text back to the DOM
+     * @param {*} $element - the clicked html element: either .hasrem or .norem
+     */
+    function handleRemClick($element) {
+        const $parent = $element.parent();
+        if ($parent.has(".remtxt").length) { // if it's showing: hide it
+            const txtrem = $parent.find(".remtxt:first");
+            const newtext = txtrem.text();
+            if (is_edit_tree($element)) { // save it back on closing
+                $element.closest("li").data("rem", newtext);
+                $element.removeClass();
+                if (newtext) {
+                    $element.addClass("hasrem").text("⊛");
+                } else {
+                    $element.addClass("norem").text("░");
+                }
+
+            }
+            txtrem.slideToggle(350, function () {
+                $(this).remove();
             });
         }
-    });
+        else { // show it by creating a temporary <div> element with the text
+            $element.nextAll("span:last")
+                .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
+            $parent.find(".remtxt:first").slideToggle(350);
+        }
 
-
-    /**
-     * click on clear button on top
-     * determines what to do if a span.lt is clicked
-     * show english/show greek/copy to #edit/clear shown text
-     */
-    $("#b_clr").on('click', function () {
-        $(".iltxt,.remtxt").slideToggle(350, function () {
-            $(this).remove();
-        });
-    });
+    }
 
     /**
      * body-caught clicks (in tree)
@@ -1551,21 +1529,9 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         }
     });
+    //endregion
 
-
-    /**
-     * transparent button click
-     * like a swatch, but makes the background transparent and the color black
-     */
-    $("#transparent").on('click', function () {
-        $("#edit").find(":checked").each(function (i, el) {
-                $(el).closest("li").find("span:first").css({
-                    "background-color": "rgba(0,0,0,0)",
-                    "color": "black"
-                });
-            }
-        );
-    });
+    //region Colors
 
     /**
      * Huebee: downloaded color grid, see huebee.pkgd.js It's in "#colors"
@@ -1619,6 +1585,37 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         className: 'color-input-picker'
         // class added to Huebee element, useful for CSS
     });
+
+    /**
+     * function openclose_hueb
+     * set div heights and display for showing/hiding colorpicker
+     */
+    function openclose_hueb(openit) {
+        if (typeof openit === "undefined") {
+            openit = $("div#colors").css("display") === "none";
+        }
+        if (!openit) { //if color picker showing
+            glob.hueb.close();
+            $("#openhueb").text("show colors");
+            $("#wrapper").css("height", "calc(100% - 3rem)");
+            switchdivs(false, glob.whichDiv);
+            $("#colors, #pick").each(function (i, el) {
+                $(el).css({"display": "none"});
+            });
+        }
+        else {
+            glob.hueb.open();
+            $("#openhueb").text("hide colors");
+            $("#wrapper").css("height", "calc(100% - 3rem)");
+            switchdivs(true, glob.whichDiv);
+            $("#colors, #pick").each(function (i, el) {
+                $(el).css({
+                    "height": "auto",
+                    "display": "inline-flex"
+                });
+            });
+        }
+    }
 
     /**
      * function choose_colors(el, swatchlist, xpos, ypos)
@@ -1710,6 +1707,36 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         });
     });
+
+    //endregion
+
+    //region Loading & Saving
+
+    /**
+     * function savePageState
+     * save bm to localStorage
+     */
+    function savePageState() {
+        const bm = $("#bookmarx tbody").html();
+        localStorage.setItem("bookmarx", bm);
+        localStorage.setItem("hueb_open", $("div#colors").css("display"));
+    }
+
+    /**
+     * function loadPageState
+     * load bm from localStorage
+     */
+    function loadPageState() {
+        const bm = localStorage.getItem("bookmarx");
+        if (bm) {
+            $("#bookmarx tbody").append(bm);
+        }
+        // const hueb = localStorage.getItem("hueb_open");
+        //if (hueb) {
+        openclose_hueb(false); //hueb !== "none"
+        //}
+    }
+
     if (parent.site100oxen) {
         glob.XML = parent.site100oxen.XML;
         createTreeFromXML(glob.XML, "struct");
@@ -1731,7 +1758,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         });
     }
-    // finally, do something:
+
     /**
      * async load the xml
      */
@@ -1749,6 +1776,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             $("#b_en").attr('disabled', true);
         }
     });
+
     $.ajax({
         type: "GET",
         url: "greek_il.xml",
@@ -1763,39 +1791,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             $("#b_gr").attr('disabled', true);
         }
     });
-    // $.ajax({
-    //     type: "GET",
-    //     url: "stylesheet.xsl",
-    //     dataType: "xml",
-    //     success: function (xml) {
-    //         glob.XSL = xml;
-    //     },
-    //     error: function (jqXHR, textStatus, errorThrown) {
-    //         console.log(`${textStatus}, ${errorThrown}`);
-    //         myAlert("Can't load stylesheet", false);
-    //     }
-    // });
+
+    //endregion
 })
 (jQuery);
-
-
-// $("#checks").on({
-//     "click": function () {
-//         const xsltProcessor = new XSLTProcessor();
-//         xsltProcessor.importStylesheet(glob.XSL);
-//         xsltProcessor.setParameter(null, "depth", 9);
-//         xsltProcessor.setParameter(null, "showgreek", 0);
-//         //xsltProcessor.setParameter(null, "line", "1.1");
-//         xsltProcessor.setParameter(null, "txt", "the Wrath of Apollo");
-//         let XSLdocument = document.implementation.createDocument("", "", null);
-//         XSLdocument = xsltProcessor.transformToFragment(glob.XML, XSLdocument);
-//         const serializer = new XMLSerializer();
-//         const transformed = serializer.serializeToString(XSLdocument);
-//         //saveTextAsFile(transformed, "xsltest.xml");
-//         $("#edit").append($("<ol>"+transformed));
-//
-//     }
-// });
-
-
-

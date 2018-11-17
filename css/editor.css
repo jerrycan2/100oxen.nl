@@ -218,7 +218,7 @@ h5{
     left: -1.5rem;
     background-color: rgba(0,0,0,0);
 }
-#edit .remtxt, #edit .iltxt{
+#edit .remtxt, #edit .iltxt .en{
     -webkit-user-modify: read-write;
     -moz-user-modify: read-write;
     user-modify: read-write;
