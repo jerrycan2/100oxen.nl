@@ -22,11 +22,7 @@
         <button class="lvlbutt" id="b7">7</button>
         <button class="lvlbutt" id="b8">8</button>
         <button class="lvlbutt" id="b9">9</button>
-        <form id="showtext">
-            <label><input id="b_en" value="en" checked="checked" type="checkbox">english</label>
-            <label><input id="b_gr" value="gr" type="checkbox">greek</label>
-            <label><input id="b_ed" value="ed" type="checkbox">edit</label>
-        </form>
+        <label id="showtext"><input id="b_ed" value="ed" type="checkbox">edit</label>
         <button id="b_clr">clear</button>
     </div>
 </header>
@@ -35,8 +31,8 @@
         <h4>helptext</h4>
         <ul>
             <li>select 'edit' checkbox, then click a treenode to start editing it.</li>
-            <li>checkboxes english, greek, edit: determine what happens if you click a
-                node-text: <i>toggle</i> Greek and/or translation (only nodes
+            <li>checkbox edit: determine what happens if you click a
+                node-text: <i>toggle</i> translation text (only 'leaf' nodes
                 which cannot be expanded further) or if 'edit' checked: copy subtree to Edit.
                 Avoid copying the whole tree to Edit, browsers do not deal with that very well.
             </li>

@@ -62,6 +62,7 @@ var site100oxen = {
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
             ["apollo.html", "Apollo"],
+            ["send.html", "send form"],
             ["mybook.01.03.html", "τά τ᾽ ἐσσόμενα"]
         ],
         pages_extern: [

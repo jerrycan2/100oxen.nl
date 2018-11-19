@@ -221,3 +221,10 @@ div.panel p {
   margin-left: auto;
   margin-right: auto;
 }
+#sendform {
+  display: flex;
+  flex-direction: column;
+}
+#sendform div {
+  margin-bottom: 2rem;
+}

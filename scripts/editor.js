@@ -1382,7 +1382,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
 
     //endregion Events
 
-    //region Tree Events
+    //region Tree clicks
 
     /**
      * function findTextByLinenr
@@ -1444,15 +1444,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         }
         else {
-            const get_en = $("#b_en").prop("checked");
-            const get_gr = $("#b_gr").prop("checked");
-            if (get_en) {
-                get_il_text(glob.ButlerText, $target, "en");
-            }
-            if (get_gr) {
-                get_il_text(glob.GreekText, $target, "gr");
-            }
-
+            get_il_text(glob.ButlerText, $target, "en");
         }
     }
 
@@ -1752,9 +1744,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 loadPageState(); // from localStorage
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                // console.log(`${textStatus}, ${errorThrown}`);
-                //  myAlert("Can't load iliad.xml", false);
-                myAlert(`iliad.xml\n${textStatus}, ${errorThrown}`, true);
+                myAlert(`Can't load iliad data: ${textStatus}, ${errorThrown}`, true);
             }
         });
     }
@@ -1770,25 +1760,8 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             glob.ButlerText = xml;
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            // console.log(`${textStatus}, ${errorThrown}`);
-            // myAlert("Can't load English text", false);
-            myAlert(`butlertext\n${textStatus}, ${errorThrown}`, true);
+            myAlert(`Can't load butlertext: ${textStatus}, ${errorThrown}`, true);
             $("#b_en").attr('disabled', true);
-        }
-    });
-
-    $.ajax({
-        type: "GET",
-        url: "greek_il.xml",
-        dataType: "xml",
-        success: function (xml) {
-            glob.GreekText = xml;
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // console.log(`${textStatus}, ${errorThrown}`);
-            // myAlert("Can't load Greek text", false);
-            myAlert(`greek_il\n${textStatus}, ${errorThrown}`, true);
-            $("#b_gr").attr('disabled', true);
         }
     });
 

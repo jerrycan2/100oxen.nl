@@ -84,7 +84,7 @@ h5{
     background-color: lightgray;
 }
 #showtext{
-    display: inline-block;
+    /*display: inline-block;*/
     margin-left: 2rem;
 }
 #struct {
