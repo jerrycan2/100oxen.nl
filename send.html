@@ -15,7 +15,24 @@
     <div>
         <textarea rows="10" cols="30" name="text"></textarea>
     </div>
-    <div><label><input type="submit" name="send" value="send"/></label></div>
+    <div><button id="sendbutton" type="button" name="verzend" value="send">send</button></div>
 </form>
+<script src="http://code.jquery.com/jquery-3.1.0.js"></script>
+<script>
+    let send = document.getElementById("sendbutton");
+    send.onclick = function () {
+        let request = $.ajax({
+            url:'/cgi-bin/send.cgi?naam=stinker&text=dit is "quoted" string',
+            method: "GET",
+            dataType: "html"
+        });
+        request.done(function (html) {
+            alert(html);
+        });
+        request.fail(function () {
+            alert("Request failed!");
+        });
+    }
+</script>
 </body>
 </html>

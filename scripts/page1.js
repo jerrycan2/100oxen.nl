@@ -147,7 +147,7 @@ function drawBlocks($node, colheight, recursion) {
                 bg = "none"; // filler
             }
             h = (parseInt($this.attr("sz")) * scale);
-            txt1 = txt2 = getlinenr(this) + " " + $this.attr("d");
+            txt1 = txt2 = this.getAttribute('ln') + " " + $this.attr("d");
             if (recursion) {
                 txt1 = "";
                 app = "3";
@@ -278,7 +278,7 @@ function drawBlocks($node, colheight, recursion) {
         $node = $(pg1Namespace.XML).find('book');
     }
     $col1 = $("#col1");
-    has_children = $node.children("line").length === 0;
+    has_children = $node.children().length > 0;
     //has_children means non-textline children. it's used in draw()
     totalEm = +$node.attr("sz");
     scale = colheight / totalEm;
@@ -377,14 +377,14 @@ function columnclick(e) {
         $trg = $(pg1Namespace.XML).find(s);
         if ($trg.length > 1) {
             $trg.each(function (i, node) {
-                if (lnr === getlinenr(node)) {
+                if (lnr === node.getAttribute('ln')) {
                     $trg = $trg.eq(i);
                     return false;
                 }
             });
         }
         if (parent) {
-            parent.site100oxen.showAndGotoAnyLine("il" + getlinenr($trg[0]), false);
+            parent.site100oxen.showAndGotoAnyLine("il" + $trg[0].getAttribute('ln'), false);
         }
         if (!$trg[0].firstChild || $trg[0].firstChild.nodeName === "line") {
             return;
@@ -396,7 +396,7 @@ function columnclick(e) {
         $x = $(pg1Namespace.XML).find('[d="' + $("#parenttitle").text() + '"]');
         if ($x.length > 1) {
             $x.each(function (i, node) {
-                if (lnr === getlinenr(node)) {
+                if (lnr === node.getAttribute('ln')) {
                     $x = $x.eq(i);
                     return false;
                 }
@@ -420,7 +420,7 @@ function columnclick(e) {
                     s = '[d="' + s + '"]';
                     $trg = $(pg1Namespace.XML).find(s);
                 }
-                parent.site100oxen.showAndGotoAnyLine("il" + getlinenr($node[0]), false);
+                parent.site100oxen.showAndGotoAnyLine("il" + $node[0].getAttribute('ln'), false);
             }
         }
         pg1Namespace.index = $node.children().index($x);//going back/right, which col2 subdiv is now in col1?
@@ -453,7 +453,7 @@ $(document).ready(function () {
 
     if (parent.site100oxen) {
         if (parent.site100oxen.forcereload || !parent.site100oxen.xml_loaded) {
-            from = getXML("iliad.xml"); //fetch from the web (async, callback) or localStorage
+            from = getXML("list.xml"); //fetch from the web (async, callback) or localStorage
             if (from === "local") {
                 createBlocks();
             }
@@ -464,7 +464,7 @@ $(document).ready(function () {
         }
     }
     else {
-        getXML("iliad.xml");
+        getXML("list.xml");
     }
 });
 /* end of 'ready' */

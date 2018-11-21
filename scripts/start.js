@@ -356,12 +356,11 @@ var site100oxen = {
                     html += "<li>";
                 }
                 //all html nodes have a line nr (chap.line)
-                html += "<span class='ln'>" + getlinenr(xnode) + "</span>";
+                html += "<span class='ln'>" + xnode.getAttribute('ln') + "</span>";
                 //main text of inner node:
-                // if "d" is empty, xnode must be a greek text line (leaf)
                 html += "<span class='lt' " + getcolorstyle(xnode) + ">" + xnode.getAttribute("d") + "</span>";
                 child = getelementnode(xnode.firstChild);
-                if (child && child.nodeName !== "line") {
+                if (child) {
                     html += build_html_string(child);
                 }
 
@@ -3501,7 +3500,7 @@ var site100oxen = {
     /* load tree */
     $.ajax({
         type: "GET",
-        url: "iliad.xml",
+        url: "list.xml",
         cache: !site100oxen.forcereload,
         dataType: "text",
         success: function (xmlstring) {
@@ -3532,7 +3531,7 @@ var site100oxen = {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             site100oxen.xml_loaded = false;
-            myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+            myAlert("can't load list.xml" + textStatus + ";" + errorThrown, true);
         }
     });
 

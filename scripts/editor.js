@@ -1736,7 +1736,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     } else {
         $.ajax({
             type: "GET",
-            url: "iliad.xml",
+            url: "list.xml",
             dataType: "xml",
             success: function (xml) {
                 glob.XML = xml;
