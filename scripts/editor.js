@@ -327,6 +327,52 @@
         disableButtons(highest);
     }
 
+    /**
+     * function findTextByLinenr
+     * @param xml - butlertext.xml or greek_il.xml, parsed
+     * @param {string} linenr - chap.line
+     * @returns {string} txt - english: <p>, greek: <p> with <br>'s inserted
+     */
+    function findTextByLinenr(xml, linenr) {
+        let txt = "";
+        $(xml).find("A").each(function (i, el) {
+            if (el.textContent === linenr) {
+                txt = this.parentNode.childNodes[1].nodeValue.split('#').join('<br>');
+            }
+            return txt === "";
+        });
+        return txt;
+    }
+
+    /**
+     * function get_il_text
+     * fetch paragraph text from xml file and write it into the DOM
+     * delete it if it's already there
+     * @param {Object} xml - Butlertext or Greek_il
+     * @param {Object} $target - html-element clicked on (span.lt)
+     * @param {string} choice - language choice "en" or "gr"
+     */
+    function get_il_text(xml, $target, choice) {
+        const $parent = $target.parent(); // $parent is a <li>
+        if (!$parent.children("ol").length || $parent.children(".line").length) {
+            // if the target has no children (#struct) or if it has .line's (#edit)
+            const $txtdivs = $target.nextAll(`.iltxt.${choice}`);
+            if ($txtdivs.length) {
+                $txtdivs.slideToggle(350, function () {
+                    $(this).remove();
+                });
+            } else {
+                const lnr = $target.prev(".ln").text();
+                const txt = findTextByLinenr(xml, lnr);
+                if (txt) {
+                    $target.prev().nextAll("span:last") // $target may be the last <span>
+                        .after(`<div class='iltxt ${choice}'>${txt}</div>`)
+                        .next().slideToggle(350);
+                }
+            }
+        }
+    }
+
     //endregion HTML tree
 
     //region UI
@@ -476,6 +522,38 @@
         return ols.promise().done(function () {
             setnodeattributes(target);
         });
+    }
+
+    /**
+     * function handleRemClick
+     * show the "rem' data-attribute text or hide it and save the text back to the DOM
+     * @param {*} $element - the clicked html element: either .hasrem or .norem
+     */
+    function handleRemClick($element) {
+        const $parent = $element.parent();
+        if ($parent.has(".remtxt").length) { // if it's showing: hide it
+            const txtrem = $parent.find(".remtxt:first");
+            const newtext = txtrem.text();
+            if (is_edit_tree($element)) { // save it back on closing
+                $element.closest("li").data("rem", newtext);
+                $element.removeClass();
+                if (newtext) {
+                    $element.addClass("hasrem").text("⊛");
+                } else {
+                    $element.addClass("norem").text("░");
+                }
+
+            }
+            txtrem.slideToggle(350, function () {
+                $(this).remove();
+            });
+        }
+        else { // show it by creating a temporary <div> element with the text
+            $element.nextAll("span:last")
+                .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
+            $parent.find(".remtxt:first").slideToggle(350);
+        }
+
     }
 
     //endregion UI
@@ -1382,53 +1460,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
 
     //endregion Events
 
-    //region Tree clicks
-
-    /**
-     * function findTextByLinenr
-     * @param xml - butlertext.xml or greek_il.xml, parsed
-     * @param {string} linenr - chap.line
-     * @returns {string} txt - english: <p>, greek: <p> with <br>'s inserted
-     */
-    function findTextByLinenr(xml, linenr) {
-        let txt = "";
-        $(xml).find("A").each(function (i, el) {
-            if (el.textContent === linenr) {
-                txt = this.parentNode.childNodes[1].nodeValue.split('#').join('<br>');
-            }
-            return txt === "";
-        });
-        return txt;
-    }
-
-    /**
-     * function get_il_text
-     * fetch paragraph text from xml file and write it into the DOM
-     * delete it if it's already there
-     * @param {Object} xml - Butlertext or Greek_il
-     * @param {Object} $target - html-element clicked on (span.lt)
-     * @param {string} choice - language choice "en" or "gr"
-     */
-    function get_il_text(xml, $target, choice) {
-        const $parent = $target.parent(); // $parent is a <li>
-        if (!$parent.children("ol").length || $parent.children(".line").length) {
-            // if the target has no children (#struct) or if it has .line's (#edit)
-            const $txtdivs = $target.nextAll(`.iltxt.${choice}`);
-            if ($txtdivs.length) {
-                $txtdivs.slideToggle(350, function () {
-                    $(this).remove();
-                });
-            } else {
-                const lnr = $target.prev(".ln").text();
-                const txt = findTextByLinenr(xml, lnr);
-                if (txt) {
-                    $target.prev().nextAll("span:last") // $target may be the last <span>
-                        .after(`<div class='iltxt ${choice}'>${txt}</div>`)
-                        .next().slideToggle(350);
-                }
-            }
-        }
-    }
+    //region Tree Events
 
     /**
      * function handleTreeClick
@@ -1444,40 +1476,16 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         }
         else {
-            get_il_text(glob.ButlerText, $target, "en");
-        }
-    }
-
-    /**
-     * function handleRemClick
-     * show the "rem' data-attribute text or hide it and save the text back to the DOM
-     * @param {*} $element - the clicked html element: either .hasrem or .norem
-     */
-    function handleRemClick($element) {
-        const $parent = $element.parent();
-        if ($parent.has(".remtxt").length) { // if it's showing: hide it
-            const txtrem = $parent.find(".remtxt:first");
-            const newtext = txtrem.text();
-            if (is_edit_tree($element)) { // save it back on closing
-                $element.closest("li").data("rem", newtext);
-                $element.removeClass();
-                if (newtext) {
-                    $element.addClass("hasrem").text("⊛");
-                } else {
-                    $element.addClass("norem").text("░");
-                }
-
+            const get_en = $("#b_en").prop("checked");
+            const get_gr = $("#b_gr").prop("checked");
+            if (get_en) {
+                get_il_text(glob.ButlerText, $target, "en");
             }
-            txtrem.slideToggle(350, function () {
-                $(this).remove();
-            });
-        }
-        else { // show it by creating a temporary <div> element with the text
-            $element.nextAll("span:last")
-                .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
-            $parent.find(".remtxt:first").slideToggle(350);
-        }
+            if (get_gr) {
+                get_il_text(glob.GreekText, $target, "gr");
+            }
 
+        }
     }
 
     /**
@@ -1736,7 +1744,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     } else {
         $.ajax({
             type: "GET",
-            url: "list.xml",
+            url: "iliad.xml",
             dataType: "xml",
             success: function (xml) {
                 glob.XML = xml;
@@ -1744,7 +1752,9 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 loadPageState(); // from localStorage
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                myAlert(`Can't load iliad data: ${textStatus}, ${errorThrown}`, true);
+                // console.log(`${textStatus}, ${errorThrown}`);
+                //  myAlert("Can't load iliad.xml", false);
+                myAlert(`iliad.xml\n${textStatus}, ${errorThrown}`, true);
             }
         });
     }
@@ -1760,8 +1770,25 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             glob.ButlerText = xml;
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            myAlert(`Can't load butlertext: ${textStatus}, ${errorThrown}`, true);
+            // console.log(`${textStatus}, ${errorThrown}`);
+            // myAlert("Can't load English text", false);
+            myAlert(`butlertext\n${textStatus}, ${errorThrown}`, true);
             $("#b_en").attr('disabled', true);
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: "greek_il.xml",
+        dataType: "xml",
+        success: function (xml) {
+            glob.GreekText = xml;
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // console.log(`${textStatus}, ${errorThrown}`);
+            // myAlert("Can't load Greek text", false);
+            myAlert(`greek_il\n${textStatus}, ${errorThrown}`, true);
+            $("#b_gr").attr('disabled', true);
         }
     });
 

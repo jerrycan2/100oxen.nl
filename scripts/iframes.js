@@ -52,7 +52,8 @@ $(document).ready(function () {
 
     acc = document.getElementsByClassName("accordion");
 
-    for (i = 0; i < acc.length; i++) {
-        $(acc[i]).on("click tap", accordionclick);
-    }
+    $(".accordion, .citation .cithead").on("click tap", accordionclick);
+    // for (i = 0; i < acc.length; i++) {
+    //     $(acc[i]).on("click tap", accordionclick);
+    // }
 });

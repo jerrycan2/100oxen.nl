@@ -1,8 +1,4 @@
 /* latin */
-@font-face {
-  font-family: "Archaic Greek";
-  src: url("../images/Archaic Greek.ttf");
-}
 .rounded {
   border-radius: 0.4rem;
 }
@@ -122,13 +118,9 @@ figure img {
   border-radius: 0.4rem;
 }
 .textlink {
-  box-shadow: 1px 1px 2px 1px #444;
-  padding: 2px;
-  background-color: rgba(255, 255, 255, 0.2);
   color: darkblue;
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: bolder;
-  border-radius: 0.4rem;
   cursor: pointer;
 }
 /*only for greek & butler frame:*/
@@ -137,18 +129,39 @@ figure img {
   padding: 0;
   display: inline-block;
   /*for the first-line selector*/
-  font-size: 90%;
   border: solid rgba(50, 50, 50, 0.2) thin;
   border-radius: 0.4rem;
 }
 .contents p a:first-line {
   background-color: rgba(5, 5, 5, 0.2);
 }
+.latin p {
+  margin-left: 2rem;
+}
 .greek p a {
   border-width: 0 0.2rem;
 }
-.latin p a {
-  border-right-width: 0.3rem;
+.citation {
+  margin-left: 4rem;
+}
+.citation .accordion {
+  background-color: rgba(0, 0, 0, 0.1);
+  outline: 1px dashed darkblue;
+  text-align: left;
+  padding-left: 2rem;
+  margin: 0 0 1rem 0;
+  width: auto;
+}
+.citation .accordion.en:before {
+  content: 'transl.:';
+}
+.citation .accordion.gr:before {
+  content: 'greek:';
+}
+.citation .panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.4s;
 }
 .bmcolor {
   color: red !important;
@@ -158,7 +171,7 @@ figure img {
 }
 button.accordion {
   background-color: rgba(0, 0, 0, 0.1);
-  color: white;
+  color: black;
   cursor: default;
   padding: 1rem 2rem 1rem 0.5rem;
   margin-top: 4px;
@@ -172,15 +185,17 @@ button.accordion.active,
 button.accordion:hover {
   background-color: rgba(0, 0, 0, 0.3);
 }
-button.accordion:after {
+.accordion:after {
   content: '\02795';
   /* Unicode character for "plus" sign (+) */
-  font-size: 120%;
   color: #777;
-  float: right;
-  margin-left: 5px;
+  margin-left: 2rem;
 }
-button.accordion.active:after {
+button.accordion:after {
+  font-size: 120%;
+  float: right;
+}
+.accordion.active:after {
   content: "\2796";
   /* Unicode character for "minus" sign (-) */
 }
@@ -201,12 +216,12 @@ div.panel p {
 #thegods header #up {
   margin-bottom: 1.5rem;
 }
-#thegods #zeus {
+#zeus {
   height: 8rem;
   float: left;
   margin-left: 20%;
 }
-#thegods #warrior {
+#warrior {
   height: 6rem;
   margin-top: 2rem;
   margin-right: 25%;

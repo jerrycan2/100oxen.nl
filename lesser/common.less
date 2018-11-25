@@ -30,11 +30,6 @@
 //    unicode-range: U+0370-03FF;
 //}
 
-@font-face {
-  font-family: "Archaic Greek";
-  src: url("../images/Archaic Greek.ttf");
-}
-
 .rounded {
   border-radius: @corner;
 }
@@ -79,6 +74,7 @@ body {
 input {
   font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
+
 h1, h2, h3, h4 {
   background-image: linear-gradient(to right, @darkgrey 10%, @lightgrey 50%, @darkgrey 90%);
   color: black;
@@ -167,6 +163,7 @@ figcaption {
 figure {
   text-align: center;
   margin: 2rem 0;
+
   img {
     width: 60%;
     border: 0.2rem groove @topcolor;
@@ -175,14 +172,14 @@ figure {
 }
 
 .textlink {
-  box-shadow: 1px 1px 2px 1px #444;
-  padding: 2px;
-  background-color: rgba(255, 255, 255, 0.2);
+  //box-shadow: 1px 1px 2px 1px #444;
+  //padding: 2px;
+  //background-color: rgba(255, 255, 255, 0.2);
   color: darkblue;
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: bolder;
   //line-height: 150%;
-  .rounded;
+  //.rounded;
   cursor: pointer;
 }
 
@@ -191,21 +188,41 @@ figure {
   color: white;
   padding: 0;
   display: inline-block; /*for the first-line selector*/
-  font-size: 90%;
   border: solid rgba(50, 50, 50, 0.2) thin;
   .rounded;
+
   &:first-line {
     background-color: rgba(5, 5, 5, 0.2);
   }
 }
-
+.latin p {
+  margin-left: 2rem;
+}
 .greek p a {
   border-width: 0 0.2rem;
-
 }
 
-.latin p a {
-  border-right-width: 0.3rem;
+.citation {
+  margin-left: 4rem;
+  .accordion {
+    background-color: rgba(0, 0, 0, 0.1);
+    outline: 1px dashed darkblue;
+    text-align: left;
+    padding-left: 2rem;
+    margin: 0 0 1rem 0;
+    width: auto;
+    &.en:before{
+      content: 'transl.:';
+    }
+    &.gr:before{
+      content: 'greek:';
+    }
+  }
+  .panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.4s;
+  }
 }
 
 .bmcolor {
@@ -218,7 +235,7 @@ figure {
 
 button.accordion {
   background-color: rgba(0, 0, 0, 0.1);
-  color: white;
+  color: black;
   cursor: default;
   padding: 1rem 2rem 1rem 0.5rem;
   margin-top: 4px;
@@ -241,15 +258,17 @@ button.accordion.active, button.accordion:hover {
 //    margin-right: 5px;
 //}
 
-button.accordion:after {
+.accordion:after {
   content: '\02795'; /* Unicode character for "plus" sign (+) */
-  font-size: 120%;
   color: #777;
+  margin-left: 2rem;
+}
+button.accordion:after {
+  font-size: 120%;
   float: right;
-  margin-left: 5px;
 }
 
-button.accordion.active:after {
+.accordion.active:after {
   content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
@@ -259,6 +278,7 @@ div.panel {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease-out;
+
   p {
     margin-left: 1rem;
   }
@@ -269,24 +289,24 @@ div.panel {
     background: linear-gradient(to bottom, #77beff 90%, #008000);
     display: table;
     width: 100%;
-    #up{
+
+    #up {
       margin-bottom: 1.5rem;
     }
   }
+}
 
-  #zeus {
-    height: 8rem;
-    float: left;
-    margin-left: 20%;
-  }
+#zeus {
+  height: 8rem;
+  float: left;
+  margin-left: 20%;
+}
 
-  #warrior {
-    height: 6rem;
-    margin-top: 2rem;
-    margin-right: 25%;
-    float: right;
-  }
-
+#warrior {
+  height: 6rem;
+  margin-top: 2rem;
+  margin-right: 25%;
+  float: right;
 }
 
 #swiffycontainer {
@@ -302,7 +322,9 @@ div.panel {
 #sendform {
   display: flex;
   flex-direction: column;
-  div{
+
+  div {
     margin-bottom: 1rem;
   }
 }
+

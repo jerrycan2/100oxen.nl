@@ -14,8 +14,7 @@ var site100oxen = {
     showAndGotoAnyLine: null,
     init_tree: null,
     createlist: null,
-    iframe_mouseup: null,
-    gr_beginLine: 0
+    iframe_mouseup: null
 };
 //endregion Site global
 
@@ -61,9 +60,8 @@ var site100oxen = {
             ["summary.html", "History"],
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
-            ["apollo.html", "Apollo"],
-            ["send.html", "send form"],
-            ["mybook.01.03.html", "τά τ᾽ ἐσσόμενα"]
+            ["rhetoric.html", "on rhetoric"],
+            ["apollo.html", "Apollo"]
         ],
         pages_extern: [
             ["", ""],
@@ -80,6 +78,7 @@ var site100oxen = {
         keepFontsize: false, //if true: fontsize remains same after window resize
         OL_level: null,
         LI_elements: null,
+        gr_beginLine: 0,
         bu_beginLine: 0,
         gr_previousLine: 0,
         greekanchors: null,
@@ -356,11 +355,12 @@ var site100oxen = {
                     html += "<li>";
                 }
                 //all html nodes have a line nr (chap.line)
-                html += "<span class='ln'>" + xnode.getAttribute('ln') + "</span>";
+                html += "<span class='ln'>" + getlinenr(xnode) + "</span>";
                 //main text of inner node:
+                // if "d" is empty, xnode must be a greek text line (leaf)
                 html += "<span class='lt' " + getcolorstyle(xnode) + ">" + xnode.getAttribute("d") + "</span>";
                 child = getelementnode(xnode.firstChild);
-                if (child) {
+                if (child && child.nodeName !== "line") {
                     html += build_html_string(child);
                 }
 
@@ -513,12 +513,12 @@ var site100oxen = {
     //region scrolling & searching
     /**
      * function scrollgreek
-     * scroll #greekframe to the line in site100oxen.gr_beginLine
+     * scroll #greekframe to the line in jbNS.gr_beginLine
      */
     function scrollgreek() {
         let begin, $top;
 
-        begin = site100oxen.gr_beginLine < 1 ? 0 : site100oxen.gr_beginLine - 1; //top = the previous line
+        begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
         if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
             return;
         }
@@ -858,12 +858,12 @@ var site100oxen = {
                         tl.className = "";
                     }
                     else {
-                        jbNS.gr_previousLine = site100oxen.gr_beginLine = i + 1;
+                        jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
                         tl.className = "bmcolor";
                     }
                 }
                 if (scroll) {
-                    jbNS.gr_previousLine = site100oxen.gr_beginLine = i + 1;
+                    jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
                     scrollgreek();
                 }
                 break;
@@ -2605,7 +2605,7 @@ var site100oxen = {
                 isgreek = true;
                 $("#selonly").text("Show only selection");
                 jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                if (site100oxen.gr_beginLine > 0) {
+                if (jbNS.gr_beginLine > 0) {
                     scrollgreek();
                 }
             }
@@ -2744,7 +2744,7 @@ var site100oxen = {
             // button clicked: show/hide/switch pages or texts
             if (colnr > 0) {// button clicked: show/hide/switch pages or texts
                 if (colnr === 1) {
-                    site100oxen.gr_beginLine = 0;
+                    jbNS.gr_beginLine = 0;
                     fetchTexts(ix);
                 }
                 configColumns(colnr, ix + 1, false); //-1
@@ -3078,7 +3078,6 @@ var site100oxen = {
             jbNS.textframe[0].src = jbNS.filenames[3][tf - 1];
         }
         for (i = 0; i < 4; ++i) {
-
             //configColumns( i, undefined, undefined ); //, jbNS.columns_config[i], true); <-- this is wrong!
             configColumns(i); //, jbNS.columns_config[i], true); <-- this is wrong!
         }
@@ -3321,8 +3320,8 @@ var site100oxen = {
     $("#goback").click(function (event) {
         let tmp;
         event.stopImmediatePropagation();
-        tmp = site100oxen.gr_beginLine;
-        site100oxen.gr_beginLine = jbNS.gr_previousLine;
+        tmp = jbNS.gr_beginLine;
+        jbNS.gr_beginLine = jbNS.gr_previousLine;
         jbNS.gr_previousLine = tmp;
         scrollgreek();
     });
@@ -3500,7 +3499,7 @@ var site100oxen = {
     /* load tree */
     $.ajax({
         type: "GET",
-        url: "list.xml",
+        url: "iliad.xml",
         cache: !site100oxen.forcereload,
         dataType: "text",
         success: function (xmlstring) {
@@ -3531,7 +3530,7 @@ var site100oxen = {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             site100oxen.xml_loaded = false;
-            myAlert("can't load list.xml" + textStatus + ";" + errorThrown, true);
+            myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
         }
     });
 

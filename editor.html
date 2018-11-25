@@ -1,157 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>XML editing test</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-
-          rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/huebee.css">
-    <link rel="stylesheet" href="css/editor.css">
-</head>
-<body>
-<header>
-    <h5>Structure &amp; Edit</h5>
-    <div id="hdrbtns"><span>expand level:</span>
-        <button class="lvlbutt" id="b1">1</button>
-        <button class="lvlbutt" id="b2">2</button>
-        <button class="lvlbutt" id="b3">3</button>
-        <button class="lvlbutt" id="b4">4</button>
-        <button class="lvlbutt" id="b5">5</button>
-        <button class="lvlbutt" id="b6">6</button>
-        <button class="lvlbutt" id="b7">7</button>
-        <button class="lvlbutt" id="b8">8</button>
-        <button class="lvlbutt" id="b9">9</button>
-        <label id="showtext"><input id="b_ed" value="ed" type="checkbox">edit</label>
-        <button id="b_clr">clear</button>
-    </div>
-</header>
-<div id="wrapper">
-    <div id="helptext">
-        <h4>helptext</h4>
-        <ul>
-            <li>select 'edit' checkbox, then click a treenode to start editing it.</li>
-            <li>checkbox edit: determine what happens if you click a
-                node-text: <i>toggle</i> translation text (only 'leaf' nodes
-                which cannot be expanded further) or if 'edit' checked: copy subtree to Edit.
-                Avoid copying the whole tree to Edit, browsers do not deal with that very well.
-            </li>
-            <li>switch: switch between <em>Structure</em> View (whole tree, no Greek, yellow)
-                and <em>Edit</em> View (subtree, incl. Greek, editable, blue) or both
-            </li>
-            <li>click on the circles star to view a short comment-text. In the Edit panel
-                this is editable. Comments attached to Greek textlines will of course
-                not turn up in the 'struct' tree, but they will be stored in the html.
-            </li>
-            <li>expand: expand/collapse 'by level' the currently focused tree.</li>
-            <li>Hide Greek: in Edit view, hide visible Greek textlines</li>
-            <li>Insert: create a new node, with selected nodes as its children</li>
-            <li>Delete: delete selected node(s), their children take their place</li>
-            <li>Split: split the parent of selected nodes into two: first with the
-                unselected children, second one with the first-selected and following
-                nodes.
-            </li>
-            <li>Merge: append, to the first selected node, the children of the
-                following selected node(s)
-            </li>
-            <li>Push: push the subtree in Edit on the stack.</li>
-            <li>Pop: pop subtree from the stack and make it editable. Buttons
-                Ins,Del,Split and Merge do an automatic 'undo' push before changing the tree.
-                (this is not a real undo. Other mutations are not pushed automatically)
-            </li>
-            <li>Stack: you can also choose a subtree from the combobox</li>
-            <li>Commit: write the current Edit subtree back into the Structure tree</li>
-            <li>Colours: hide/show color panel
-                <ul>
-                    <li>clicking on a color colors the selected nodes (colors of textlines
-                        can be set but are not saved)
-                    </li>
-                    <li>in 5 modes:
-                        <ul>
-                            <li>none: all siblings the same color</li>
-                            <li>left, up etc: siblings get the next left, up etc. color</li>
-                            <li>if "turn' is selected, the selection creates an a-b-c-b-a color
-                                pattern (use uneven nr. of nodes)
-                            </li>
-                        </ul>
-                    </li>
-                    <li>if any nodes are selected when clicking on the nodetext, they will
-                        take that color (as if the color was clicked). Only if 'edit' is checked.
-                    </li>
-                </ul>
-            </li>
-            <li>Load, Save: store/retrieve a (sub)tree to/from the user's device. It
-                depends on Switch: if in Struct View, load to Structure panel etc. If no
-                name is entered into the "save" box, one is generated.
-            </li>
-            <li>Bookmark: click on a linenumber (in Struct) to create a bookmark. Click on the
-                bm. to go there, tree will expand as necessary. Click on bm. twice to delete.
-                Bookmarks are remembered in browser storage. Click the button to delete all.
-            </li>
-        </ul>
-    </div>
-    <div id="checksresult"></div>
-    <div id="struct" class="tree"></div>
-    <div id="edit" class="tree"></div>
-    <div id="pick">
-        <form id="direct"><label><input name="direction" value="up" type="radio">up</label>
-            <label><input name="direction" value="down" type="radio">down</label>
-            <label><input name="direction" value="left" type="radio">left</label>
-            <label><input name="direction" value="right" checked="checked" type="radio">right</label>
-            <label><input name="direction" value="none" type="radio">none</label>
-        </form>
-        <form id="doturn"><label><input id="turning" type="checkbox">turn</label>
-        </form>
-        <button id="transparent">transparent</button>
-    </div>
-    <div id="colors" class="color-input"></div>
-</div>
-<div id="sidebar">
-    <button id="help">Help</button>
-    <button id="switch">switch</button>
-    <button id="showGreek">Hide Greek</button>
-    <button id="insertnode">Insert</button>
-    <button id="delnodes">Delete</button>
-    <button id="split">Split</button>
-    <button id="merge">Merge</button>
-    <button id="pushtree">Push</button>
-    <button id="poptree">Pop</button>
-    <select id="undoArray" title="select stored tree">
-        <option value="" disabled="disabled" selected="selected" style="display:none;">0
-            items
-        </option>
-    </select>
-    <button id="commit">Commit</button>
-    <button id="openhueb">hide colors</button>
-    <div id="savem"><label>Save As:<input id="inputFileNameToSaveAs"></label>
-        <button id="savefile">Save Edit</button>
-    </div>
-    <div id="loadem"><label>Load:<input id="fileToLoad" type="file"></label>
-        <button id="loadfile">Load Edit</button>
-    </div>
-    <div id="bmdiv">
-        <table id="bookmarx">
-            <thead>
-            <tr>
-                <td>
-                    <button>bookmarx:</button>&nbsp;click to del
-                </td>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-    <button id="checks">checks</button>
-</div>
-<div id="coverall"></div>
-<div id="msgbox">
-    <h5>&nbsp;</h5>
-    <div id="ok">OK</div>
-    <div id="cancel">Cancel</div>
-</div>
-<script src="http://code.jquery.com/jquery-3.1.0.js"></script>
-<script src="scripts/huebee.pkgd.js"></script>
-<script src="scripts/editor.js"></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>XML editing test</title>
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
+
+          rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/huebee.css">
+    <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+<header>
+    <h5>Structure &amp; Edit</h5>
+    <div id="hdrbtns"><span>expand level:</span>
+        <button class="lvlbutt" id="b1">1</button>
+        <button class="lvlbutt" id="b2">2</button>
+        <button class="lvlbutt" id="b3">3</button>
+        <button class="lvlbutt" id="b4">4</button>
+        <button class="lvlbutt" id="b5">5</button>
+        <button class="lvlbutt" id="b6">6</button>
+        <button class="lvlbutt" id="b7">7</button>
+        <button class="lvlbutt" id="b8">8</button>
+        <button class="lvlbutt" id="b9">9</button>
+        <form id="showtext">
+            <label><input id="b_en" value="en" checked="checked" type="checkbox">english</label>
+            <label><input id="b_gr" value="gr" type="checkbox">greek</label>
+            <label><input id="b_ed" value="ed" type="checkbox">edit</label>
+        </form>
+        <button id="b_clr">clear</button>
+    </div>
+</header>
+<div id="wrapper">
+    <div id="helptext">
+        <h4>helptext</h4>
+        <ul>
+            <li>select 'edit' checkbox, then click a treenode to start editing it.</li>
+            <li>checkboxes english, greek, edit: determine what happens if you click a
+                node-text: <i>toggle</i> Greek and/or translation (only nodes
+                which cannot be expanded further) or if 'edit' checked: copy subtree to Edit.
+                Avoid copying the whole tree to Edit, browsers do not deal with that very well.
+            </li>
+            <li>switch: switch between <em>Structure</em> View (whole tree, no Greek, yellow)
+                and <em>Edit</em> View (subtree, incl. Greek, editable, blue) or both
+            </li>
+            <li>click on the circles star to view a short comment-text. In the Edit panel
+                this is editable. Comments attached to Greek textlines will of course
+                not turn up in the 'struct' tree, but they will be stored in the html.
+            </li>
+            <li>expand: expand/collapse 'by level' the currently focused tree.</li>
+            <li>Hide Greek: in Edit view, hide visible Greek textlines</li>
+            <li>Insert: create a new node, with selected nodes as its children</li>
+            <li>Delete: delete selected node(s), their children take their place</li>
+            <li>Split: split the parent of selected nodes into two: first with the
+                unselected children, second one with the first-selected and following
+                nodes.
+            </li>
+            <li>Merge: append, to the first selected node, the children of the
+                following selected node(s)
+            </li>
+            <li>Push: push the subtree in Edit on the stack.</li>
+            <li>Pop: pop subtree from the stack and make it editable. Buttons
+                Ins,Del,Split and Merge do an automatic 'undo' push before changing the tree.
+                (this is not a real undo. Other mutations are not pushed automatically)
+            </li>
+            <li>Stack: you can also choose a subtree from the combobox</li>
+            <li>Commit: write the current Edit subtree back into the Structure tree</li>
+            <li>Colours: hide/show color panel
+                <ul>
+                    <li>clicking on a color colors the selected nodes (colors of textlines
+                        can be set but are not saved)
+                    </li>
+                    <li>in 5 modes:
+                        <ul>
+                            <li>none: all siblings the same color</li>
+                            <li>left, up etc: siblings get the next left, up etc. color</li>
+                            <li>if "turn' is selected, the selection creates an a-b-c-b-a color
+                                pattern (use uneven nr. of nodes)
+                            </li>
+                        </ul>
+                    </li>
+                    <li>if any nodes are selected when clicking on the nodetext, they will
+                        take that color (as if the color was clicked). Only if 'edit' is checked.
+                    </li>
+                </ul>
+            </li>
+            <li>Load, Save: store/retrieve a (sub)tree to/from the user's device. It
+                depends on Switch: if in Struct View, load to Structure panel etc. If no
+                name is entered into the "save" box, one is generated.
+            </li>
+            <li>Bookmark: click on a linenumber (in Struct) to create a bookmark. Click on the
+                bm. to go there, tree will expand as necessary. Click on bm. twice to delete.
+                Bookmarks are remembered in browser storage. Click the button to delete all.
+            </li>
+        </ul>
+    </div>
+    <div id="checksresult"></div>
+    <div id="struct" class="tree"></div>
+    <div id="edit" class="tree"></div>
+    <div id="pick">
+        <form id="direct"><label><input name="direction" value="up" type="radio">up</label>
+            <label><input name="direction" value="down" type="radio">down</label>
+            <label><input name="direction" value="left" type="radio">left</label>
+            <label><input name="direction" value="right" checked="checked" type="radio">right</label>
+            <label><input name="direction" value="none" type="radio">none</label>
+        </form>
+        <form id="doturn"><label><input id="turning" type="checkbox">turn</label>
+        </form>
+        <button id="transparent">transparent</button>
+    </div>
+    <div id="colors" class="color-input"></div>
+</div>
+<div id="sidebar">
+    <button id="help">Help</button>
+    <button id="switch">switch</button>
+    <button id="showGreek">Hide Greek</button>
+    <button id="insertnode">Insert</button>
+    <button id="delnodes">Delete</button>
+    <button id="split">Split</button>
+    <button id="merge">Merge</button>
+    <button id="pushtree">Push</button>
+    <button id="poptree">Pop</button>
+    <select id="undoArray" title="select stored tree">
+        <option value="" disabled="disabled" selected="selected" style="display:none;">0
+            items
+        </option>
+    </select>
+    <button id="commit">Commit</button>
+    <button id="openhueb">hide colors</button>
+    <div id="savem"><label>Save As:<input id="inputFileNameToSaveAs"></label>
+        <button id="savefile">Save Edit</button>
+    </div>
+    <div id="loadem"><label>Load:<input id="fileToLoad" type="file"></label>
+        <button id="loadfile">Load Edit</button>
+    </div>
+    <div id="bmdiv">
+        <table id="bookmarx">
+            <thead>
+            <tr>
+                <td>
+                    <button>bookmarx:</button>&nbsp;click to del
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <button id="checks">checks</button>
+</div>
+<div id="coverall"></div>
+<div id="msgbox">
+    <h5>&nbsp;</h5>
+    <div id="ok">OK</div>
+    <div id="cancel">Cancel</div>
+</div>
+<script src="http://code.jquery.com/jquery-3.1.0.js"></script>
+<script src="scripts/huebee.pkgd.js"></script>
+<script src="scripts/editor.js"></script>
+</body>
+</html>
