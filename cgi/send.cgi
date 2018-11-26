@@ -1,11 +1,15 @@
 #!/Strawberry/perl/bin/perl -w
+# #!/usr/bin/perl -w
+# use cPanelUserConfig;
 # test
 use strict;
 use warnings FATAL => 'all';
-use CGI ':standard';
-   print header;                    
-   print start_html('answer');
+use CGI;
+   my $q = CGI->new();
+   print $q->header;
+   print $q->start_html('answer');
    print 'ok ';
-   print param('naam'), "<br>", 'bakker';
-   print "<p>", param('text'), "</p>";
-   print end_html;
+   print 'hallo ', $q->param('name'), "<br>";
+   print 'adres: ', $q->param('mail'), "<br>";
+   print "<p>", $q->param('text'), "</p>";
+   print $q->end_html;

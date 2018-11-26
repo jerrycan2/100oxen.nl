@@ -2,7 +2,7 @@
  * Created by jeroe on 07-Aug-18.
  */
 
-(function($) {
+(function ($) {
     "use strict";
 
     //region Global State Var
@@ -83,8 +83,7 @@
                     if (typeof okExec === "function") {
                         okExec();
                     }
-                }
-                else if ($(this).attr("id") === "cancel") {
+                } else if ($(this).attr("id") === "cancel") {
                     if (typeof cancelExec === "function") {
                         cancelExec();
                     }
@@ -231,18 +230,15 @@
                 let rem = xnode.getAttribute("rem");
                 if (rem) {
                     html += `<li data-rem="${rem}"><div class="hasrem">&oast;</div>`;
-                }
-                else if (target === "edit") {
+                } else if (target === "edit") {
                     html += '<li><div class="norem">&blk14;</div>';
-                }
-                else { // struct && no remark
+                } else { // struct && no remark
                     html += '<li>';
                 }
                 //all html nodes have a line nr (chap.line)
                 if (target === "edit") { // add checkbox if editing mode:
                     html += `<label class='ln'><input type='checkbox' class='chk'/>${getlinenr(xnode)}</label>`;
-                }
-                else {
+                } else {
                     html += `<span class='ln'>${getlinenr(xnode)}</span>`;
                 }
                 //main text of inner node:
@@ -305,8 +301,7 @@
                     if (editing) {
                         $node.attr("class", "line");
                     }
-                }
-                else {
+                } else {
                     highest = setlevel($ol, level + 1, highest);
                 }
             });
@@ -401,8 +396,7 @@
             const list_el = $("#edit").find("ol>li:first");
             const name = list_el.children("label").text() + " " + list_el.children("span.lt").text();
             sel.options[n] = new Option(name);
-        }
-        else if (n > glob.Tstack.length + 1) {
+        } else if (n > glob.Tstack.length + 1) {
             sel.options.remove(n - 1);
         }
         sel.options[0].textContent = (sel.options.length - 1) + " items";
@@ -457,15 +451,13 @@
             $("#showGreek").attr('disabled', false);
             glob.targetdiv = "struct";
             $("header>h5").text("Structure & Edit");
-        }
-        else if (which_div === 1) { // struct alone
+        } else if (which_div === 1) { // struct alone
             $ed.css(cssnone);
             $struct.css("height", whole);
             $("#showGreek").attr('disabled', true);
             glob.targetdiv = "struct";
             $("header>h5").text("Structure");
-        }
-        else if (which_div === 2) { // edit alone
+        } else if (which_div === 2) { // edit alone
             $struct.css(cssnone);
             $ed.css({
                 "height": whole,
@@ -477,7 +469,7 @@
         }
     }
 
-     /**
+    /**
      * function checkbox_clicked
      * manage 'checked' property of #edit checkboxes
      * @param {Object} $node - <input type="checkbox"> element (jQuery)
@@ -492,8 +484,7 @@
             $inputs.filter(`:gt(${firstsel})`).prop("checked", true);
             $inputs.filter(`:gt(${lastsel})`).prop("checked", false);
             // NB this means you cannot uncheck a box between 2 checked siblings
-        }
-        else if ($all.length > 1) { //additional click in another parent
+        } else if ($all.length > 1) { //additional click in another parent
             $all.prop("checked", false); //uncheck all
             $node.prop("checked", true);  //except the one clicked
             // this means you cannot multi-level select.
@@ -547,8 +538,7 @@
             txtrem.slideToggle(350, function () {
                 $(this).remove();
             });
-        }
-        else { // show it by creating a temporary <div> element with the text
+        } else { // show it by creating a temporary <div> element with the text
             $element.nextAll("span:last")
                 .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
             $parent.find(".remtxt:first").slideToggle(350);
@@ -604,8 +594,7 @@
         if (tree.length) {
             glob.Tstack.push(tree);
             updateUndoSelect();
-        }
-        else {
+        } else {
             myAlert("Nothing to push", false);
         }
     }
@@ -618,8 +607,7 @@
         const tree = glob.Tstack[glob.Tstack.length - 1];
         if (!tree) {
             myAlert("stack empty", false);
-        }
-        else {
+        } else {
             myAlert("Restore previous edit?", true, function () {
                 const $ed = $("#edit");
                 glob.Tstack[glob.Tstack.length - 1] = null; //to make obj unreachable. Necessary?
@@ -679,11 +667,9 @@
         const $li_elements = $checked.parent("label").parent("li");
         if ($li_elements.children("ol").length === 0) {
             myAlert("You cannot delete textlines", false);
-        }
-        else if ($li_elements.parent("ol:first").data("level") === 0) {
+        } else if ($li_elements.parent("ol:first").data("level") === 0) {
             myAlert("You cannot delete a root node", false);
-        }
-        else {
+        } else {
             myAlert("Deleted " + $checked.length + " nodes", false);
             pushtree();
             $li_elements.eq(0).before($li_elements.find("ol:first>li"));
@@ -733,11 +719,9 @@
         const $li_elements = $checked.parent("label").parent("li");
         if ($checked.length < 2) {
             myAlert("There is nothing to merge! select more than 1 node", false);
-        }
-        else if ($li_elements.children("ol").length === 0) {
+        } else if ($li_elements.children("ol").length === 0) {
             myAlert("You cannot merge textlines", false);
-        }
-        else {
+        } else {
             myAlert("Merging " + $checked.length + " nodes", false);
             pushtree();
             $li_elements.slice(0, 1).children("ol").append($li_elements.find("ol:first>li"))
@@ -745,6 +729,7 @@
             setnodeattributes("edit");
         }
     }
+
     //endregion Edit Tree manip
 
     //region HTML 2 XML
@@ -821,8 +806,7 @@
                     const nodesize = visitNodes(xnew, $olnode);
                     size += nodesize;
                     xnew.setAttribute("sz", nodesize);
-                }
-                else {
+                } else {
                     size += 1;
                 }
                 $rootli = $rootli.nextAll("li:first");
@@ -852,8 +836,7 @@
                 myAlert(errorcondition, false);
             } else if (!oldSubtree || !newSubtree) {
                 myAlert("subtree not found", false);
-            }
-            else {
+            } else {
                 myAlert("commit to struct?", true, function () {
                     oldSubtree.parentNode.replaceChild(newSubtree, oldSubtree);
                     $("#struct").find("ol:first").remove().addBack()  // addBack is to get the #struct element back
@@ -861,19 +844,23 @@
                     setnodeattributes("struct");
                     if (parent.site100oxen) {
                         parent.site100oxen.XML = AllXML;
-                        const txt = new XMLSerializer().serializeToString(AllXML);
-                        parent.site100oxen.init_tree(txt);
+                        let txt = new XMLSerializer().serializeToString(AllXML);
+                        localStorage.setItem("list_xml", txt);
+                        localStorage.setItem("list_xml_loaded", "true");
+                        parent.site100oxen.init_tree();
                     }
                 });
-            }
+            }// txt = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE boop SYSTEM "iltree.dtd">' + txt;
+
         }
     }
-    //endregion HTML2XML
 
+    //endregion HTML2XML
     //region Blob and Filereader
 
     /**********************************************************************/
     /*! Blob & FileReader:                                                */
+
     /**********************************************************************/
     /**
      * function saveTextAsFile
@@ -932,6 +919,7 @@
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
+
     //endregion Blob and Filereader
 
     //region Checks and Tests
@@ -993,13 +981,11 @@
             if (node.nodeType === 1) {
                 if (node.nodeName === "line") {
                     count += 1;
-                }
-                else {
+                } else {
                     if (count > 10) {
                         morelines += 1;
                         mcount += count;
-                    }
-                    else if (count > 0) {
+                    } else if (count > 0) {
                         paragraphs += 1;
                         pcount += count;
                     }
@@ -1102,6 +1088,7 @@
         });
         return [Lcount, Hcount];
     }
+
     //endregion Checks and Tests
 
     //region Events
@@ -1116,10 +1103,10 @@
         "unload": savePageState
     });
 
-    $("#checks,#checksresult").on({
+    $("#checks,#result").on({
         "click": function () {
-            const $trg = $("#checksresult");
-            if ($trg.css("display") === "none") {
+            const $trg = $("#result");
+            if ($trg.html() === "") {
                 let [count1, result1] = checkLineNrs();
                 let [count2, result2] = checkParagraphsButler2Iliad();
                 let [count3, result3] = checkParagraphsIliad2Butler();
@@ -1154,14 +1141,58 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     });
     $("#help,#helptext").on({
         "click": function () {
-            const $trg = $("#helptext");
-            $trg.slideToggle(400, function () {
-                if ($trg.css("display") === "none") {
-                    $("#wrapper").css("overflow", "hidden");
-                } else {
-                    $("#wrapper").css("overflow", "auto");
-                }
-            });
+            let $trg = $("#helptext");
+
+            function divtoggle() {
+                $trg.slideToggle(400, function () {
+                    if ($trg.css("display") === "none") {
+                        $("#wrapper").css("overflow", "hidden");
+                    } else {
+                        $("#wrapper").css("overflow", "auto");
+                    }
+                });
+            }
+
+            if (!($trg.css("display") === "none")) {
+                divtoggle();
+            } else {
+                $.get("helptext.html", function (data) {
+                    $trg.children().remove();
+                    $trg.html(data);
+                    divtoggle();
+                });
+            }
+        }
+    });
+    $("#sendtree").on({
+        "click": function () {
+            if ($("#sender").html() === "") {
+                $.get("send.html", function (data) {
+                    $("#sender").html(data).slideToggle(400);
+                });
+            } else {
+                $("#sender").slideToggle(400);
+            }
+        }
+    });
+    $("#sender").on({
+        "click": function (event) {
+            const $trg = $(event.target);
+            if ($trg.attr("id") === "sendbutton") {
+                let data$ = `name=${$("#myname").val()}&mail=${$("#mymail").val()}&text=${$("#mytext").val()}`;
+                let request = $.ajax({
+                    url: '/cgi-bin/send.cgi',
+                    method: "POST",
+                    data: data$,
+                    dataType: "text"
+                });
+                request.done(function (html) {
+                    $("#page").append(html); //.children().remove().end()
+                });
+                request.fail(function () {
+                    alert("Request failed!");
+                });
+            }
         }
     });
     /**
@@ -1177,8 +1208,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             if (glob.whichDiv === 1) {
                 $("#loadfile").text("Load Struct");
                 $("#savefile").text("Save Struct");
-            }
-            else {
+            } else {
                 $("#loadfile").text("Load Edit");
                 $("#savefile").text("Save Edit");
             }
@@ -1210,8 +1240,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     el.target.textContent = "Hide Greek";
                     lines.slideDown(600);
                     glob.showing_greek = true;
-                }
-                else {
+                } else {
                     el.target.textContent = "Show Greek";
                     lines.slideUp(600);
                     glob.showing_greek = false;
@@ -1371,8 +1400,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             if ($trg.is("tbody>tr>td")) {
                 if ($trg.is(".delable")) {
                     $trg.parents("tr").remove(); // delete bookmark
-                }
-                else {
+                } else {
                     const bmtext = $trg.text();
                     const $struct = $("#struct");
                     const pos = bmtext.indexOf(" ");
@@ -1388,8 +1416,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                                 scrollTop: found.position().top - $(".book").eq(0).position().top
                             }, 350); // position can only be calculated after expanding
                         });
-                    }
-                    else {
+                    } else {
                         const diff = found.position().top - $(".book").eq(0).position().top;
                         $trg.addClass("delable"); // class is wiped after an actual scroll
                         if ($struct.scrollTop !== diff) { // go to
@@ -1474,8 +1501,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             } else if ($("div#colors").css("display") !== "none") {
                 glob.hueb.setColor(`#${rgb2hex($target.css("backgroundColor")).toUpperCase()}`);
             }
-        }
-        else {
+        } else {
             const get_en = $("#b_en").prop("checked");
             const get_gr = $("#b_gr").prop("checked");
             if (get_en) {
@@ -1602,8 +1628,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             $("#colors, #pick").each(function (i, el) {
                 $(el).css({"display": "none"});
             });
-        }
-        else {
+        } else {
             glob.hueb.open();
             $("#openhueb").text("hide colors");
             $("#wrapper").css("height", "calc(100% - 3rem)");
@@ -1627,22 +1652,19 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     function choose_colors(target, xpos, ypos) {
         if (xpos < 0) {
             xpos = 0;
-        }
-        else if (xpos > 15) {
+        } else if (xpos > 15) {
             xpos = 17;
         }
         if (ypos < 2) {
             ypos = 2;
-        }
-        else if (ypos > 9) {
+        } else if (ypos > 9) {
             ypos = 9;
         }
         const swatch = glob.hueb.swatches[xpos + "," + ypos]; // Huebee dictionary of colors by position
         target.style.backgroundColor = swatch.color;
         if (swatch.lum - Math.cos((swatch.hue + 70) / 180 * Math.PI) * 0.15 > 0.5) {
             target.style.color = "black";
-        }
-        else {
+        } else {
             target.style.color = "white";
         }
     }
@@ -1670,8 +1692,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     if (turnaround) {
                         ypos += 1;
                         direction = "down";
-                    }
-                    else {
+                    } else {
                         ypos -= 1;
                     }
                     break;
@@ -1679,8 +1700,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     if (turnaround) {
                         ypos -= 1;
                         direction = "up";
-                    }
-                    else {
+                    } else {
                         ypos += 1;
                     }
                     break;
@@ -1688,8 +1708,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     if (turnaround) {
                         xpos += 1;
                         direction = "right";
-                    }
-                    else {
+                    } else {
                         xpos -= 1;
                     }
                     break;
@@ -1697,8 +1716,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     if (turnaround) {
                         xpos -= 1;
                         direction = "left";
-                    }
-                    else {
+                    } else {
                         xpos += 1;
                     }
                     break;

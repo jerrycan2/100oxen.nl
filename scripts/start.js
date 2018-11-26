@@ -61,6 +61,7 @@ var site100oxen = {
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
             ["rhetoric.html", "on rhetoric"],
+            ["send.html", "send form"],
             ["apollo.html", "Apollo"]
         ],
         pages_extern: [
@@ -3512,7 +3513,9 @@ var site100oxen = {
             }
             site100oxen.forcereload = false;
             site100oxen.xml_loaded = true;
-            init_tree(xmlstring);
+            localStorage.setItem("list_xml", xmlstring);
+            localStorage.setItem("list_xml_loaded", "true");
+            init_tree();
             if (jbNS.untouchable) { //} && !jbNS.is_firefox) {
                 $("#treeframe").niceScroll({
                     cursorcolor: "#888",
@@ -3534,10 +3537,8 @@ var site100oxen = {
         }
     });
 
-    function init_tree(xmlstring) {
+    function init_tree() {
         createTreeFromXML(site100oxen.XML);
-        localStorage.setItem("list_xml", xmlstring);
-        localStorage.setItem("list_xml_loaded", "true");
         /* initialize */
         jbNS.OL_level = jbNS.treeframe.find('ol');
         jbNS.LI_elements = jbNS.treeframe.find('li');

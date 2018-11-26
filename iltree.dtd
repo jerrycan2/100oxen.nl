@@ -1,0 +1,92 @@
+<!ELEMENT book ( lvl1 )>
+<!ELEMENT lvl1 ( lvl2* | line* )>
+<!ELEMENT lvl2 ( lvl3* | line* )>
+<!ELEMENT lvl3 ( lvl4* | line* )>
+<!ELEMENT lvl4 ( lvl5* | line* )>
+<!ELEMENT lvl5 ( lvl6* | line* )>
+<!ELEMENT lvl6 ( lvl7* | line* )>
+<!ELEMENT lvl7 ( lvl8* | line* )>
+<!ELEMENT lvl8 ( lvl9* | line* )>
+<!ELEMENT lvl9 ( line* )>
+<!ELEMENT line EMPTY>
+
+<!ATTLIST book
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl1
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl2
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl3
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl4
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl5
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl6
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl7
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl8
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST lvl9
+        d CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        c CDATA #IMPLIED
+        f CDATA #IMPLIED
+        rem CDATA #IMPLIED
+        sz CDATA #IMPLIED
+        >
+<!ATTLIST line
+        d CDATA "Line text missing!"
+        lnr CDATA "Line number missing!"
+        >

@@ -1,38 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>send form test</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-          rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/common.css">
-</head>
-<body>
-<form id="sendform" action="/cgi-bin/send.cgi" method="post">
-    <div><label>my name:<input type="text" name="naam"/></label></div>
-    <div><label>e-mail: <input type="text" name="mail"/></label></div>
+<form id="sendform" action="cgi-bin/send.cgi" method="post">
+    <div><label>my name:<input type="text" name="naam" id="myname"/></label></div>
+    <div><label>e-mail: <input type="text" name="mail" id="mymail"/></label></div>
     <p><label>remarks:</label></p>
     <div>
-        <textarea rows="10" cols="30" name="text"></textarea>
+        <textarea rows="10" cols="30" name="text" id="mytext"></textarea>
     </div>
     <div><button id="sendbutton" type="button" name="verzend" value="send">send</button></div>
+    <div id="page"></div>
 </form>
-<script src="http://code.jquery.com/jquery-3.1.0.js"></script>
-<script>
-    let send = document.getElementById("sendbutton");
-    send.onclick = function () {
-        let request = $.ajax({
-            url:'/cgi-bin/send.cgi?naam=stinker&text=dit is "quoted" string',
-            method: "GET",
-            dataType: "html"
-        });
-        request.done(function (html) {
-            alert(html);
-        });
-        request.fail(function () {
-            alert("Request failed!");
-        });
-    }
-</script>
-</body>
-</html>

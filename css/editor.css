@@ -53,7 +53,7 @@ h5{
 #showGreek:enabled {
     color: black;
 }
-#helptext{
+#helptext, #result, #sender{
     background-color: darkkhaki;
     padding: 0 1rem;
     overflow: hidden;
