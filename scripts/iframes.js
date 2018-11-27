@@ -8,19 +8,24 @@ var untouchable;
 function accordionclick(event) {
     var button, panel;
 
-    event.stopImmediatePropagation();
+    //event.stopImmediatePropagation();
     button = event.target;
     button.classList.toggle("active");
     panel = $(button).next(".panel");
     if (panel) {
         if (panel[0].style.maxHeight) {
             panel[0].style.maxHeight = null;
+            panel[0].style.height = null;
         } else {
             panel[0].style.maxHeight = panel[0].scrollHeight + "px";
+            panel[0].style.height = panel[0].style.maxHeight;
         }
     }
     if (untouchable) {
-        $("html").getNiceScroll().resize();
+        setTimeout(function () { //wait for transition?
+            $("html").getNiceScroll().resize();
+        }, 500);
+
     }
 }
 

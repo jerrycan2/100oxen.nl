@@ -2191,7 +2191,7 @@ var site100oxen = {
      * @param event
      */
     function tree_handleMouseEvents(event) { //single click or mouseenter
-        let $trg, $prev, $ol, s, ids, bg, clsnm, lvl, hovering, found, anchor;
+        let $trg, $prev, $ol, s, ids, bg, lvl, hovering, found, anchor;
 
         hovering = event.type !== "click";
         $trg = $(event.target);
@@ -2199,13 +2199,7 @@ var site100oxen = {
         if (hovering) {
             ids = element2lineIDs($trg);
             bg = ids.beginning;
-            clsnm = $trg.parent().parent().attr("class").substring(1);
-            if (!clsnm) {
-                lvl = 8;
-            }
-            else {
-                lvl = parseInt(clsnm, 10) + 1;
-            }
+            lvl = $trg.parent().parent().data("level") + 1;
             anchor = lvl + ":" + bg;
             found = gotoAnchor(anchor, hovering); // if hover, don't go, just return true if anchor found
             if (found) {
@@ -2246,19 +2240,13 @@ var site100oxen = {
             $trg = $(event.target);
 
         $(event.currentTarget).one("mouseup", function (ev2) {
-            let ids, bg, clsnm, lvl, anchor, found, ix,
+            let ids, bg, lvl, anchor, found, ix,
                 time2 = ev2.timeStamp - time1;
 
             if (time2 < 500) { //'click'
                 ids = element2lineIDs($trg);
                 bg = ids.beginning;
-                clsnm = $trg.parent().parent().attr("class").substring(1);
-                if (!clsnm) {
-                    lvl = 8;
-                }
-                else {
-                    lvl = parseInt(clsnm, 10) + 1;
-                }
+                lvl = $trg.parent().parent().data("level") + 1;
                 anchor = lvl + ":" + bg;
                 found = gotoAnchor(anchor, true); // check if target exists
                 if (found) {

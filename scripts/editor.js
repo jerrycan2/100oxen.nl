@@ -13,7 +13,6 @@
      */
     let glob = {
         XML: null,  //complete Iliad XML tree
-        XSL: null,
         ButlerText: null, // translation XML
         GreekText: null, // Iliad text divided into paragraphs
         Tstack: [], //array of HTML subtrees for undo/redo purposes
@@ -24,6 +23,64 @@
         showing_greek: true
     };
     //endregion Global State Var
+
+    //region Linenumber class
+    class Linenumber {
+        constructor(chap, line) { // either new line(10, 234) or new line('10.234')
+            if (arguments.length === 2) {
+                this.chap = typeof chap === 'string' ? parseInt(chap) : chap;
+                this.line = typeof line === 'string' ? parseInt(line) : line;
+            }
+            else if (arguments.length === 1){
+                this.fromstring(chap);
+            }
+            else {
+                console.log("Linenumber error");
+            }
+        }
+        getchap() {
+            return this.chap;
+        }
+        getline() {
+            return this.line;
+        }
+        tostring() {
+            return `${this.chap}.${this.line}`;
+        }
+        fromstring(lnr){
+            const dot = lnr.indexOf('.');
+            this.chap = parseInt(lnr.substr(0, dot));
+            this.line = parseInt(lnr.substr(dot+1));
+            return this;
+        }
+        nextline() {
+            this.line = this.line + 1;
+            if (this.line > this.chaplen[this.chap - 1]) {
+                this.line = 1;
+                this.chap += 1;
+            }
+            return this.chap > 24 ? null : this;
+        }
+        prevline() {
+            this.line = this.line - 1;
+            if (this.line === 0) {
+                this.chap -= 1;
+
+                this.line = this.chap > 1 ? this.chaplen[this.chap - 1] : 0;
+            }
+            return this.line ? this : null;
+        }
+        lessthan(lnr){
+            let less = false;
+            const ln = lnr.getline();
+            const ch = lnr.getchap();
+            if((this.chap < ch) || (ch === this.chap && this.line < ln)) {less = true;}
+            return less;
+        }
+    }
+    Linenumber.prototype.chaplen = [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804];
+
+    //endregion
 
     //region Utilities
 
@@ -1484,7 +1541,22 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         );
     });
-
+    $("#test").on({
+        "click": function () {
+            const a = new Linenumber(1,1);
+            let b = a.nextline().tostring();
+            console.log(b);
+            b = a.prevline().tostring();
+            console.log(b);
+            b = a.fromstring("2.870").tostring();
+            console.log(b);
+            let c = new Linenumber(1,611);
+            console.log(c.nextline().tostring());
+            console.log(a.lessthan(c));
+            c.fromstring("3.10");
+            while(!c.prevline().lessthan(a)){console.log(c.tostring());}
+        }
+    });
     //endregion Events
 
     //region Tree Events

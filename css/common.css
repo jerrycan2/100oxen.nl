@@ -118,10 +118,13 @@ figure img {
   border-radius: 0.4rem;
 }
 .textlink {
-  color: darkblue;
+  color: black;
   text-decoration: underline;
   font-weight: bolder;
   cursor: pointer;
+}
+.textlink:visited {
+  color: darkblue;
 }
 /*only for greek & butler frame:*/
 .contents p a {

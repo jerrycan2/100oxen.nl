@@ -28,3 +28,5 @@ scripts/temp.js
 .DS_Store
 Thumbs.db
 100oxen oud.html
+*.pm
+scripts/jquery.nicescroll.iframehelper.min.js
