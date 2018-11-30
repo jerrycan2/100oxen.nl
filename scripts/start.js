@@ -1,10 +1,11 @@
+import * as utils from '../scripts/myUtils.js';
+import{ beta2uni, uni2beta, LatinGreek } from '../scripts/beta.js';
 'use strict';
-
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
 // the list xml (list.xml) is loaded by page1.html and available here and there
 
 //region Site global
-var site100oxen = {
+window.site100oxen = {
     nolocalstorage: false,
     forcereload: true,
     global_flag_updating: false,
@@ -14,6 +15,9 @@ var site100oxen = {
     showAndGotoAnyLine: null,
     init_tree: null,
     createlist: null,
+    setnodeattributes: null,
+    find_xml_node: null,
+    untouchable: true,
     iframe_mouseup: null
 };
 //endregion Site global
@@ -61,7 +65,6 @@ var site100oxen = {
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
             ["rhetoric.html", "on rhetoric"],
-            ["send.html", "send form"],
             ["apollo.html", "Apollo"]
         ],
         pages_extern: [
@@ -116,323 +119,16 @@ var site100oxen = {
         exp_state: "11",
         editing: false,
         scrollspeed: 600,
-        untouchable: true,
         touchcancel: false,
         dontSetColumns: false,
         colResizeStep: 96,
         currentLevel: 2,
         currentPage: ""
     };
-    /**
-     * object LatinGreek
-     * Iliad chapter lengths and latin-greek letterindexes
-     */
-    let LatinGreek = {
-        chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
-        greek: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
-        latin: 'ABGDEZHQIKLMNCOPRSTUFXYWabgdezhqiklmncoprstufxyw',
-        greek2index: function (letter) {
-            return this.greek.indexOf(letter);
-        },
-        latin2index: function (letter) {
-            return this.latin.indexOf(letter);
-        },
-        index2greek: function (letter) {
-            return this.greek.charAt(letter);
-        },
-        index2latin: function (letter) {
-            return this.latin.charAt(letter);
-        },
-        convertG_L: function (letter) {
-            let a = this.greek.indexOf(letter);
-            return a < 0 ? letter : this.latin.charAt(a);
-        },
-        convertL_G: function (letter) {
-            let a = this.latin.indexOf(letter);
-            return a < 0 ? letter : this.greek.charAt(a);
-        },
-        greek_charcode: function (letter) {
-            return this.greek.charCodeAt(letter);
-        },
-        getchaplen: function (x) {
-            return typeof x === "number" ? this.chaplength[x - 1] : this.chaplength[this.greek2index(x)];
-        },
-        repl_03: [0x03AC, 0x03AD, 0x03AE, 0x03AF, 0x03B0, 0x03CC, 0x03CD, 0x03CE, 0x0386, 0x0388, 0x0389, 0x0390, 0x038A, 0x03B0, 0x038E, 0x038C, 0x038F, 0x00B4],
-        repl_1F: [0x1F71, 0x1F73, 0x1F75, 0x1F77, 0x1FE3, 0x1F79, 0x1F7B, 0x1F7D, 0x1FBB, 0x1FC9, 0x1FCB, 0x1FD3, 0x1FDB, 0x1FE3, 0x1FEB, 0x1FF9, 0x1FFB, 0x1FFD],
-        norm_1F_to_03: function (c) { // c is charcode
-            let i = LatinGreek.repl_1F.indexOf(c);
-            if (i >= 0) {
-                c = LatinGreek.repl_03[i]; //normalize
-            }
-            return c;
-        },
-        conv_03_to_1F: function (c) { // c is charcode
-            let i = LatinGreek.repl_03.indexOf(c);
-            if (i >= 0) {
-                c = LatinGreek.repl_1F[i]; //de-normalize
-            }
-            return c;
-        }
-    };
     //endregion Page global
 
-    //region Utilities
-
-    /**
-     * function cover
-     * apply a covering div to the whole screen (to catch events)
-     * @param z : number // integer z-index default = 8
-     * @param a : number // 0-1 opacity default = 0.4
-     */
-    function cover(z, a) { // z-index, a=opacity
-        if (z === undefined) {
-            z = 12;
-        }
-        if (a === undefined) {
-            a = 0.3;
-        }
-        $("#coverall").css({
-            "background": "rgba(128, 128, 128, " + a + ")",
-            "z-index": z
-        });
-    }
-
-    /**
-     * function fademsg
-     * fadeout messagebox
-     */
-    function fademsg() {
-        $("#msgbox").fadeOut(3000);
-    }
-
-    /**
-     * function myAlert
-     * display alert box that can simulate modal (but isn't blocking)
-     * NB no modal result can be returned: use the okExec function
-     * @param txt : string // to be displayed
-     * @param modal : boolean // (optional) true=wait for user click OK/CANCEL, false=disappear in 3 sec
-     * @param okExec : function  // (optional) to execute on 'OK' click
-     */
-    function myAlert(txt, modal, okExec) {
-        let $box;
-
-        $box = $("#msgbox");
-        $box.fadeIn(400).on("mousedown", function (e) {
-            let off_x, off_y,
-                $this = $(this);
-            off_x = $this.offset().left - e.pageX;
-            off_y = $this.offset().top - e.pageY;
-            $this.on("mousemove", function (e) {
-                $this.offset({
-                    left: e.pageX + off_x,
-                    top: e.pageY + off_y
-                });
-            });
-            $this.one("mouseup", function () {
-                $this.off("mousemove"); // Unbind events from popup
-            });
-            e.preventDefault(); // disable selection
-
-        });
-        //$box.find("h5")[0].innerHTML = txt;
-        $box.find("h5").text(txt);
-        if (modal) {
-            cover(8, 0.3);
-            $("#ok, #cancel").show().one("click", function (e) {
-                e.stopPropagation();
-                if ($(this).attr("id") === "ok") {
-                    if (okExec) {
-                        okExec();
-                    }
-                }
-                cover(-8, 0.3);
-                $box.fadeOut(1000);
-            });
-        } else {
-            $("#ok, #cancel").hide();
-            setTimeout(fademsg, 1000);
-        }
-        return false;
-    }
-
-    /**
-     * function getelementnode
-     * test if xml node n is an element-node. If not, test its nextsibling
-     * @param {Object} n - xml node
-     * @returns {Object} n - xml node
-     */
-    function getelementnode(n) {
-        while (n && n.nodeType !== 1) {
-            n = n.nextSibling;
-        }
-        return n;
-    }
-
-    /**
-     * function getlinenr
-     * go down tree until "line" node, then take its ltr and nr attributes
-     * @param {Object} node - xml node
-     * @returns {string} - "booknr.linenr" string or ""
-     */
-    function getlinenr(node) {
-        while (node.nodeName !== "line") {
-            node = getelementnode(node.firstChild);
-            if (node === null) {
-                break;
-            }
-        }
-        return node ? node.getAttribute("lnr") : "";
-    }
-    //endregion Utilities
-
-    //region XML2HTML
-
-    /**
-     * function createTreeFromXML
-     * callback from $.ajax() which has already done the parsing
-     * creates the 'struct' html-tree without Greek text
-     * @param {Object} xml - xml node: the iliad xml tree, parsed
-     */
-    function createTreeFromXML(xml) {
-        $("#list").find("ol:first").remove().end()
-            .append(createlist(xml.firstChild));
-        setnodeattributes();
-    }
-
-    /**
-     * function getcolorstyle
-     * turn the xmlnode attributes into a html style decl.
-     * @param {Object} node - xml node
-     * @returns {string} htmlstring
-     */
-    function getcolorstyle(node) {
-        let bg, htmlstring, fg, alpha;
-        bg = node.getAttribute("c"); //if xml has color info, put it in
-        htmlstring = "";
-        if (bg && parseInt(bg, 16)) {
-            fg = node.getAttribute("f") || "000000"; //errors in xml file
-            alpha = 1;
-            if (bg === "ffffff") {
-                alpha = 0;
-                fg = "000000";
-            }
-            htmlstring = "style='color: #" + fg + "; background-color: #" + bg + "; opacity: " + alpha + "'";
-        }
-        return htmlstring;
-    }
-
-    /**
-     * function createlist
-     * create the html for the OL in treeframe, from the XML tree
-     * only rootnode is traversed, not any siblings
-     * (rootnode may be any node in the xml tree)
-     * @param {Object} rootnode - xml node
-     * @returns {string} htmltxt - html as string
-     */
-    function createlist(rootnode) {
-        let htmltxt;
-        htmltxt = ""; //html-string to be constructed
-        if (rootnode) {
-            htmltxt = build_html_string(rootnode);
-        }
-        return htmltxt;
-
-        /**
-         * function build_html_string
-         * depth-first pre-order traversal of xnode and all of its children
-         * @param {Object} xnode - xml node
-         * @return {string} html - html text
-         */
-        function build_html_string(xnode) {
-            let html, child, rem;
-            html = "<ol class='" + xnode.nodeName + "'>";
-            do {
-                rem = xnode.getAttribute("rem");
-                if (rem) {
-                    rem = rem.replace(/'/g, '&#39').replace(/"/g, '&quot;');
-                    html += "<li data-rem='" + rem + "'><div class='hasrem'>&oast;</div>";
-                }
-                else { // struct && no remark
-                    html += "<li>";
-                }
-                //all html nodes have a line nr (chap.line)
-                html += "<span class='ln'>" + getlinenr(xnode) + "</span>";
-                //main text of inner node:
-                // if "d" is empty, xnode must be a greek text line (leaf)
-                html += "<span class='lt' " + getcolorstyle(xnode) + ">" + xnode.getAttribute("d") + "</span>";
-                child = getelementnode(xnode.firstChild);
-                if (child && child.nodeName !== "line") {
-                    html += build_html_string(child);
-                }
-
-                html += "</li>";
-                if (xnode === rootnode) {
-                    break; //don't do siblings of the start xnode
-                }
-                xnode = getelementnode(xnode.nextSibling);
-            } while (xnode); //do siblings of any other xnode
-            html += "</ol>";
-            return html;
-        }
-    }
-
-    /**
-     * function setlevel($node, level)
-     * recursive traversal of OL-tree
-     * adjusting + and - expansion buttons and level data-attribute
-     * and determine highest available level
-     *
-     * @param {Object} $node - rootnode (jQuery)
-     * @param {number} level - recursion level
-     * @param {number} highest
-     * @returns {number} highest
-     */
-    function setlevel($node, level, highest) {
-        if ($node.children("li").length) {
-            $node.find("span.plm").remove();
-            $node.children("li").children("ol").each(function (i, el) {
-                let $el = $(el);
-                $el.filter(":visible").siblings("span:last").after("<span class='plm'>&ominus;</span>");
-                $el.filter(":hidden").siblings("span:last").after("<span class='plm'>&oplus;</span>");
-            });
-
-            $node.data("level", level);
-            $node.attr("class", "v" + level);
-            if (level > highest) {
-                highest = level;
-            }
-            $node.children("li").each(function () {
-                let $ol = $(this).find("ol:first"); //only 1
-                if ($ol.length !== 0) {
-                    highest = setlevel($ol, level + 1, highest);
-                }
-            });
-        }
-        return highest;
-    }
-
-    /**
-     * function setnodeattributes
-     * loop through all OL nodes
-     * 1: set the proper + and - signs in tree after expand/collapse
-     * 2: determine level of each node and store in data attr
-     * 3: store highest&lowest
-     */
-    function setnodeattributes() {
-        let highest = setlevel($("#list").find("ol:first"), 0, 0);
-        //disableButtons(highest);
-    }
-    //endregion XML2HTML
-
-
-    /**
-     * functions iliad_loaded, textframe_loaded
-     * return true if item loaded
-     * @returns {boolean}
-     */
-    function wd_loaded() {
-        return jbNS.columns_config[1] === 4;
-    }
+    window.site100oxen.untouchable =
+        !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));//we're on a tablet or phone
 
     //region Perseus
     /**********************************************************************/
@@ -509,7 +205,6 @@ var site100oxen = {
         configColumns(0, 2, true);
     }
     //endregion Perseus
-
 
     //region scrolling & searching
     /**
@@ -642,11 +337,11 @@ var site100oxen = {
 
         n1 = lineID_2_lineNR_obj(t1);
         if (!n1) {
-            myAlert("'" + t1 + "' is not a line number", false, null);
+            utils.myAlert("'" + t1 + "' is not a line number", false, null);
         }
         n2 = lineID_2_lineNR_obj(t2);
         if (!n2) {
-            myAlert("'" + t2 + "' is not a line number", false, null);
+            utils.myAlert("'" + t2 + "' is not a line number", false, null);
         }
         if (!n1 || !n2) {
             return 0;
@@ -718,16 +413,16 @@ var site100oxen = {
             return (1);
         } // item & lineID actually are lineNRs here
         s = jbNS.butleranchors.eq(Aindex).text();
-        found1 = lineID_2_lineNR_obj(s) || myAlert("'" + s + "' is not a line number", false, null);
+        found1 = lineID_2_lineNR_obj(s) || utils.myAlert("'" + s + "' is not a line number", false, null);
         this1 = found1.c; // found beginline of section
         this2 = found1.l;
 
         s = jbNS.butleranchors.eq(Aindex + 1).text();
-        found2 = lineID_2_lineNR_obj(s) || myAlert("'" + s + "' is not a line number", false, null);
+        found2 = lineID_2_lineNR_obj(s) || utils.myAlert("'" + s + "' is not a line number", false, null);
         nxt1 = found2.c; // beginline of next section
         nxt2 = found2.l;
 
-        target = lineID_2_lineNR_obj(item) || myAlert("'" + item + "' is not a line number", false, null);
+        target = lineID_2_lineNR_obj(item) || utils.myAlert("'" + item + "' is not a line number", false, null);
         it1 = target.c;
         it2 = target.l;
         if (which === 2) { //second linenumber: move back 1 iliad line
@@ -839,7 +534,7 @@ var site100oxen = {
             }
             if (stepcount > 15) {
                 if (mark === 0) {
-                    myAlert("Can't find '" + lineNR + "'!", false, null);
+                    utils.myAlert("Can't find '" + lineNR + "'!", false, null);
                 }
                 return -1;
             }
@@ -953,7 +648,7 @@ var site100oxen = {
             }
         }
         else {
-            myAlert("Butler bookmark not found", false, null);
+            utils.myAlert("Butler bookmark not found", false, null);
         }
         return lineindex;
     }
@@ -1152,7 +847,7 @@ var site100oxen = {
         textindex = 0;
         parsebm = bookmark.match(jbNS.parse_lineID);
         if (!parsebm) {
-            myAlert(bookmark + ": Not a linenumber!", false, null);
+            utils.myAlert(bookmark + ": Not a linenumber!", false, null);
             return;
         }
         prefix = parsebm[2];
@@ -1169,7 +864,7 @@ var site100oxen = {
             }
         }
         if (textindex < 1) {
-            myAlert("Not a linenumber!", false, null);
+            utils.myAlert("Not a linenumber!", false, null);
             return;
         }
         if (parsebm[3] === ":") {
@@ -1183,7 +878,7 @@ var site100oxen = {
         } // same language
 
         if (!lineID_2_lineNR_obj(parsebm[4])) {
-            myAlert("'" + parsebm[4] + "' is no linenumber!", false, null);
+            utils.myAlert("'" + parsebm[4] + "' is no linenumber!", false, null);
             return;
         }
         jbNS.bm_to_goto = bookmark;
@@ -1456,7 +1151,7 @@ var site100oxen = {
             else { //click in text, no selection: set bookmark
                 too_many_bm = setUnsetBookMark(bookmark, true, greek);
                 if (too_many_bm) {
-                    myAlert("Too many bookmarks (max. 1000). BM not set.", false, null);
+                    utils.myAlert("Too many bookmarks (max. 1000). BM not set.", false, null);
                 }
             }
         }
@@ -1521,7 +1216,7 @@ var site100oxen = {
 
         inp = $("#textinput").val();
         if (inp.length < 1) {
-            myAlert("Select what?", false, null);
+            utils.myAlert("Select what?", false, null);
             return;
         }
         del_all_bm();
@@ -1537,7 +1232,7 @@ var site100oxen = {
                 bm = $(el).children("a:first").text();
                 count += 1;
                 if (setUnsetBookMark(bm, false, false)) {
-                    myAlert("too many bookmarks! (max. 1000)", false, null);
+                    utils.myAlert("too many bookmarks! (max. 1000)", false, null);
                     //abort!
                 }
             });
@@ -1580,7 +1275,7 @@ var site100oxen = {
                     count += 1;
                     if (setUnsetBookMark(lines.eq(n).children(":first").text(), false, true)) {
                         // 2nd parameter: don't toggle BM, just add
-                        myAlert("too many bookmarks! (max. 1000)", false, null);
+                        utils.myAlert("too many bookmarks! (max. 1000)", false, null);
                         return; //abort!
                     }
                 }
@@ -1590,7 +1285,7 @@ var site100oxen = {
         cleanupBookMarx();
         //updateCounter();
         if (!count) {
-            myAlert("Nothing found!", false, null);
+            utils.myAlert("Nothing found!", false, null);
         }
         else {
             bmsel = $("#BMselector");
@@ -1641,7 +1336,7 @@ var site100oxen = {
         }
         else {
             if (!isNaN(parseInt(s, 10))) {
-                //myAlert( "ill-formed line number", false, null );
+                //utils.myAlert( "ill-formed line number", false, null );
                 typ = -1; // -1 = error
             }
             else {
@@ -1934,7 +1629,7 @@ var site100oxen = {
         event.stopImmediatePropagation();
         //$(".btn1 ul").removeClass("menuActive");
         if (jbNS.columns_config[1] > 2) {
-            myAlert("sorry, Iliad or Odyssey only", false, null);
+            utils.myAlert("sorry, Iliad or Odyssey only", false, null);
             return;
         }
         a = $("#selonly");
@@ -2086,9 +1781,9 @@ var site100oxen = {
         }
     }
 
+    //region Tree manip
     /**********************************************************************/
     /*! Tree manipulation:                                                */
-
     /**********************************************************************/
     /**
      * function setplusminus
@@ -2220,7 +1915,11 @@ var site100oxen = {
 
                 $ol = $trg.closest("li").eq(0).children("ol").eq(0);
                 $ol.slideToggle(400); //this = LI element
-                $ol.promise().done(setplusminus);
+                $ol.promise().done(function(){
+                        setplusminus();
+//                        utils.setnodeattributes("list");
+                        $("html").getNiceScroll().resize();
+                });
             }
         }
         else if ($trg.is("div.hasrem")) {
@@ -2286,9 +1985,10 @@ var site100oxen = {
 
         key -= 48;
         if (key >= 0 && key <= 8) {
-            klap(key);
+            utils.expand("list", key, false);
         }
     }
+    //endregion
 
     /**
      * function element2lineIDs
@@ -2372,7 +2072,7 @@ var site100oxen = {
             $tmp,
             $coverdiv = $("#coverall");
         // create invisible cover for dragging resizer over iframes:
-        cover(8, 0); //brings #coverall forward
+        utils.cover(8, 0); //brings #coverall forward
 
         // clone resizer div  and detach it to make resizing visible
         $tmp = $resizer.clone().css({
@@ -2385,7 +2085,7 @@ var site100oxen = {
         }).appendTo($coverdiv);
         $(document).one("mouseup", function (e) { //evt handler disappears after use
             $tmp.remove();
-            cover(-8, 0.3);
+            utils.cover(-8, 0.3);
             $("#coverall").off("mousemove");
             //calc. position, width change
             delta_X = e.pageX - prevX;
@@ -2626,7 +2326,7 @@ var site100oxen = {
             iFrameLoad("butlerframe", jbNS.filenames[2][filenr]))
             .then(function () { //what to do after both frames have been loaded:
                 setColumns();
-                if (jbNS.untouchable) {
+                if (window.site100oxen.untouchable) {
                     createSplitter();
                 }
                 adjustColWidth();
@@ -2696,7 +2396,7 @@ var site100oxen = {
             return;
         }
         setColumns(); //width, display
-        if (jbNS.untouchable) {
+        if (window.site100oxen.untouchable) {
             createSplitter();
         }
         if (colnr === 0 && ix === 0) {
@@ -2750,7 +2450,8 @@ var site100oxen = {
             else { // list/pages
                 if (jbNS.columns_config[0] === 2 && ix === 1) {
 
-                    if ((!e.shiftKey && jbNS.untouchable) || (!jbNS.untouchable && time2 < 1500)) {
+                    if ((!e.shiftKey && window.site100oxen.untouchable)
+                        || (!window.site100oxen.untouchable && time2 < 1500)) {
                         if (jbNS.pageframe[0].src.split("/").pop() !== 'page1.html') {
                             jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
                         }
@@ -2765,7 +2466,7 @@ var site100oxen = {
                                 "left": "2rem",
                                 "opacity": "1"
                             }, 800);
-                            cover(4, 0.35);
+                            utils.cover(4, 0.35);
                             $("#coverall").one("click", hidemenuitems);
                         }
                     }
@@ -2940,7 +2641,7 @@ var site100oxen = {
             "left": "-" + $fm.width(),
             "opacity": "0"
         }, 800);
-        cover(-8, 0.3);
+        utils.cover(-8, 0.3);
         jbNS.pages_menu_expanded = false;
         //$("#switchColumns").on("mousedown touchstart", switchColMousedown);
         $(".menuitems").css("background-color", "");
@@ -2990,7 +2691,7 @@ var site100oxen = {
     }
 
     function doReset() {
-        site100oxen.forcereload = true;
+        window.site100oxen.forcereload = true;
         localStorage.clear();
         window.location.reload(true); //can't do anything after this! or the reload is aborted
                                       //also: doesn't work on ipad
@@ -3002,7 +2703,7 @@ var site100oxen = {
      */
     function savePageState() {
         let s;
-        if (site100oxen.forcereload) {
+        if (window.site100oxen.forcereload) {
             return;
         }
         //1: save column config
@@ -3096,6 +2797,13 @@ var site100oxen = {
         else {
             $("#splash").hide();
         }
+        if(localStorage.getItem("messages") === $("#messages span").text()
+            && localStorage.getItem("showmsg") === "false") {
+            $("#messages").hide();
+        } else {
+            localStorage.setItem("showmsg", "true");
+            $("#messages").show();
+        }
         setSelButtonText();
         jbNS.currentPage = localStorage.getItem("currentpage") || "page1.html";
         jbNS.pageframe[0].src = jbNS.currentPage;
@@ -3175,14 +2883,9 @@ var site100oxen = {
 
     };
     /* set global vars */
-    site100oxen.iframe_mouseup = iframe_mouseup;
-    site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
-    site100oxen.createlist = createlist;
-    site100oxen.init_tree = init_tree;
-
-    /* are we on a touch device? */
-    jbNS.untouchable = !(('ontouchstart' in window) ||
-        (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+    window.site100oxen.iframe_mouseup = iframe_mouseup;
+    window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
+    window.site100oxen.init_tree = init_tree;
 
     /* bind event handlers */
     $("#switchColumns").on({
@@ -3219,9 +2922,8 @@ var site100oxen = {
     });
 
     $("iframe").on("load", function () {
-        let diff;
         try {
-            diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
+            const diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
             $(this).contents().find("html").css("font-size",
                 (jbNS.basic_fontsize - diff) + "px");
         }
@@ -3230,7 +2932,7 @@ var site100oxen = {
     });
 
     /* menu clicks */
-    if (!jbNS.untouchable) {
+    if (!window.site100oxen.untouchable) {
         $(window, "#topdiv,#switchColumns,#bm_nav").on("swipeleft", shrinkLeftColumn);
         $(window, "#topdiv,#switchColumns,#bm_nav").on("swiperight", growLeftColumn);
     }
@@ -3253,7 +2955,7 @@ var site100oxen = {
             let t = $targ.text();
             $("#setlevel tr td").css("backgroundColor", "");
             if (t !== "level:") {
-                klap(parseInt(t, 10));
+                utils.expand("list", parseInt(t, 10), false);
             }
             if ($targ.is("td")) {
                 $targ.css("backgroundColor", "black");
@@ -3287,7 +2989,7 @@ var site100oxen = {
     $("#reset").click(function (event) {
         event.stopImmediatePropagation();
         //$(".btn1 ul").removeClass("menuActive");
-        myAlert("Reset all? settings will be lost", true, doReset);
+        utils.myAlert("Reset all? settings will be lost", true, doReset);
     });
     $("#del_all_bm").click(function (event) {
             event.stopImmediatePropagation();
@@ -3334,7 +3036,7 @@ var site100oxen = {
     $(".btn1 ul li").on({
         "click": function () {
             //event.stopImmediatePropagation();
-            //myAlert("notok", false);
+            //utils.myAlert("notok", false);
             $(".btn1 ul").hide();
         }
     });
@@ -3474,14 +3176,10 @@ var site100oxen = {
     $("#showcolnav, #showbmnav").click(swcol_down);
     $("#savefile").click(saveBlob);
     $("#loadfile").click(loadFileAsText);
-    $("#swiffycontainer").click(function () {
-        showAndGotoAnyLine("il 6.146", true);
-    });
     $("#messages button").click(function () {
         $("#messages").slideUp(600);
-    });
-    $("body").on("load", function () {
-        //this.contentWindow.ready();
+        localStorage.setItem("showmsg", "false");
+        localStorage.setItem("messages", $("#messages span").text());
     });
 
     /* initialize tree */
@@ -3489,22 +3187,22 @@ var site100oxen = {
     $.ajax({
         type: "GET",
         url: "iliad.xml",
-        cache: !site100oxen.forcereload,
+        cache: !window.site100oxen.forcereload,
         dataType: "text",
         success: function (xmlstring) {
             try {
-                site100oxen.XML = $.parseXML(xmlstring);
+                window.site100oxen.XML = $.parseXML(xmlstring);
             }
             catch (e) {
-                myAlert(e, true, null);
+                utils.myAlert(e, true, null);
                 return;
             }
-            site100oxen.forcereload = false;
-            site100oxen.xml_loaded = true;
+            window.site100oxen.forcereload = false;
+            window.site100oxen.xml_loaded = true;
             localStorage.setItem("list_xml", xmlstring);
             localStorage.setItem("list_xml_loaded", "true");
             init_tree();
-            if (jbNS.untouchable) { //} && !jbNS.is_firefox) {
+            if (window.site100oxen.untouchable) { //} && !jbNS.is_firefox) {
                 $("#treeframe").niceScroll({
                     cursorcolor: "#888",
                     cursorwidth: "7px",
@@ -3520,13 +3218,13 @@ var site100oxen = {
             //zoominout();
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            site100oxen.xml_loaded = false;
-            myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+            window.site100oxen.xml_loaded = false;
+            utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
         }
     });
 
     function init_tree() {
-        createTreeFromXML(site100oxen.XML);
+        utils.createTreeFromXML(site100oxen.XML.firstChild, 'list');
         /* initialize */
         jbNS.OL_level = jbNS.treeframe.find('ol');
         jbNS.LI_elements = jbNS.treeframe.find('li');
@@ -3542,356 +3240,5 @@ var site100oxen = {
         scrolltree(jbNS.treetop_el_index);
     }
 
-    /******************************************************************************************/
-    /*                                   BETACODE                                             */
-
-    /******************************************************************************************/
-    /**
-     * function beta2uni
-     * convert ASCI-string (betacode) to unicode extended-greek and normalize the greek
-     * @param string : string //one line to be converted
-     * @returns {string} //unicode string
-     */
-    function beta2uni(string) { //beta code to unicode extended Greek
-        let vocals = "aehiouwr",
-            accents = "\\/=", accent,
-            iotas = "ahw", iota, //deze kunnen iota subscr. hebben
-            longs = "ahiuw", longvoc, //deze kunnen circumflexus hebben (lange vocalen)
-            offset,
-            vocal,
-            spirit,
-            hoofdletter,
-            str_index = 0,
-            unichar,
-            curr,
-            nextchar,
-            flags, has_spirit, has_acc, has_iota, has_umlaut,
-            uni_offset,
-            i, tmp,
-            result = "";
-
-        tmp = "";
-        for (i = 0; i < string.length; i += 1) {
-            tmp += LatinGreek.convertG_L(string[i]);
-        }
-        string = tmp;
-        while (str_index < string.length) {
-            uni_offset = 0;
-            spirit = -1;
-            has_spirit = 0;
-            has_acc = 0;
-            has_iota = 0;
-            has_umlaut = 0;
-            flags = hoofdletter = 0;
-
-            curr = string[str_index];
-            // 1: * or letter
-            if (curr === "*") { //hoofdletter, voorafgaand aan letter + tekens
-                hoofdletter = 8; //offset
-                i = 1;
-                do {
-                    curr = string[str_index + i]; //scan ahead for the letter
-                    i += 1;
-                    if (str_index + i > string.length) {
-                        myAlert(string + "<br>Betacode error at position: " + str_index, true, null);
-                        return "";
-                    }
-                } while (!(curr >= "a" && curr <= "z"));
-            } //curr is now the letter in question
-            offset = 0; //cumulative offset from string[str_index+1]
-
-            // 2: (vocals or "r") breathing? "(" or ")"
-            vocal = vocals.indexOf(curr); // "aehiouwr"
-            if (vocal >= 0) { //non-vocals on the 0x300 unicode page
-                nextchar = string[str_index + 1 + offset]; // breathing?
-                if (nextchar === ")") {
-                    spirit = 0;
-                }
-                else if (nextchar === "(") {
-                    spirit = 1;
-                }
-                if (spirit >= 0) { // breathing + ?accent?
-                    has_spirit = 1; //bit 0
-                    offset += 1;
-                }
-                nextchar = string[str_index + 1 + offset];
-                accent = accents.indexOf(nextchar); //accent can be -1
-                if (accent >= 0) {
-                    offset += 1; //breathing + accent
-                    has_acc = accent === 0 ? 2 : accent * 4; //bits 1,2,3
-                }
-
-                nextchar = string[str_index + 1 + offset]; //umlaut?
-                if (nextchar === "+") {
-                    offset += 1;
-                    has_umlaut = 16;
-                }
-                longvoc = longs.indexOf(curr);
-            }
-            if (hoofdletter) {
-                offset += 1;
-            }
-            nextchar = string[str_index + 1 + offset];
-            if (nextchar === "|") {//iota subscr before lowercase but AFTER capital
-                offset += 1;
-                has_iota = 32;
-                iota = iotas.indexOf(curr);
-            }
-            // we have the flags, now the calculations:
-            //spirit:1 acc:2,4,8 umlaut:16 iota:32
-            flags = has_spirit | has_acc | has_umlaut | has_iota;
-            if (flags) { //if extended Greek:
-                if (flags === 0x01 && curr === "r") {
-                    if (!hoofdletter) {
-                        uni_offset = 0xE4 + spirit;
-                    } else {
-                        uni_offset = 0xEC;
-                    }
-                }
-                else if ((flags & 0x01) && (flags <= 0x09)) { // breathing[+acc]
-                    uni_offset = (vocal * 16) + spirit + 2 * (accent + 1) + hoofdletter; // unicode 1F00 + (0-6F)
-                }
-                else if (flags === 2 || flags === 4) { //only grave or acute
-                    if (hoofdletter) {
-                        if (longvoc >= 0) {
-                            uni_offset = 0xBA + longvoc * 16 + accent;
-                        }
-                        else if (curr === "e") {
-                            uni_offset = 0xC8 + accent;
-                        }
-                        else if (curr === "o") {
-                            uni_offset = 0xF8 + accent;
-                        }
-                    }
-                    else {
-                        uni_offset = 0x70 + vocal * 2 + accent; //0x70-7F
-                    }
-                }
-                else if (((flags & 0x21) === 0x21) && ((flags ^ 0x21) <= 0x08)) { //iota+breathing[plus accent]
-                    uni_offset = (8 + iota) * 16 + spirit + 2 * (accent + 1) + hoofdletter; //0x80-AF
-                }
-                else if (flags === 0x12 || flags === 0x22) { // \ plus iota or +
-                    uni_offset = 0xB2 + longvoc * 16 + hoofdletter;
-                }
-                else if (flags === 0x20 || flags === 0x14) { // iota alone or / plus +
-                    uni_offset = 0xB3 + longvoc * 16 +
-                        (hoofdletter ? 9 : 0);
-                }
-                else if (flags === 0x24) { // / plus iota
-                    uni_offset = 0xB4 + longvoc * 16 + hoofdletter;
-                }
-                else if (flags === 0x08) { // = alone
-                    uni_offset = 0xB6 + longvoc * 16 + hoofdletter;
-                }
-                else if (flags === 0x18 || flags === 0x28) { // = plus iota or +
-                    uni_offset = 0xB7 + longvoc * 16 + hoofdletter;
-                }
-                else if (flags === 0x10) { // + alone
-                    if (curr === "i") {
-                        uni_offset = -0x1C00 + 0xCA; //offset back to the 0x300 page
-                    } else if (curr === "u") {
-                        uni_offset = -0x1C00 + 0xCB;
-                    }
-                }
-                unichar = 0x1F00 + uni_offset;
-            }
-
-            offset += 1;
-            str_index += offset;
-
-            if (!flags) { //not extended greek
-                if (curr >= "a" && curr <= "z") {
-                    unichar = LatinGreek.greek_charcode(LatinGreek.latin2index(curr) - 3 * hoofdletter); // i.e. -24 or 0
-                    if (curr === "s" && !hoofdletter) {
-                        nextchar = string[str_index]; //next char
-                        if (str_index < string.length && ((nextchar >= "a" && nextchar <= "z") || nextchar === "'")) {
-                            unichar = "σ".charCodeAt(0);
-                        } else {
-                            unichar = "ς".charCodeAt(0);
-                        }
-                    }
-                } else {
-                    if (curr === "'") {
-                        unichar = 0x1FBD;
-                    }
-                    else {
-                        unichar = curr.charCodeAt(0); //as it is
-                    }
-                }
-            }
-            unichar = LatinGreek.norm_1F_to_03(unichar); //normalize
-            result += String.fromCharCode(unichar);
-        }
-        return result;
-    }
-
-    /*
- 0x300 range: "a.ehi.o.uwiabgdezhqiklmncopr.stufxywiuaehiuabgdezhqiklmncoprsstufxywiuouw" //386 - 3ce
- 1Fxx range:
- 16x a,e,h,i,o,u,w 0-6F
- aaeehhiioouuww.. 70-7F
- 16x a,h,w 80-AF
- 16x a,h,i,u,w b0-ff
- */
-    /**
-     * function uni2beta
-     * convert unicode string to betacode (all lowercase)
-     * @param string //string to be converted
-     * @param accents //flag: if false delete all breathings, accents, uppercase markers etc.
-     * @returns {string} //betacode string
-     */
-    function uni2beta(string, accents) {
-        let sindex,
-            code,
-            beta,
-            result,
-            acc,
-            capital,
-            iota,
-            ahiuwr = "ahiuwr",
-            ah,
-            ix, row, column,
-            beta0300 = "abgdezhqiklmncopr.stufxywiuaehiuabgdezhqiklmncoprsstufxywiuouw", //unicode ranges of Greek chars
-            beta1F00 = "aehiouw.ahwahiuw",
-            beta1F70 = "aaeehhiioouuww..",
-            beta_accents = [")", "(", ")\\", "(\\", ")/", "(/", ")=", "(="];
-
-        sindex = 0;
-        result = "";
-        while (sindex < string.length) {
-            capital = false;
-            acc = "";
-            iota = "";
-            code = string.charCodeAt(sindex);
-            code = LatinGreek.conv_03_to_1F(code); //change some 03-pagers to the 1F-page for ease of processing
-
-            if (code > 0x300 && code < 0x400) {
-                ix = code - 0x391;
-                beta = beta0300[ix];
-                if (accents && (code >= 0x391 && code <= 0x3A9)) {
-                    capital = true;
-                    acc = "*";
-                }
-                if (accents && (code === 0x3CA || code === 0x3CB)) {
-                    acc = "+";
-                }
-            }
-            else if (code === 0x1FBD) {
-                beta = "'";
-            }
-            else if (code >= 0x1f00 && code < 0x2000) {
-                ix = code - 0x1F00;
-                row = Math.floor(ix / 16);
-                column = ix % 16;
-                if (row !== 7) {
-                    beta = beta1F00[row];
-                    if (row === 14 && (column === 4 || column === 5 || column === 12)) {
-                        beta = "r";
-                    }
-                }
-                if (row === 7) {
-                    beta = beta1F70[column];
-                }
-                if (accents) {
-                    // if (row > 7 && row < 11) {
-                    //     beta += "i";
-                    // }
-                    // if (row === 11 || row === 12 || row === 15) {
-                    //     if (column === 2 || column === 3 || column === 4 ||
-                    //         column === 7 || column === 12) {
-                    //         beta += "i";
-                    //     }
-                    // }
-                    //} else {
-                    if (row < 7) {
-                        acc = beta_accents[column % 8];
-                    } else if (row === 7) {
-                        if (column & 1) {
-                            acc = "/";
-                        } else {
-                            acc = "\\";
-                        }
-                    } else if (row > 7 && row < 11) {
-                        acc = beta_accents[column % 8];
-                        iota = "|";
-                    } else if (row >= 11) {
-                        ah = ahiuwr.indexOf(beta);
-                        if (column === 2) {
-                            acc = "\\";
-                            if (ah === 0 || ah === 1 || ah === 4) {
-                                iota = "|";
-                            } else if (ah === 2 || ah === 3) {
-                                acc += "+";
-                            }
-                        } else if (column === 3) {
-                            if (ah === 0 || ah === 1 || ah === 4) {
-                                iota = "|";
-                            } else if (ah === 2 || ah === 3) {
-                                acc = "/+";
-                            }
-                        } else if (column === 4) {
-                            if (ah === 0 || ah === 1 || ah === 4) {
-                                acc = "/";
-                                iota = "|";
-                            } else if (ah === 5) {
-                                acc = ")";
-                            }
-                        } else if (column === 5) {
-                            if (ah === 5) {
-                                acc = "("; // "ῤ or ῥ"
-                            }
-                        } else if (column === 6) {
-                            acc = "=";
-                        } else if (column === 7) {
-                            acc = "=";
-                            if (ah === 0 || ah === 1 || ah === 4) {
-                                iota = "|";
-                            } else if (ah === 2 || ah === 3) {
-                                acc += "+";
-                            }
-                        } else if (column === 8) {
-                            if (ah === 1 || ah === 4) {
-                                acc = "\\";
-                            }
-                        } else if (column === 9) {
-                            if (ah === 1 || ah === 4) {
-                                acc = "/";
-                            }
-                        } else if (column === 10) {
-                            acc = "\\";
-                        } else if (column === 11) {
-                            acc = "/";
-                        } else if (column === 12) {
-                            if (ix === 0xEC) {
-                                acc = ")"; // "Ῥ"
-                            } else {
-                                iota = "|";
-                            }
-                        }
-                    }
-                    if (row !== 7 && column >= 8) {
-                        if (ix === 0xBD) {
-                            beta = "'";
-                        } else {
-                            capital = true;
-                            acc = "*" + acc;
-                        }
-                    }
-                }
-            }
-            else {
-                beta = String.fromCharCode(code);
-            }
-            if (capital) {
-                beta = acc + beta + iota;
-            }
-            else {
-                beta = beta + acc + iota;
-            }
-            sindex += 1;
-            result += beta;
-        }
-        return result;
-    }
 
 })(jQuery);

@@ -46,14 +46,6 @@ $(document).ready(function () {
         parent.site100oxen.iframe_mouseup(e);
     });
 
-    $(".showlist").click(function () {
-        parent.show_list();
-    });
-
-    acc = document.getElementsByClassName("accordion");
-
     $(".accordion, .citation .cithead").on("click tap", accordionclick);
-    // for (i = 0; i < acc.length; i++) {
-    //     $(acc[i]).on("click tap", accordionclick);
-    // }
+
 });

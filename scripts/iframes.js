@@ -1,9 +1,9 @@
+import * as utils from '../scripts/myUtils.js';
 /**
  * Created by jeroen on 17/02/2017.
  * this goes into files, loaded into pageframe
  */
 'use strict';
-var untouchable;
 
 function accordionclick(event) {
     var button, panel;
@@ -21,7 +21,7 @@ function accordionclick(event) {
             panel[0].style.height = panel[0].style.maxHeight;
         }
     }
-    if (untouchable) {
+    if (parent.site100oxen.untouchable) {
         setTimeout(function () { //wait for transition?
             $("html").getNiceScroll().resize();
         }, 500);
@@ -30,12 +30,10 @@ function accordionclick(event) {
 }
 
 $(document).ready(function () {
-    var i, acc;
+    let acc, frags;
 
-    untouchable = !(('ontouchstart' in window) ||  window.DocumentTouch);
-        //(navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //we're on a tablet or phone
 
-    if (untouchable) {
+    if (parent.site100oxen.untouchable) {
         $("html").niceScroll({
             cursorcolor: "#888",
             cursorwidth: "7px",
@@ -51,14 +49,20 @@ $(document).ready(function () {
         parent.site100oxen.iframe_mouseup(e);
     });
 
-    $(".showlist").click(function () {
-        parent.show_list();
-    });
-
-    acc = document.getElementsByClassName("accordion");
+    //acc = document.getElementsByClassName("accordion");
 
     $(".accordion, .citation .cithead").on("click tap", accordionclick);
-    // for (i = 0; i < acc.length; i++) {
-    //     $(acc[i]).on("click tap", accordionclick);
-    // }
+
+    frags = $(".treefragment");
+    if(frags.length){
+        frags.each(function (i, el) {
+            const lnr = "" + $(el).data("lnr"); //the data is a number!
+            const title = $(el).data("title");
+            const lvl = $(el).data("lvl");
+            let node = utils.find_xml_node(parent.site100oxen.XML, lnr, title);
+            utils.createTreeFromXML(node, "frag");
+            utils.setnodeattributes("frag");
+            utils.expand("frag", 1, false);
+        });
+    }
 });

@@ -176,13 +176,14 @@ button.accordion {
   background-color: rgba(0, 0, 0, 0.1);
   color: black;
   cursor: default;
-  padding: 1rem 2rem 1rem 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 0.3rem;
   margin-top: 4px;
   width: 100%;
   text-align: left;
   border: none;
   outline: none;
   transition: 0.4s;
+  font-size: 1rem;
 }
 button.accordion.active,
 button.accordion:hover {
@@ -204,12 +205,14 @@ button.accordion:after {
 }
 div.panel {
   padding-left: 1rem;
-  max-height: 0;
+  /*background-color: white;*/
+  /*max-height: 0;*/
   overflow: hidden;
   transition: max-height 0.4s ease-out;
+  font-size: 1rem;
 }
 div.panel p {
-  margin-left: 1rem;
+  margin-left: 1.1rem;
 }
 #thegods header {
   background: linear-gradient(to bottom, #77beff 90%, #008000);
@@ -229,15 +232,6 @@ div.panel p {
   margin-top: 2rem;
   margin-right: 25%;
   float: right;
-}
-#swiffycontainer {
-  width: 328px;
-  height: 80px;
-  display: block;
-  position: relative;
-  top: -2px;
-  margin-left: auto;
-  margin-right: auto;
 }
 #sendform {
   display: flex;

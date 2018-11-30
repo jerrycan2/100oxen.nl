@@ -9682,45 +9682,5 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="scripts/jquery.nicescroll.min.js"></script>
     <script src="scripts/common.js"></script>
-    <script>
-        var saved_event;
-        function saveEditTarget(e) {
-            saved_event = e;
-            e.stopImmediatePropagation();
-            e.preventDefault();
-            $(saved_event.target).parent().on("keypress", function () {
-                saved_event.stopImmediatePropagation();
-                saved_event.preventDefault();
-            });
-        }
-        function editAnchors() {
-            "use strict";
-            var s, prv, txt, range, result, head, tail, a, prevtxt, nwtxt, line;
-            range = window.getSelection().getRangeAt(0);
-            //txt = $(saved_event.target).text();
-            if (saved_event.ctrlKey) { //merge this paragraph with previous one
-                prevtxt = $(saved_event.target).children("a").text();
-                if (window.confirm("delete " + prevtxt + "?")) {
-                    prv = saved_event.target.previousElementSibling;
-                    s = prv.lastChild.nodeValue + saved_event.target.lastChild.nodeValue;
-                    //$( saved_event.target ).children( "a" ).remove();
-                    $(saved_event.target).remove();
-                    prv.lastChild.nodeValue = s;
-                }
-            } else {
-                txt = saved_event.target.outerHTML;
-                line = $(saved_event.target).children("a").text();
-                a = range.startOffset + 10 + line.length;
-                line = line.substring(0, line.indexOf(".") + 1);
-                result = window.prompt(txt.substr(a), line);
-                if (result !== null) {
-                    head = txt.substring(0, a);
-                    tail = txt.substring(a);
-                    nwtxt = head + "</p>\n<p><a>" + result + "</a> " + tail;
-                    $(saved_event.target).replaceWith(nwtxt);
-                }
-            }
-        }
-    </script>
 </body>
 </html>

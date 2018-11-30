@@ -1,6 +1,6 @@
-#!/Strawberry/perl/bin/perl -w
-# #!/usr/bin/perl -w
-# use cPanelUserConfig;
+#!/usr/bin/perl -w
+use cPanelUserConfig;
+# #!/Strawberry/perl/bin/perl -w
 # test
 use strict;
 use warnings FATAL => 'all';

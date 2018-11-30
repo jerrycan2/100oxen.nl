@@ -1,3 +1,7 @@
+import * as utils from '../scripts/myUtils.js';
+import Linenumber from '../scripts/myUtils.js';
+import { MD5 } from '../scripts/md5.js';
+
 /**
  * Created by jeroe on 07-Aug-18.
  */
@@ -24,300 +28,6 @@
     };
     //endregion Global State Var
 
-    //region Linenumber class
-    class Linenumber {
-        constructor(chap, line) { // either new line(10, 234) or new line('10.234')
-            if (arguments.length === 2) {
-                this.chap = typeof chap === 'string' ? parseInt(chap) : chap;
-                this.line = typeof line === 'string' ? parseInt(line) : line;
-            }
-            else if (arguments.length === 1){
-                this.fromstring(chap);
-            }
-            else {
-                console.log("Linenumber error");
-            }
-        }
-        getchap() {
-            return this.chap;
-        }
-        getline() {
-            return this.line;
-        }
-        tostring() {
-            return `${this.chap}.${this.line}`;
-        }
-        fromstring(lnr){
-            const dot = lnr.indexOf('.');
-            this.chap = parseInt(lnr.substr(0, dot));
-            this.line = parseInt(lnr.substr(dot+1));
-            return this;
-        }
-        nextline() {
-            this.line = this.line + 1;
-            if (this.line > this.chaplen[this.chap - 1]) {
-                this.line = 1;
-                this.chap += 1;
-            }
-            return this.chap > 24 ? null : this;
-        }
-        prevline() {
-            this.line = this.line - 1;
-            if (this.line === 0) {
-                this.chap -= 1;
-
-                this.line = this.chap > 1 ? this.chaplen[this.chap - 1] : 0;
-            }
-            return this.line ? this : null;
-        }
-        lessthan(lnr){
-            let less = false;
-            const ln = lnr.getline();
-            const ch = lnr.getchap();
-            if((this.chap < ch) || (ch === this.chap && this.line < ln)) {less = true;}
-            return less;
-        }
-    }
-    Linenumber.prototype.chaplen = [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804];
-
-    //endregion
-
-    //region Utilities
-
-    /**
-     * function cover
-     * apply a covering div to the whole screen (to catch events)
-     * @param {number} z - integer z-index default = 8
-     * @param {number} a - 0-1 opacity default = 0.4
-     */
-    function cover(z, a) { // z-index, a=opacity
-        if (z === undefined) {
-            z = 12;
-        }
-        if (a === undefined) {
-            a = 0.3;
-        }
-        $("#coverall").css({
-            "background": "rgba(128, 128, 128, " + a + ")",
-            "z-index": z
-        });
-    }
-
-    /**
-     * function myAlert
-     * display alert box that can simulate modal (but isn't blocking)
-     * NB no modal result can be returned: use the okExec function
-     * @param {string} txt - to be displayed
-     * @param {boolean} [modal] - (optional) true=wait for user click OK/NOT, false=disappear in 3 sec
-     * @param {function} [okExec] - (optional) to execute on 'OK' click
-     * @param {function} [cancelExec] - (optional) executes on "Cancel" click
-     */
-    function myAlert(txt, modal, okExec, cancelExec) {
-        const $box = $("#msgbox");
-        $box.show().on("mousedown", function (e) {
-            const $this = $(this);
-            const off_x = $this.offset().left - e.pageX;
-            const off_y = $this.offset().top - e.pageY;
-            $this.on("mousemove", function (el) {
-                $this.offset({
-                    left: el.pageX + off_x,
-                    top: el.pageY + off_y
-                });
-            });
-            $this.one("mouseup", function () {
-                $this.off("mousemove"); // Unbind events from popup
-            });
-            e.preventDefault(); // disable selection
-
-        });
-
-        $box.find("h5").text(txt);
-        if (modal) {
-            cover(8, 0.3);
-            $("#ok, #cancel").show().one("click", function (el) {
-                el.stopPropagation();
-                if ($(this).attr("id") === "ok") {
-                    if (typeof okExec === "function") {
-                        okExec();
-                    }
-                } else if ($(this).attr("id") === "cancel") {
-                    if (typeof cancelExec === "function") {
-                        cancelExec();
-                    }
-                }
-                cover(-8, 0.3);
-                $box.fadeOut(2000);
-            });
-        } else {
-            $("#ok, #cancel").hide();
-            setTimeout(function () {
-                $("#msgbox").fadeOut(1500);
-            }, 2000);
-        }
-    }
-
-    /**
-     * function rgb2hex
-     * change the return value of a .css('color') call, return the hex color value
-     * can handle "rgb()" and "rgba()"
-     * ignore the alfa value
-     * @param rgb {string} - rgb
-     * @returns {string} - (hex-string)
-     */
-    function rgb2hex(rgb) {
-        const result = rgb.match(/^rgb(a)?\((\d+),\s*(\d+),\s*(\d+)(,\s*(\d+))?\)$/);
-
-        function hex(x) {
-            return ("0" + parseInt(x).toString(16)).slice(-2);
-        }
-
-        return hex(result[2]) + hex(result[3]) + hex(result[4]);
-    }
-
-    /**
-     * function getelementnode
-     * test if xml node n is an element-node. If not, test its nextsibling
-     * @param {Object} n - xml node
-     * @returns {Object} n - xml node
-     */
-    function getelementnode(n) {
-        while (n && n.nodeType !== 1) {
-            n = n.nextSibling;
-        }
-        return n;
-    }
-
-    /**
-     * function maptree
-     * map function func() to an xml-tree
-     * where func returns false, recursion for the child-subtree is cut off,
-     * @param {Object} node - rootnode
-     * @param {Function} func - function to map
-     */
-    function maptree(node, func) {
-        if (node && func(node)) {
-            node = node.firstChild;
-            while (node) {
-                maptree(node, func);
-                node = node.nextSibling;
-            }
-        }
-    }
-
-    //endregion Utilities
-
-    //region HTML tree
-    /**
-     * function getlinenr
-     * go down tree until "line" node, then take its ltr and nr attributes
-     * @param {Object} node - xml node
-     * @returns {string} - "booknr.linenr" string or ""
-     */
-    function getlinenr(node) {
-        while (node.nodeName !== "line") {
-            node = getelementnode(node.firstChild);
-            if (node === null) {
-                break;
-            }
-        }
-        return node ? node.getAttribute("lnr") : "";
-    }
-
-    /**
-     * function createTreeFromXML
-     * callback from $.ajax() which has already done the parsing
-     * creates the 'struct' html-tree without Greek text
-     * @param {Object} xml - xml node: the iliad xml tree, parsed
-     * @param {string} target - "struct" or "edit"
-     */
-    function createTreeFromXML(xml, target) {
-        /* create new collapsible Ordered List in "struct" div */
-        $("#" + target).find("ol:first").remove().end()
-            .append(createlist(xml.firstChild, target, target === "edit")); // showgreek = false if "struct"
-        setnodeattributes(target);
-    }
-
-    /**
-     * function getcolorstyle
-     * turn the xmlnode attributes into a html style decl.
-     * @param {Object} node - xml node
-     * @returns {string} htmlstring
-     */
-    function getcolorstyle(node) {
-        let bg = node.getAttribute("c"); //if xml has color info, put it in
-        let htmlstring = "";
-        if (bg && parseInt(bg, 16)) {
-            let fg = node.getAttribute("f") || "000000"; //errors in xml file
-            let alpha = 1;
-            if (bg === "ffffff") {
-                alpha = 0;
-                fg = "000000";
-            }
-            htmlstring = `style='color: #${fg}; background-color: #${bg}; opacity: ${alpha}'`;
-        }
-        return htmlstring;
-    }
-
-    /**
-     * function createlist
-     * create the html for the OL in treeframe, from the XML tree
-     * only rootnode is traversed, not any siblings
-     * (rootnode may be any node in the xml tree)
-     * @param {Object} rootnode - xml node
-     * @param {string} target  - string, target div id "struct" or "edit"
-     * @param {boolean} include_greek - if in edit, choose to display greek text
-     * @returns {string} htmltxt - html as string
-     */
-    function createlist(rootnode, target, include_greek) {
-        let htmltxt = ""; //html-string to be constructed
-        if (rootnode) {
-            htmltxt = build_html_string(rootnode);
-        }
-        return htmltxt;
-
-        /**
-         * function build_html_string
-         * depth-first pre-order traversal of xnode and all of its children
-         * @param {Object} xnode - xml node
-         * @return {string} html - html text
-         */
-        function build_html_string(xnode) {
-            let html = `<ol class='${xnode.nodeName}'>`;
-            do {
-                let rem = xnode.getAttribute("rem");
-                if (rem) {
-                    html += `<li data-rem="${rem}"><div class="hasrem">&oast;</div>`;
-                } else if (target === "edit") {
-                    html += '<li><div class="norem">&blk14;</div>';
-                } else { // struct && no remark
-                    html += '<li>';
-                }
-                //all html nodes have a line nr (chap.line)
-                if (target === "edit") { // add checkbox if editing mode:
-                    html += `<label class='ln'><input type='checkbox' class='chk'/>${getlinenr(xnode)}</label>`;
-                } else {
-                    html += `<span class='ln'>${getlinenr(xnode)}</span>`;
-                }
-                //main text of inner node:
-                // if "d" is empty, xnode must be a greek text line (leaf)
-                html += `<span class='lt${xnode.nodeName === "line" ? "" : " ed"}' ` +
-                    `${getcolorstyle(xnode)}>${xnode.getAttribute("d") || $(xnode).text()}</span>`;
-                const child = getelementnode(xnode.firstChild);
-                if (child && (child.nodeName !== "line" || include_greek)) {
-                    html += build_html_string(child);
-                }
-
-                html += "</li>";
-                if (xnode === rootnode) {
-                    break; //don't do siblings of the start xnode
-                }
-                xnode = getelementnode(xnode.nextSibling);
-            } while (xnode); //do siblings of any other xnode
-            html += "</ol>";
-            return html;
-        }
-    }
-
     /**
      * is node a descendant of #edit div?
      * @param {Object} $node //jquery node
@@ -326,106 +36,6 @@
     function is_edit_tree($node) {
         return $node.closest("#edit").length > 0;
     }
-
-    /**
-     * function setlevel($node, level)
-     * recursive traversal of OL-tree
-     * adjusting + and - expansion buttons and level data-attribute
-     * and determine highest available level
-     *
-     * @param {Object} $node - rootnode (jQuery)
-     * @param {number} level - recursion level
-     * @param {number} highest
-     * @returns {number} highest
-     */
-    function setlevel($node, level, highest) {
-        const editing = is_edit_tree($node);
-        if ($node.children("li").length) {
-            $node.find("span.plm").remove();
-            $node.children("li").children("ol").each(function (i, el) {
-                const $el = $(el);
-                $el.filter(":visible").siblings("span:last").after("<span class='plm'>&ominus;</span>");
-                $el.filter(":hidden").siblings("span:last").after("<span class='plm'>&oplus;</span>");
-            });
-
-            $node.data("level", level);
-            if (level > highest) {
-                highest = level;
-            }
-            $node.children("li").each(function () {
-                const $ol = $(this).find("ol:first"); //only 1
-                if ($ol.length === 0) {
-                    if (editing) {
-                        $node.attr("class", "line");
-                    }
-                } else {
-                    highest = setlevel($ol, level + 1, highest);
-                }
-            });
-        }
-        return highest;
-    }
-
-    /**
-     * function setnodeattributes
-     * loop through all OL nodes
-     * 1: set the proper + and - signs in tree after expand/collapse
-     * 2: determine level of each node and store in data attr
-     * 3: store highest&lowest
-     * @param {string} target
-     */
-    function setnodeattributes(target) {
-        let highest = setlevel($("#" + target).find("ol:first"), 0, 0);
-        disableButtons(highest);
-    }
-
-    /**
-     * function findTextByLinenr
-     * @param xml - butlertext.xml or greek_il.xml, parsed
-     * @param {string} linenr - chap.line
-     * @returns {string} txt - english: <p>, greek: <p> with <br>'s inserted
-     */
-    function findTextByLinenr(xml, linenr) {
-        let txt = "";
-        $(xml).find("A").each(function (i, el) {
-            if (el.textContent === linenr) {
-                txt = this.parentNode.childNodes[1].nodeValue.split('#').join('<br>');
-            }
-            return txt === "";
-        });
-        return txt;
-    }
-
-    /**
-     * function get_il_text
-     * fetch paragraph text from xml file and write it into the DOM
-     * delete it if it's already there
-     * @param {Object} xml - Butlertext or Greek_il
-     * @param {Object} $target - html-element clicked on (span.lt)
-     * @param {string} choice - language choice "en" or "gr"
-     */
-    function get_il_text(xml, $target, choice) {
-        const $parent = $target.parent(); // $parent is a <li>
-        if (!$parent.children("ol").length || $parent.children(".line").length) {
-            // if the target has no children (#struct) or if it has .line's (#edit)
-            const $txtdivs = $target.nextAll(`.iltxt.${choice}`);
-            if ($txtdivs.length) {
-                $txtdivs.slideToggle(350, function () {
-                    $(this).remove();
-                });
-            } else {
-                const lnr = $target.prev(".ln").text();
-                const txt = findTextByLinenr(xml, lnr);
-                if (txt) {
-                    $target.prev().nextAll("span:last") // $target may be the last <span>
-                        .after(`<div class='iltxt ${choice}'>${txt}</div>`)
-                        .next().slideToggle(350);
-                }
-            }
-        }
-    }
-
-    //endregion HTML tree
 
     //region UI
 
@@ -471,7 +81,7 @@
             $edit.find("ol:first").remove();
             $edit.append(tree);
             glob.targetdiv = "edit";
-            setnodeattributes("edit");
+            utils.setnodeattributes("edit");
             updateUndoSelect();
         }
 
@@ -549,30 +159,6 @@
     }
 
     /**
-     * function expand
-     * expand/collapse list acc. to buttonclick (level)
-     * @param {string} target - name of targetdiv
-     * @param {number} level - 1-9
-     * @returns {*} - promise
-     */
-    function expand(target, level) {
-        const ols = $("#" + target).find("ol");
-        ols.each(function () {
-            const $this = $(this);
-            const val = $this.data("level");
-            const fold = !glob.showing_greek && $this.attr("class") === "line";
-            if (fold || (level <= 9 && val > level)) {
-                $this.slideUp(600);
-            } else {
-                $this.slideDown(600);
-            }
-        });
-        return ols.promise().done(function () {
-            setnodeattributes(target);
-        });
-    }
-
-    /**
      * function handleRemClick
      * show the "rem' data-attribute text or hide it and save the text back to the DOM
      * @param {*} $element - the clicked html element: either .hasrem or .norem
@@ -624,21 +210,21 @@
         let found = null;
         if (targets.length > 0) {
             targets.each(function (i, el) {
-                if ($subtree.find(".ln:first").text() === getlinenr(el)) {
+                if ($subtree.find(".ln:first").text() === utils.getlinenr(el)) {
                     found = el;
                 }
                 return found === null;
             });
         }
         if (!found) {
-            myAlert("nothing found!", false); //shouldn't be possible
+            utils.myAlert("nothing found!", false); //shouldn't be possible
         } else {
             $("#showGreek").text("Hide Greek");
             glob.showing_greek = true;
             glob.targetdiv = "edit";
             $("#edit").find("ol:first").remove().end()   //create html in the edit div
-                .append(createlist(found, "edit", true));
-            setnodeattributes("edit");
+                .append(utils.createlist(found, "edit", true));
+            utils.setnodeattributes("edit");
         }
     }
 
@@ -652,7 +238,7 @@
             glob.Tstack.push(tree);
             updateUndoSelect();
         } else {
-            myAlert("Nothing to push", false);
+            utils.myAlert("Nothing to push", false);
         }
     }
 
@@ -665,13 +251,13 @@
         if (!tree) {
             myAlert("stack empty", false);
         } else {
-            myAlert("Restore previous edit?", true, function () {
+            utils.myAlert("Restore previous edit?", true, function () {
                 const $ed = $("#edit");
                 glob.Tstack[glob.Tstack.length - 1] = null; //to make obj unreachable. Necessary?
                 glob.Tstack.pop();
                 $ed.find("ol:first").remove();
                 $ed.append(tree);
-                setnodeattributes("edit");
+                utils.setnodeattributes("edit");
                 updateUndoSelect();
             });
         }
@@ -709,7 +295,7 @@
         const linenr = $firstsel.find("label.ln:first").text();
         $firstsel.before(HTMLtoInsert(linenr)); //create new node
         $("#new").append($checked.closest("li")).removeAttr("id").parents("ol:first").attr("class", "lvl"); //move selection to it
-        setnodeattributes("edit");
+        utils.setnodeattributes("edit");
     }
 
     /**
@@ -723,15 +309,15 @@
         const $checked = $("#edit").find(":checked");
         const $li_elements = $checked.parent("label").parent("li");
         if ($li_elements.children("ol").length === 0) {
-            myAlert("You cannot delete textlines", false);
+            utils.myAlert("You cannot delete textlines", false);
         } else if ($li_elements.parent("ol:first").data("level") === 0) {
-            myAlert("You cannot delete a root node", false);
+            utils.myAlert("You cannot delete a root node", false);
         } else {
-            myAlert("Deleted " + $checked.length + " nodes", false);
+            utils.myAlert("Deleted " + $checked.length + " nodes", false);
             pushtree();
             $li_elements.eq(0).before($li_elements.find("ol:first>li"));
             $li_elements.remove();
-            setnodeattributes("edit");
+            utils.setnodeattributes("edit");
         }
     }
 
@@ -754,15 +340,15 @@
             const $targetnode = $selnode.parent().parent();
             // make sure we have exactly one rootnode:
             if ($targetnode.parent("ol")[0] === $edit.find("ol:first")[0]) {
-                myAlert("Edit tree can only have ONE root. Edit one level up!", false);
+                utils.myAlert("Edit tree can only have ONE root. Edit one level up!", false);
             } else {
                 $targetnode.after(HTMLtoInsert(linenr)); //create new node
                 $("#new").append($edit.find(":checked").closest("li")).removeAttr("id"); //move selection to it
-                setnodeattributes("edit");
-                myAlert(`new node @ ${linenr} inserted`, false);
+                utils.setnodeattributes("edit");
+                utils.myAlert(`new node @ ${linenr} inserted`, false);
             }
         } else {
-            myAlert("split: cannot split before the first item", false);
+            utils.myAlert("split: cannot split before the first item", false);
         }
     }
 
@@ -775,144 +361,20 @@
         const $checked = $("#edit").find(":checked");
         const $li_elements = $checked.parent("label").parent("li");
         if ($checked.length < 2) {
-            myAlert("There is nothing to merge! select more than 1 node", false);
+            utils.myAlert("There is nothing to merge! select more than 1 node", false);
         } else if ($li_elements.children("ol").length === 0) {
-            myAlert("You cannot merge textlines", false);
+            utils.myAlert("You cannot merge textlines", false);
         } else {
-            myAlert("Merging " + $checked.length + " nodes", false);
+            utils.myAlert("Merging " + $checked.length + " nodes", false);
             pushtree();
             $li_elements.slice(0, 1).children("ol").append($li_elements.find("ol:first>li"))
                 .end().end().slice(1).remove(); // append to first <li>, delete following <li>'s
-            setnodeattributes("edit");
+            utils.setnodeattributes("edit");
         }
     }
 
     //endregion Edit Tree manip
 
-    //region HTML 2 XML
-
-    /**
-     * function find_xml_node
-     * find node given line number + text ("d" attribute in xml)
-     * linenumber only available in "line" nodes
-     * @param xml {Object}
-     * @param {string} linenr - only in "line" nodes
-     * @param {string} text - "d" attribute
-     * @returns {?Node} result - xml node
-     */
-    function find_xml_node(xml, linenr, text) {
-        let result = null;
-        const nodes = $(xml).find('[d="' + text + '"]'); // first find the text
-        nodes.each(function (i, node) { // there may be more
-            if (getlinenr(node) === linenr) { // check it
-                result = node;
-            }
-            return result === null; // each() stops when ret. false
-        });
-        return result;
-    }
-
-    /**
-     * function HTML2XML
-     * convert a given HTML node (<OL> root) into newly created XML
-     * @param {Object} htmlroot
-     * @returns {Array} [xmlDoc, errorcondition] - XML tree + error if any
-     */
-    function HTML2XML(htmlroot) {
-        let errorcondition = ""; // accessible in closure
-        const xmlDoc = document.implementation.createDocument("", "", null);
-        visitNodes(xmlDoc, htmlroot);
-        return [xmlDoc, errorcondition];
-
-        /**
-         * function visitNodes
-         * recursively turn html-tree into an xml-tree
-         * also check for errors
-         * @param {Object} currXMLnode - current xml node
-         * @param {Object} $currHTMLnode - current DOM node (jQuery)
-         * @returns {number} size - number of textlines descending from this node
-         */
-        function visitNodes(currXMLnode, $currHTMLnode) {
-            let size = 0;
-            let $rootli = $currHTMLnode.find("li:first");
-            const nodeclass = $currHTMLnode.attr("class");
-            do {
-                if ((nodeclass === "line") !== ($rootli.children("ol").length === 0)) {
-                    // if its class = "line" it must not have children and vv.
-                    errorcondition = `Illformed Treenode in: '${$rootli.children("label.ln:first").text()} ` +
-                        `${$rootli.children("span.lt:first").text()}'`;
-                    break;
-                }
-                const xnew = xmlDoc.createElement(nodeclass);
-                currXMLnode.appendChild(xnew);
-                const $spannode = $rootli.children("span.lt:first");
-                if (nodeclass === "line") {
-                    xnew.textContent = $spannode.text();
-                    xnew.setAttribute("lnr", $rootli.children("label.ln:first").text()); // line number
-                } else {
-                    xnew.setAttribute("d", $spannode.text());
-                    xnew.setAttribute("c", rgb2hex($spannode.css("background-color")));
-                    xnew.setAttribute("f", rgb2hex($spannode.css("color")));
-                }
-                const rem = $rootli.data("rem");
-                if (rem) {
-                    xnew.setAttribute("rem", rem);
-                }
-                const $olnode = $rootli.children("ol:first");
-                if ($olnode.length > 0) {
-                    const nodesize = visitNodes(xnew, $olnode);
-                    size += nodesize;
-                    xnew.setAttribute("sz", nodesize);
-                } else {
-                    size += 1;
-                }
-                $rootli = $rootli.nextAll("li:first");
-            } while ($rootli.length && !errorcondition);
-
-            return size;
-        }
-    }
-
-    /**
-     * function reCreateStructTree
-     * create an xml subtree from the root of the DOM-tree in #edit
-     * then ask to substitute this subtree in the original XML (and remake the html in #struct)
-     * @param {Node} AllXML - complete XML tree as shown in #struct
-     */
-    function reCreateStructTree(AllXML) {
-        const $domroot = $("#edit").find("ol:first");
-
-        if ($domroot) {
-            const LInode = $domroot.children("li:first");
-            const lineNr = LInode.children("label:first").text();
-            const txt = LInode.children("span:first").text();
-            const [Editxml, errorcondition] = HTML2XML($domroot);
-            const newSubtree = find_xml_node(Editxml, lineNr, txt); // search by node text AND linenr
-            const oldSubtree = find_xml_node(AllXML, lineNr, txt); // there may be duplicate node texts
-            if (errorcondition) {
-                myAlert(errorcondition, false);
-            } else if (!oldSubtree || !newSubtree) {
-                myAlert("subtree not found", false);
-            } else {
-                myAlert("commit to struct?", true, function () {
-                    oldSubtree.parentNode.replaceChild(newSubtree, oldSubtree);
-                    $("#struct").find("ol:first").remove().addBack()  // addBack is to get the #struct element back
-                        .append(createlist(AllXML.firstChild, "struct", false));
-                    setnodeattributes("struct");
-                    if (parent.site100oxen) {
-                        parent.site100oxen.XML = AllXML;
-                        let txt = new XMLSerializer().serializeToString(AllXML);
-                        localStorage.setItem("list_xml", txt);
-                        localStorage.setItem("list_xml_loaded", "true");
-                        parent.site100oxen.init_tree();
-                    }
-                });
-            }// txt = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE boop SYSTEM "iltree.dtd">' + txt;
-
-        }
-    }
-
-    //endregion HTML2XML
     //region Blob and Filereader
 
     /**********************************************************************/
@@ -972,7 +434,7 @@
             if (target === "struct") {
                 glob.XML = xml;
             }
-            createTreeFromXML(xml, target);
+            utils.createTreeFromXML(xml, target);
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
@@ -1015,15 +477,15 @@
     function checkLineNrs() {
         let result = "";
         let count = 0;
-        maptree.lastline = "test";
-        maptree(glob.XML, function (node) {
+        utils.maptree.lastline = "test";
+        utils.maptree(glob.XML, function (node) {
             if (node.nodeName === "line") {
                 const lnr = node.getAttribute("lnr");
                 if (lineNrDiff(lnr, maptree.lastline)) {
                     result += `err: ${maptree.lastline}, ${lnr}<br>\n`;
                     count += 1;
                 }
-                maptree.lastline = lnr;
+                utils.maptree.lastline = lnr;
             }
             return true;
         });
@@ -1034,7 +496,7 @@
         let paragraphs = 0, pcount = 0;
         let morelines = 0, mcount = 0;
         let count = 0;
-        maptree(glob.XML, function (node) {
+        utils.maptree(glob.XML, function (node) {
             if (node.nodeType === 1) {
                 if (node.nodeName === "line") {
                     count += 1;
@@ -1070,7 +532,7 @@
     function checkParagraphsIliad2Butler() {
         let result = "";
         let count = 0;
-        maptree(glob.XML, function (node) {
+        utils.maptree(glob.XML, function (node) {
             let found = false;
             if (node.firstChild && node.firstChild.nodeName === "line") { //get start linenrs of all paragraphs in iliad.xml
                 const lnr = node.firstChild.getAttribute("lnr");
@@ -1093,7 +555,7 @@
     function checkParagraphsButler2Iliad() {
         let result = "";
         let count = 0;
-        maptree(glob.ButlerText, function (node) {
+        utils.maptree(glob.ButlerText, function (node) {
             let found = false;
             if (node.nodeName === "A") { //get start linenrs of all paragraphs in butlertext.xml
                 const lnr = node.textContent; //search in the html is easier:
@@ -1116,12 +578,12 @@
     function checkSiblings() {
         let result = "";
         let count = 0;
-        maptree(glob.XML, function (node) {
+        utils.maptree(glob.XML, function (node) {
             const sib = node.nextSibling;
             if (sib) {
                 if (sib.nodeName !== node.nodeName) {
                     count += 1;
-                    result += `mixed node ${getlinenr(sib)}<br>\n`;
+                    result += `mixed node ${utils.getlinenr(sib)}<br>\n`;
                 }
             }
             return true;
@@ -1132,7 +594,7 @@
     function count_nodes() {
         let Lcount = 0;
         let Hcount = 0;
-        maptree(glob.XML, function (node) {
+        utils.maptree(glob.XML, function (node) {
             node = getelementnode(node);
             if (node) {
                 if (node.nodeName === "line") {
@@ -1238,7 +700,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             if ($trg.attr("id") === "sendbutton") {
                 let data$ = `name=${$("#myname").val()}&mail=${$("#mymail").val()}&text=${$("#mytext").val()}`;
                 let request = $.ajax({
-                    url: '/cgi-bin/send.cgi',
+                    url: '/cgi/send.cgi',
                     method: "POST",
                     data: data$,
                     dataType: "text"
@@ -1280,7 +742,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     $(".lvlbutt").on({
         "click": function (e) {
             const n = parseInt(e.target.textContent, 10);
-            expand(glob.targetdiv, n);
+            utils.expand(glob.targetdiv, n, glob.showing_greek);
         }
     });
 
@@ -1303,7 +765,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     glob.showing_greek = false;
                 }
                 lines.promise().done(function () {
-                    setnodeattributes("edit");
+                    utils.setnodeattributes("edit");
                 });
             }
         }
@@ -1367,7 +829,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      */
     $("#commit").on({
         "click": function () {
-            reCreateStructTree(glob.XML);
+            utils.reCreateStructTree(glob.XML);
         }
     });
     /**
@@ -1395,7 +857,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 saveBlob(glob.XML, name);
             } else {
                 const $edit = $("#edit").find("ol:first");
-                const [xml, error] = HTML2XML($edit);
+                const [xml, error] = utils.HTML2XML($edit);
                 const $li = $edit.find("li:first");
                 let name = $("#inputFileNameToSaveAs").val();
                 if (!name) {
@@ -1407,7 +869,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 if (!error) {
                     saveBlob(xml, name);
                 } else {
-                    myAlert("error: " + error, false);
+                    utils.myAlert("error: " + error, false);
                 }
             }
         }
@@ -1468,7 +930,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
 
                     if ($ol.css("display") === "none") {
                         let lvl = $ol.data("level");
-                        expand("struct", lvl).then(function () {
+                        utils.expand("struct", lvl, false).then(function () {
                             $struct.animate({
                                 scrollTop: found.position().top - $(".book").eq(0).position().top
                             }, 350); // position can only be calculated after expanding
@@ -1493,7 +955,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      */
     $("#bookmarx button").on({
         "click": function () {
-            myAlert("clear bookmarks?", true, function () {
+            utils.myAlert("clear bookmarks?", true, function () {
                 localStorage.setItem("bookmarks", "");
                 $("#bookmarx tbody tr").remove();
             });
@@ -1543,18 +1005,26 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     });
     $("#test").on({
         "click": function () {
-            const a = new Linenumber(1,1);
+            const a = new Linenumber(1, 1);
             let b = a.nextline().tostring();
             console.log(b);
             b = a.prevline().tostring();
             console.log(b);
             b = a.fromstring("2.870").tostring();
             console.log(b);
-            let c = new Linenumber(1,611);
+            let c = new Linenumber(1, 611);
             console.log(c.nextline().tostring());
             console.log(a.lessthan(c));
             c.fromstring("3.10");
-            while(!c.prevline().lessthan(a)){console.log(c.tostring());}
+            while (!c.prevline().lessthan(a)) {
+                console.log(c.tostring());
+            }
+
+            let txt = new XMLSerializer().serializeToString(parent.site100oxen.XML);
+
+            var result = MD5(txt);
+
+            console.log('hash: ' + result);
         }
     });
     //endregion Events
@@ -1571,16 +1041,16 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             if (!is_edit_tree($target)) {
                 copy_tree_to_edit($target);
             } else if ($("div#colors").css("display") !== "none") {
-                glob.hueb.setColor(`#${rgb2hex($target.css("backgroundColor")).toUpperCase()}`);
+                glob.hueb.setColor(`#${utils.rgb2hex($target.css("backgroundColor")).toUpperCase()}`);
             }
         } else {
             const get_en = $("#b_en").prop("checked");
             const get_gr = $("#b_gr").prop("checked");
             if (get_en) {
-                get_il_text(glob.ButlerText, $target, "en");
+                utils.get_il_text(glob.ButlerText, $target, "en");
             }
             if (get_gr) {
-                get_il_text(glob.GreekText, $target, "gr");
+                utils.get_il_text(glob.GreekText, $target, "gr");
             }
 
         }
@@ -1603,7 +1073,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 case "plm": // "+" or "-": expand/collapse subtree
                     $clicktarget.closest("li").eq(0).children("ol:first").slideToggle(350)
                         .promise().done(function () {
-                        setlevel($clicktarget.closest("ol"));
+                        utils.setlevel($clicktarget.closest("ol"), 0, 0);
                     });
                     break;
 
@@ -1621,7 +1091,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                         let target = $clicktarget.closest("div").attr("id");
                         if (target) {
                             glob.targetdiv = target;
-                            setnodeattributes(target);
+                            utils.setnodeattributes(target);
                         }
                     }
             }
@@ -1829,7 +1299,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
 
     if (parent.site100oxen) {
         glob.XML = parent.site100oxen.XML;
-        createTreeFromXML(glob.XML, "struct");
+        utils.createTreeFromXML(glob.XML.firstChild, "struct");
         loadPageState(); // from localStorage
     } else {
         $.ajax({
@@ -1838,13 +1308,13 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             dataType: "xml",
             success: function (xml) {
                 glob.XML = xml;
-                createTreeFromXML(xml, "struct");
+                utils.createTreeFromXML(xml.firstChild, "struct");
                 loadPageState(); // from localStorage
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 // console.log(`${textStatus}, ${errorThrown}`);
                 //  myAlert("Can't load iliad.xml", false);
-                myAlert(`iliad.xml\n${textStatus}, ${errorThrown}`, true);
+                utils.myAlert(`iliad.xml\n${textStatus}, ${errorThrown}`, true);
             }
         });
     }
@@ -1862,7 +1332,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         error: function (jqXHR, textStatus, errorThrown) {
             // console.log(`${textStatus}, ${errorThrown}`);
             // myAlert("Can't load English text", false);
-            myAlert(`butlertext\n${textStatus}, ${errorThrown}`, true);
+            utils.myAlert(`butlertext\n${textStatus}, ${errorThrown}`, true);
             $("#b_en").attr('disabled', true);
         }
     });
@@ -1877,7 +1347,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         error: function (jqXHR, textStatus, errorThrown) {
             // console.log(`${textStatus}, ${errorThrown}`);
             // myAlert("Can't load Greek text", false);
-            myAlert(`greek_il\n${textStatus}, ${errorThrown}`, true);
+            utils.myAlert(`greek_il\n${textStatus}, ${errorThrown}`, true);
             $("#b_gr").attr('disabled', true);
         }
     });
