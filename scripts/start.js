@@ -2,7 +2,6 @@ import * as utils from '../scripts/myUtils.js';
 import{ beta2uni, uni2beta, LatinGreek } from '../scripts/beta.js';
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
-// the list xml (list.xml) is loaded by page1.html and available here and there
 
 //region Site global
 window.site100oxen = {
@@ -22,9 +21,6 @@ window.site100oxen = {
 };
 //endregion Site global
 
-/**
- * startup function. Set global vars, bind event handlers, load contents
- */
 (function ($) {
 
     //region Page global (jbNS + LatinGreek)
@@ -582,10 +578,6 @@ window.site100oxen = {
         return i; //return index to jbNS.greekanchors or -1
     }
 
-    function gotoline(bookmark) { //used in scrolls.js
-        bm_greek_search(bookmark, true, 0);
-    }
-
     /**
      * function bm_butler_search
      * binary search for linenumber (bookmark) in butler text
@@ -765,7 +757,7 @@ window.site100oxen = {
         } // 4 = lineID
         bm = parsebm[4];
         if (jbNS.columns_config[2] & 1) {
-            gotoline(bm);
+            bm_greek_search(bm, true, 0);
         }
         if (jbNS.columns_config[2] & 2) {
             butlerGotoBM(bm);
@@ -832,6 +824,7 @@ window.site100oxen = {
 
     //endregion Bookmarks
 
+    //region goto linenrs
     /**
      * function showAndGotoAnyLine
      * goto any lineID (bookmark), load text /switch language as needed
@@ -960,7 +953,6 @@ window.site100oxen = {
         return ((c >= "0" && c <= "9") || c === ".");
     }
 
-
     /**
      * function iframe_mouseup(event)
      * iframe-mouseup. If clicked element contains a lineID, go there
@@ -1027,7 +1019,9 @@ window.site100oxen = {
             showAndGotoAnyLine(txt, true);
         }
     }
+    //endregion
 
+    //region user input
     /**
      * function gr_bu_MouseDown(event)
      * event-handler for mousedown/touchend on greek and butlertexts
@@ -1145,7 +1139,7 @@ window.site100oxen = {
                     butlerGotoBM(line);
                 }
                 else {
-                    gotoline(line);
+                    bm_greek_search(line, true, 0);
                 }
             }
             else { //click in text, no selection: set bookmark
@@ -1578,76 +1572,10 @@ window.site100oxen = {
                 break;
         }
     }
+    //endregion
 
-    /**
-     * function showAllLines
-     * unhide lines hidden by showSelOnly()
-     */
-    function showAllLines() {
-        let i, len, headers;
+    //region blob & filereader
 
-        headers = $("#greekframe").contents().find("h4");
-        len = headers.length;
-        for (i = 0; i < len; i += 1) {
-            headers[i].style.display = "";
-        }
-        len = jbNS.greekanchors.length;
-        for (i = 0; i < len; i += 1) {
-            jbNS.greekanchors[i].parentNode.style.display = "";
-        }
-    }
-
-    /**
-     * function showSelOnly
-     * Hide all greek lines that are not bookmarked (Il, Od only)
-     */
-    function showSelOnly() {
-        let i, len, p, headers;
-
-        len = jbNS.greekanchors.length;
-        for (i = 0; i < len; i += 1) {
-            p = jbNS.greekanchors[i];
-            if (p.className !== "bmcolor") {
-                p.parentNode.style.display = "none";
-            }
-        }
-        headers = $("#greekframe").contents().find("h4");
-        len = headers.length;
-        for (i = 0; i < len; i += 1) {
-            headers[i].style.display = "none";
-        }
-    }
-
-    /**
-     * function toggleSelOnly
-     * toggle showSelOnly() - showAllLines + menu-entry
-     * @param event
-     */
-    function toggleSelOnly(event) {
-        let a;
-
-        event.stopImmediatePropagation();
-        //$(".btn1 ul").removeClass("menuActive");
-        if (jbNS.columns_config[1] > 2) {
-            utils.myAlert("sorry, Iliad or Odyssey only", false, null);
-            return;
-        }
-        a = $("#selonly");
-        if (jbNS.showonlyselection) {
-            a.text("Show only selection");
-            jbNS.showonlyselection = false;
-            showAllLines();
-        } else {
-            a.text("Show all lines");
-            jbNS.showonlyselection = true;
-            showSelOnly();
-        }
-    }
-
-    /**********************************************************************/
-    /*! Blob & FileReader:                                                          */
-
-    /**********************************************************************/
     /**
      * function saveTextAsFile
      * save string (notepad contents) to a file going to the download directory (blob)
@@ -1696,11 +1624,10 @@ window.site100oxen = {
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
+    //endregion
 
-    /**********************************************************************/
-    /*! Notepad:                                                          */
+    //region notepad
 
-    /**********************************************************************/
     /**
      * function showNotes
      * show notepad
@@ -1767,6 +1694,9 @@ window.site100oxen = {
         }
         inp.selectionStart = inp.selectionEnd;
     }
+    //endregion
+
+    //region menu items
 
     /**
      * function showAlfabet
@@ -1780,6 +1710,72 @@ window.site100oxen = {
             $("#alfabetdiv").hide("slow", "swing");
         }
     }
+
+    /**
+     * function showAllLines
+     * unhide lines hidden by showSelOnly()
+     */
+    function showAllLines() {
+        let i, len, headers;
+
+        headers = $("#greekframe").contents().find("h4");
+        len = headers.length;
+        for (i = 0; i < len; i += 1) {
+            headers[i].style.display = "";
+        }
+        len = jbNS.greekanchors.length;
+        for (i = 0; i < len; i += 1) {
+            jbNS.greekanchors[i].parentNode.style.display = "";
+        }
+    }
+
+    /**
+     * function showSelOnly
+     * Hide all greek lines that are not bookmarked (Il, Od only)
+     */
+    function showSelOnly() {
+        let i, len, p, headers;
+
+        len = jbNS.greekanchors.length;
+        for (i = 0; i < len; i += 1) {
+            p = jbNS.greekanchors[i];
+            if (p.className !== "bmcolor") {
+                p.parentNode.style.display = "none";
+            }
+        }
+        headers = $("#greekframe").contents().find("h4");
+        len = headers.length;
+        for (i = 0; i < len; i += 1) {
+            headers[i].style.display = "none";
+        }
+    }
+
+    /**
+     * function toggleSelOnly
+     * toggle showSelOnly() - showAllLines + menu-entry
+     * @param event
+     */
+    function toggleSelOnly(event) {
+        let a;
+
+        event.stopImmediatePropagation();
+        //$(".btn1 ul").removeClass("menuActive");
+        if (jbNS.columns_config[1] > 2) {
+            utils.myAlert("sorry, Iliad or Odyssey only", false, null);
+            return;
+        }
+        a = $("#selonly");
+        if (jbNS.showonlyselection) {
+            a.text("Show only selection");
+            jbNS.showonlyselection = false;
+            showAllLines();
+        } else {
+            a.text("Show all lines");
+            jbNS.showonlyselection = true;
+            showSelOnly();
+        }
+    }
+    //endregion
 
     //region Tree manip
     /**********************************************************************/
@@ -1988,7 +1984,6 @@ window.site100oxen = {
             utils.expand("list", key, false);
         }
     }
-    //endregion
 
     /**
      * function element2lineIDs
@@ -2018,15 +2013,10 @@ window.site100oxen = {
         return {beginning: bg, last: nd};
     }
 
-    /**********************************************************************/
-    /**********************************************************************/
-    /* manage content columns                                             */
-    /**********************************************************************/
+    //endregion
 
-    /**********************************************************************/
-    /*! load content:                                                     */
+    //region load content
 
-    /**********************************************************************/
     function get_page_from_menu(ix) {
         let txt;
 
@@ -2039,7 +2029,6 @@ window.site100oxen = {
             jbNS.pageframe[0].src = txt;
         }
     }
-
 
     /**
      * loadIframeToPage
@@ -2055,6 +2044,72 @@ window.site100oxen = {
         let [c1, c2, c3, c4] = jbNS.columns_config;
         configColumns(0, 2, true);
     }
+
+    /**
+     * function iFrameLoad
+     * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
+     * @param id : string // #id of iframe
+     * @param src : string //url
+     * @returns {*}
+     */
+    function iFrameLoad(id, src) {
+        let deferred = $.Deferred(),
+            iframe = document.getElementById(id);
+        iframe.src = src;
+        $(iframe).load(deferred.resolve);
+
+        deferred.done(function () { //what to do after the individual frame has been loaded
+            let $frame, isgreek;
+
+            if (id === "greekframe") {
+                $frame = $("#greekframe");
+                isgreek = true;
+                $("#selonly").text("Show only selection");
+                jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
+                if (jbNS.gr_beginLine > 0) {
+                    scrollgreek();
+                }
+            }
+            else {
+                $frame = $("#butlerframe");
+                isgreek = false;
+                jbNS.butleranchors = $frame.contents().find("a");
+            }
+            $frame.contents().find("body").on({
+                //"touchhold": gr_bu_hold,
+                "mousedown": gr_bu_MouseDown,
+                "touchmove": function () {
+                    jbNS.touchcancel = true;
+                }
+            });
+            putbackBookmarks(isgreek); // false = butler, true = greek
+        });
+        return deferred.promise();
+    }
+
+    /**
+     * function fetchTexts
+     * fetch greek/butler texts acc. to columns_config
+     * @param filenr : number // index to filenames array
+     */
+    function fetchTexts(filenr) {
+        $.when(
+            iFrameLoad("greekframe", jbNS.filenames[1][filenr]),
+            iFrameLoad("butlerframe", jbNS.filenames[2][filenr]))
+            .then(function () { //what to do after both frames have been loaded:
+                setColumns();
+                if (window.site100oxen.untouchable) {
+                    createSplitter();
+                }
+                adjustColWidth();
+                goto_BM_on_load();
+            });
+    }
+
+
+    //endregion
+
+    //region column manip
 
     /**
      * function mousedowncolresize
@@ -2274,137 +2329,6 @@ window.site100oxen = {
     }
 
     /**
-     * function iFrameLoad
-     * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
-     * @param id : string // #id of iframe
-     * @param src : string //url
-     * @returns {*}
-     */
-    function iFrameLoad(id, src) {
-        let deferred = $.Deferred(),
-            iframe = document.getElementById(id);
-        iframe.src = src;
-        $(iframe).load(deferred.resolve);
-
-        deferred.done(function () { //what to do after the individual frame has been loaded
-            let $frame, isgreek;
-
-            if (id === "greekframe") {
-                $frame = $("#greekframe");
-                isgreek = true;
-                $("#selonly").text("Show only selection");
-                jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                if (jbNS.gr_beginLine > 0) {
-                    scrollgreek();
-                }
-            }
-            else {
-                $frame = $("#butlerframe");
-                isgreek = false;
-                jbNS.butleranchors = $frame.contents().find("a");
-            }
-            $frame.contents().find("body").on({
-                //"touchhold": gr_bu_hold,
-                "mousedown": gr_bu_MouseDown,
-                "touchmove": function () {
-                    jbNS.touchcancel = true;
-                }
-            });
-            putbackBookmarks(isgreek); // false = butler, true = greek
-        });
-        return deferred.promise();
-    }
-
-    /**
-     * function fetchTexts
-     * fetch greek/butler texts acc. to columns_config
-     * @param filenr : number // index to filenames array
-     */
-    function fetchTexts(filenr) {
-        $.when(
-            iFrameLoad("greekframe", jbNS.filenames[1][filenr]),
-            iFrameLoad("butlerframe", jbNS.filenames[2][filenr]))
-            .then(function () { //what to do after both frames have been loaded:
-                setColumns();
-                if (window.site100oxen.untouchable) {
-                    createSplitter();
-                }
-                adjustColWidth();
-                goto_BM_on_load();
-            });
-    }
-
-    /**
-     * function configColumns
-     * implement column-switching logic
-     * configure column[ colnr ] and set buttons accordingly (if set == true). Then set column width, font, scrollbar etc.
-     * @param colnr : number // column index (0-3)
-     * @param ix : number // index of buttons. if undefined (absent), set everything acc. to columns_config
-     * @param notoggle : boolean // if true: set, don't toggle default = false
-     */
-    function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
-    {	// NB: index has 1 added so [0] can be 'none'
-        let language_choice = 0, $allbuttons;
-
-        jbNS.dontSetColumns = false;
-
-        $allbuttons = $(".switch").eq(colnr).find("li");
-        //notoggle = (typeof notoggle !== "undefined");
-
-        if (typeof ix === "undefined") {
-            ix = jbNS.columns_config[colnr];
-            notoggle = true;
-            jbNS.dontSetColumns = true;
-        }
-        if (colnr === 2) { //language choice
-            language_choice = 1; // raise index by one, because of "⇔" button
-            if (notoggle) {
-                jbNS.columns_config[colnr] = ix;
-            }//language buttons can both be set (greek = bit0, engl. = bit1)
-            else {
-                if (ix > 1) {
-                    ix = (ix === 2 ? 3 : 2);
-                }//make the middle button count as 3 (bit0 + bit1) so it performs a 'switch'
-                jbNS.columns_config[colnr] ^= ix;
-            }
-        }
-        else {						// the other btns: not both
-            if (notoggle) {
-                jbNS.columns_config[colnr] = ix;
-            }
-            else {
-                jbNS.columns_config[colnr] = (jbNS.columns_config[colnr] === ix ? 0 : ix);
-            }
-        }
-        $allbuttons.removeClass("switchselect");
-        if (colnr === 1) { //text select
-            if (jbNS.columns_config[1]) {
-                $allbuttons.eq(ix - 1).addClass("switchselect");
-                //fetchTexts( ix - 1 );
-                return; // because text in iframe is fetchText()-ed and setcolumns() etc is done by deferred callback
-            }
-        }
-        else {// textframe
-            if (jbNS.columns_config[colnr] & 1) {
-                $allbuttons.eq(0).addClass("switchselect");
-            }
-            if (jbNS.columns_config[colnr] & 2) {
-                $allbuttons.eq(1 + language_choice).addClass("switchselect");
-            }
-        }
-        if (jbNS.dontSetColumns) {
-            return;
-        }
-        setColumns(); //width, display
-        if (window.site100oxen.untouchable) {
-            createSplitter();
-        }
-        if (colnr === 0 && ix === 0) {
-            scrolltree(jbNS.treetop_el_index);
-        }
-    }
-
-    /**
      * function switchColMousedown
      * event handler: mousedown on top-of-screen 'pop-down' menu.  on 'pages' > 1/2 sec. : show popup menu
      * @param event
@@ -2513,10 +2437,78 @@ window.site100oxen = {
         }, 400, "swing");
     }
 
-    /**********************************************************************/
-    /*! fontsize-zoom:                                                    */
+    /**
+     * function configColumns
+     * implement column-switching logic
+     * configure column[ colnr ] and set buttons accordingly (if set == true). Then set column width, font, scrollbar etc.
+     * @param colnr : number // column index (0-3)
+     * @param ix : number // index of buttons. if undefined (absent), set everything acc. to columns_config
+     * @param notoggle : boolean // if true: set, don't toggle default = false
+     */
+    function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
+    {	// NB: index has 1 added so [0] can be 'none'
+        let language_choice = 0, $allbuttons;
 
-    /**********************************************************************/
+        jbNS.dontSetColumns = false;
+
+        $allbuttons = $(".switch").eq(colnr).find("li");
+        //notoggle = (typeof notoggle !== "undefined");
+
+        if (typeof ix === "undefined") {
+            ix = jbNS.columns_config[colnr];
+            notoggle = true;
+            jbNS.dontSetColumns = true;
+        }
+        if (colnr === 2) { //language choice
+            language_choice = 1; // raise index by one, because of "⇔" button
+            if (notoggle) {
+                jbNS.columns_config[colnr] = ix;
+            }//language buttons can both be set (greek = bit0, engl. = bit1)
+            else {
+                if (ix > 1) {
+                    ix = (ix === 2 ? 3 : 2);
+                }//make the middle button count as 3 (bit0 + bit1) so it performs a 'switch'
+                jbNS.columns_config[colnr] ^= ix;
+            }
+        }
+        else {						// the other btns: not both
+            if (notoggle) {
+                jbNS.columns_config[colnr] = ix;
+            }
+            else {
+                jbNS.columns_config[colnr] = (jbNS.columns_config[colnr] === ix ? 0 : ix);
+            }
+        }
+        $allbuttons.removeClass("switchselect");
+        if (colnr === 1) { //text select
+            if (jbNS.columns_config[1]) {
+                $allbuttons.eq(ix - 1).addClass("switchselect");
+                //fetchTexts( ix - 1 );
+                return; // because text in iframe is fetchText()-ed and setcolumns() etc is done by deferred callback
+            }
+        }
+        else {// textframe
+            if (jbNS.columns_config[colnr] & 1) {
+                $allbuttons.eq(0).addClass("switchselect");
+            }
+            if (jbNS.columns_config[colnr] & 2) {
+                $allbuttons.eq(1 + language_choice).addClass("switchselect");
+            }
+        }
+        if (jbNS.dontSetColumns) {
+            return;
+        }
+        setColumns(); //width, display
+        if (window.site100oxen.untouchable) {
+            createSplitter();
+        }
+        if (colnr === 0 && ix === 0) {
+            scrolltree(jbNS.treetop_el_index);
+        }
+    }
+    //endregion
+
+    //region zoom functions
 
     /**
      * function setHeaderContents
@@ -2597,11 +2589,10 @@ window.site100oxen = {
         diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
         setfont(size - diff);
     }
+    //endregion
 
-    /**********************************************************************/
-    /*! initialize:                                                       */
+    //region initialize
 
-    /**********************************************************************/
     /**
      * function get_pages_list
      * load list of available pages: (#filesmenu)
@@ -2647,10 +2638,6 @@ window.site100oxen = {
         $(".menuitems").css("background-color", "");
     }
 
-    /**********************************************************************/
-    /*! local storage & page state                                        */
-
-    /**********************************************************************/
     /**
      * function storeExpansionstate
      * save expansion state of treeframe by creating a string of '0' and '1'
@@ -2810,12 +2797,28 @@ window.site100oxen = {
         zoominout();
     }
 
-    /* End of function decl.                                              */
+    function init_tree() {
+        utils.createTreeFromXML(site100oxen.XML.firstChild, 'list');
+        /* initialize */
+        jbNS.OL_level = jbNS.treeframe.find('ol');
+        jbNS.LI_elements = jbNS.treeframe.find('li');
+        jbNS.treeframe.find(".ln").on({
+            "mouseenter": tree_handleMouseEvents,
+            "mouseleave": function (event) {
+                event.target.style.backgroundColor = "";
+            },
+            "mousedown": lineIDmousedown
+        });
+        setExpansionstate();
+        setplusminus();
+        scrolltree(jbNS.treetop_el_index);
+    }
 
-    /******************************************************************************************/
-    /*                                   DRAGGABLE                                            */
-    /******************************************************************************************/
-// Simple JQuery Draggable Plugin
+    //endregion
+
+    //region draggable
+
+    // Simple JQuery Draggable Plugin
 // https://plus.google.com/108949996304093815163/about
 // Usage: $(selector).drags();
 // Options:
@@ -2882,12 +2885,17 @@ window.site100oxen = {
         return this;
 
     };
+    //endregion
+
+    //region set globals
+
     /* set global vars */
     window.site100oxen.iframe_mouseup = iframe_mouseup;
     window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
     window.site100oxen.init_tree = init_tree;
+    //endregion
 
-    /* bind event handlers */
+    //region bound event handlers
     $("#switchColumns").on({
         "mousedown touchstart": switchColMousedown
         //"click": swcol_up
@@ -3181,9 +3189,10 @@ window.site100oxen = {
         localStorage.setItem("showmsg", "false");
         localStorage.setItem("messages", $("#messages span").text());
     });
+    //endregion
 
-    /* initialize tree */
     /* load tree */
+
     $.ajax({
         type: "GET",
         url: "iliad.xml",
@@ -3222,23 +3231,5 @@ window.site100oxen = {
             utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
         }
     });
-
-    function init_tree() {
-        utils.createTreeFromXML(site100oxen.XML.firstChild, 'list');
-        /* initialize */
-        jbNS.OL_level = jbNS.treeframe.find('ol');
-        jbNS.LI_elements = jbNS.treeframe.find('li');
-        jbNS.treeframe.find(".ln").on({
-            "mouseenter": tree_handleMouseEvents,
-            "mouseleave": function (event) {
-                event.target.style.backgroundColor = "";
-            },
-            "mousedown": lineIDmousedown
-        });
-        setExpansionstate();
-        setplusminus();
-        scrolltree(jbNS.treetop_el_index);
-    }
-
 
 })(jQuery);
