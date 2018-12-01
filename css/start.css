@@ -276,7 +276,7 @@ div#colwrap {
 #treeframe li {
   height: auto;
   white-space: nowrap;
-  margin-left: 0;
+  margin: 3px 0;
 }
 #treeframe li li {
   margin-left: 1.5rem;

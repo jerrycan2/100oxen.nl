@@ -1,9 +1,10 @@
 import * as utils from '../scripts/myUtils.js';
-import{ beta2uni, uni2beta, LatinGreek } from '../scripts/beta.js';
+import {beta2uni, uni2beta, LatinGreek} from '../scripts/beta.js';
+
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
 
-//region Site global
+//region Site global var
 window.site100oxen = {
     nolocalstorage: false,
     forcereload: true,
@@ -19,11 +20,11 @@ window.site100oxen = {
     untouchable: true,
     iframe_mouseup: null
 };
-//endregion Site global
+//endregion Site global vars
 
 (function ($) {
 
-    //region Page global (jbNS + LatinGreek)
+    //region Page global (jbNS)
     /**********************************************************************/
     /*! global Objects:                                                   */
     /**********************************************************************/
@@ -99,10 +100,10 @@ window.site100oxen = {
         selectBtnMessages: [
             [""],
             ["???"],
-            ["Goto gr.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
-            ["Goto eng.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
+            ["Goto gr.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
+            ["Goto eng.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
             ["Goto"],
-            ["Find gr.", "<img id='perseus' src='../images/perseus_digital_lib.gif'> :", "Word Study"],
+            ["Find gr.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Word Study"],
             ["Find eng."]
         ],
         selectBtnActions: [
@@ -123,12 +124,10 @@ window.site100oxen = {
     };
     //endregion Page global
 
-    window.site100oxen.untouchable =
-        !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));//we're on a tablet or phone
-
     //region Perseus
     /**********************************************************************/
     /*! Perseus:                                                           */
+
     /**********************************************************************/
     /**
      * function perseusLookup
@@ -144,8 +143,7 @@ window.site100oxen = {
             line = lineID_2_lineNR_obj(parse[4]);
             n1 = line.c;
             n2 = line.l;
-        }
-        else {
+        } else {
             return;
         }
         text = parse[2].toLowerCase();
@@ -159,14 +157,12 @@ window.site100oxen = {
         url1 = jbNS.perseus_url;
         if (textindex >= 0) {
             url1 += jbNS.perseus_names[language][textindex];
-        }
-        else {
+        } else {
             return;
         }
         if (textindex < 2) { // il, od
             url1 = url1 + ":book=" + n1 + ":card=" + n2;
-        }
-        else {
+        } else {
             url1 = url1 + ":card=" + n2;
         }
         //url1 = encodeURI( url1 ); ??
@@ -200,6 +196,7 @@ window.site100oxen = {
         }
         configColumns(0, 2, true);
     }
+
     //endregion Perseus
 
     //region scrolling & searching
@@ -253,14 +250,14 @@ window.site100oxen = {
             });
             jbNS.textframe[0].src = jbNS.filenames[3][0];
             configColumns(3, 1, true);
-        }
-        else {
+        } else {
             gotoAnchor(name, false);
         }
     }
 
     /**********************************************************************/
     /*! Finding linenrs IN THE TEXT                                       */
+
     /**********************************************************************/
     /**
      * function checklastletter
@@ -296,8 +293,7 @@ window.site100oxen = {
                     } // hack: W&D lines out of order (169a etc. between 173 & 174)
                     lnr = n + checklastletter(lineID);
                 }
-            }
-            else { // Il or Od greek or latin
+            } else { // Il or Od greek or latin
                 n = LatinGreek.greek2index(lineID.substr(0, 1));
                 if (n < 0) {
                     n = LatinGreek.latin2index(lineID.substr(0, 1));
@@ -310,8 +306,7 @@ window.site100oxen = {
                     lnr = parseInt(lineID.substr(1), 10);
                 }
             }
-        }
-        else { // Il or Od transl. "chapter.line"
+        } else { // Il or Od transl. "chapter.line"
             chap = parseInt(lineID, 10);
             lnr = parseInt(lineID.substr(i + 1), 10);
         }
@@ -444,6 +439,7 @@ window.site100oxen = {
         }
         return -1;
     }
+
     //endregion scrolling & searching
 
     //region Bookmarks
@@ -548,8 +544,7 @@ window.site100oxen = {
                 if (mark === 1) {
                     if (tl.className === "bmcolor") {
                         tl.className = "";
-                    }
-                    else {
+                    } else {
                         jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
                         tl.className = "bmcolor";
                     }
@@ -638,8 +633,7 @@ window.site100oxen = {
             if ($("#butlerframe:visible").length) {
                 jbNS.butleranchors[lineindex].scrollIntoView();
             }
-        }
-        else {
+        } else {
             utils.myAlert("Butler bookmark not found", false, null);
         }
         return lineindex;
@@ -667,8 +661,7 @@ window.site100oxen = {
         }
         if (parsebm[3]) {
             hascolon = parsebm[3] === ":"; //possible switch to other language
-        }
-        else {
+        } else {
             hascolon = !greek;
         }
         if (!parsebm[2]) {
@@ -677,11 +670,9 @@ window.site100oxen = {
 
         if (greek && !hascolon) {
             $target = jbNS.greekanchors.eq(bm_greek_search(linenr, false, 2));
-        }
-        else if (!greek && hascolon) {
+        } else if (!greek && hascolon) {
             $target = $(jbNS.butlerframe).contents().find("a:contains('" + linenr + "'):first");
-        }
-        else {
+        } else {
             return false;
         }
         bms = jbNS.bookMarx[currtxt];
@@ -690,8 +681,7 @@ window.site100oxen = {
             if (toggle) {
                 $target.removeClass("bmcolor");
                 bms[i] = "";
-            }
-            else {
+            } else {
                 $target.addClass("bmcolor");
             }
         } else {
@@ -783,8 +773,7 @@ window.site100oxen = {
             while (i > 0 && bmsel.options[i - 1].value[0] !== "-") {
                 i -= 1;
             }
-        }
-        else {
+        } else {
             i += 1;
         }
         bmsel.selectedIndex = i;
@@ -807,8 +796,7 @@ window.site100oxen = {
             while (i < bmsel.options.length - 1 && bmsel.options[i + 1].value[0] !== "-") {
                 i += 1;
             }
-        }
-        else {
+        } else {
             i -= 1;
         }
         bmsel.selectedIndex = i;
@@ -846,8 +834,7 @@ window.site100oxen = {
         prefix = parsebm[2];
         if (!prefix) {
             textindex = jbNS.columns_config[1]; // same text
-        }
-        else {
+        } else {
             prefix = prefix.toLowerCase();
             for (i = 0; i < jbNS.prefixes.length; ++i) {
                 if (jbNS.prefixes[i].toLowerCase() === prefix) {
@@ -862,11 +849,9 @@ window.site100oxen = {
         }
         if (parsebm[3] === ":") {
             lang = 2; //english
-        }
-        else if (parsebm[3] === " ") {
+        } else if (parsebm[3] === " ") {
             lang = 1; //greek
-        }
-        else {
+        } else {
             lang = jbNS.columns_config[2];
         } // same language
 
@@ -878,8 +863,7 @@ window.site100oxen = {
         if (jbNS.columns_config[2] === 0) {
             if (loadtext) {
                 configColumns(2, lang, true);
-            }
-            else {
+            } else {
                 jbNS.bm_to_goto = "";
                 return;
             }
@@ -888,13 +872,11 @@ window.site100oxen = {
             if (loadtext) {
                 fetchTexts(textindex - 1);// callback also goes to goto_BM_on_load()
                 configColumns(1, textindex, true); // right text.
-            }
-            else {
+            } else {
                 jbNS.bm_to_goto = "";
                 return;
             }
-        }
-        else {
+        } else {
             goto_BM_on_load();
         }
     }
@@ -911,35 +893,29 @@ window.site100oxen = {
         if (event && event.view.name === "greekframe") {
             doc = document.getElementById("greekframe");
             ifr = true;
-        }
-        else if (event && event.view.name === "butlerframe") {
+        } else if (event && event.view.name === "butlerframe") {
             doc = document.getElementById("butlerframe");
             ifr = true;
-        }
-        else if (event && event.view.name === "pageframe") {
+        } else if (event && event.view.name === "pageframe") {
             doc = document.getElementById("pageframe");
             ifr = true;
-        }
-        else if (event && event.view.name === "textframe") {
+        } else if (event && event.view.name === "textframe") {
             doc = document.getElementById("textframe");
             ifr = true;
-        }
-        else {
+        } else {
             doc = document;
         }
         idoc = doc || doc.contentDocument || doc.contentWindow.document;
         if (window.getSelection) { //webkit
             if (ifr) {
                 txt = $.trim(doc.contentWindow.getSelection().toString());
-            }
-            else {
+            } else {
                 txt = $.trim(doc.getSelection().toString());
             }
         } else if (document.getSelection) {
             if (ifr) {
                 txt = $.trim(doc.contentWindow.getSelection().toString());
-            }
-            else {
+            } else {
                 txt = $.trim(idoc.getSelection().toString());
             }
         } else if (document.selection) { //IE?
@@ -964,15 +940,13 @@ window.site100oxen = {
 
         if (event.view.name === "pageframe") {
             doc = document.getElementById("pageframe");
-        }
-        else if (event.view.name === "textframe") {
+        } else if (event.view.name === "textframe") {
             doc = document.getElementById("textframe");
         }
         sel = doc.contentWindow.getSelection();
         if (sel && sel.rangeCount > 0) {
             range = sel.getRangeAt(0);
-        }
-        else {
+        } else {
             return;
         }
         bg = range.startOffset;
@@ -999,15 +973,13 @@ window.site100oxen = {
                 ok = true;
                 bg -= 1;
             }
-        }
-        else {
+        } else {
             return;
         }
 
         if (ok) {
             bg -= 2;
-        }
-        else {
+        } else {
             return;
         }
         txt = txt.substring(bg, nd);
@@ -1019,6 +991,7 @@ window.site100oxen = {
             showAndGotoAnyLine(txt, true);
         }
     }
+
     //endregion
 
     //region user input
@@ -1038,8 +1011,7 @@ window.site100oxen = {
 
             if (time2 < 500) {
                 gr_bu_MouseUp(ev2);
-            }
-            else { //'hold'
+            } else { //'hold'
                 //ev2.preventDefault();
                 txt = getSelectedText(ev2);
                 greek = ev2.view.name === "greekframe";
@@ -1060,8 +1032,7 @@ window.site100oxen = {
                         if (txt.length < 100) {
                             $("#textinput").val(txt);
                             setSelButtonText();
-                        }
-                        else {
+                        } else {
                             $("#textinput").val("selection too large");
                         }
 
@@ -1091,8 +1062,7 @@ window.site100oxen = {
             line = $t.text();
             click_lnr = true;
             /* click on linenr */
-        }
-        else if ($t.is("p")) { /* or on line itself */
+        } else if ($t.is("p")) { /* or on line itself */
             for (n = 0; n < 5; ++n) { // in Hesiod greek there is an <a> once in 5 <p>
                 line = $t.children("a").text();
                 if (line) {
@@ -1125,24 +1095,20 @@ window.site100oxen = {
                 if (s.length < 100) {
                     $("#textinput").val(s);
                     setSelButtonText();
-                }
-                else {
+                } else {
                     $("#textinput").val("selection too large");
                 }
 
             }
-        }
-        else {
+        } else {
             if (click_lnr) {  // click on linenumber: let the other frame scroll there
                 jbNS.bm_to_goto = line;
                 if (greek) {
                     butlerGotoBM(line);
-                }
-                else {
+                } else {
                     bm_greek_search(line, true, 0);
                 }
-            }
-            else { //click in text, no selection: set bookmark
+            } else { //click in text, no selection: set bookmark
                 too_many_bm = setUnsetBookMark(bookmark, true, greek);
                 if (too_many_bm) {
                     utils.myAlert("Too many bookmarks (max. 1000). BM not set.", false, null);
@@ -1248,8 +1214,7 @@ window.site100oxen = {
                             greekline.substr(pos + inp.length);
                         found += 1;
                     }
-                }
-                else { // search in Greek unicode
+                } else { // search in Greek unicode
                     while ((start = greekline.indexOf(inp, start + 1)) >= 0) {
                         greekline = greekline.substr(0, start) + "<b>" + inp + "</b>" + greekline.substr(start + inp.length);
                         start += inp.length + 7;
@@ -1280,8 +1245,7 @@ window.site100oxen = {
         //updateCounter();
         if (!count) {
             utils.myAlert("Nothing found!", false, null);
-        }
-        else {
+        } else {
             bmsel = $("#BMselector");
             $("#counter").css({
                 "left": bmsel.offset().left + bmsel.width() + 10,
@@ -1316,24 +1280,20 @@ window.site100oxen = {
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 i = jbNS.columns_config[1];
             }
             lnr = true;
             if (parseln[3] === " ") {
                 lang = 1;
-            }
-            else if (parseln[3] === ":") {
+            } else if (parseln[3] === ":") {
                 lang = 2;
             }
-        }
-        else {
+        } else {
             if (!isNaN(parseInt(s, 10))) {
                 //utils.myAlert( "ill-formed line number", false, null );
                 typ = -1; // -1 = error
-            }
-            else {
+            } else {
                 coding = isGreekCode(s);
             }
         } //coding: text encoding 0=latin 1=greek 2=extended greek
@@ -1356,30 +1316,23 @@ window.site100oxen = {
         if (!what || !s) {
             selbutt.find("ul").remove();
             return;
-        }
-        else if (what.kind === -1) {
+        } else if (what.kind === -1) {
             msg = 1; //"???";
-        }
-        else if (what.kind === 2) {
+        } else if (what.kind === 2) {
             msg = 7;
-        }
-        else {
+        } else {
             if (what.lnr) {
                 if (what.taal === 1) {
                     msg = 2; //"goto gr." + Perseus lookups
-                }
-                else if (what.taal === 2) {
+                } else if (what.taal === 2) {
                     msg = 3; //"goto eng." + Perseus lookups
-                }
-                else if (what.taal === 3) {
+                } else if (what.taal === 3) {
                     msg = 4; //"goto";
                 }
-            }
-            else {
+            } else {
                 if (what.code) { //which = 1 or 2
                     msg = 5; //"Find gr."; + Word Study lookup
-                }
-                else { // which = 0
+                } else { // which = 0
                     msg = 6; //"Find eng.";
                 }
             }
@@ -1390,8 +1343,7 @@ window.site100oxen = {
         if (!sb.length) {
             selbutt.append("<ul id='selectlist'></ul>");
             sb = selbutt.find("ul");
-        }
-        else {
+        } else {
             sb.children().remove();
         }
         for (i = 0; i < jbNS.selectBtnMessages[msg].length; ++i) {
@@ -1435,8 +1387,7 @@ window.site100oxen = {
         inputbox.value = val.slice(0, start) + str + val.slice(selend);
         if (start === selend) {
             inputbox.selectionStart = inputbox.selectionEnd = selend + 1;// Move the caret
-        }
-        else {
+        } else {
             if (keep) {
                 inputbox.selectionStart = start;
                 inputbox.selectionEnd = start + str.length;
@@ -1472,8 +1423,7 @@ window.site100oxen = {
         }
         if (isGreekCode(sel)) {
             sel = uni2beta(sel, accents);
-        }
-        else {
+        } else {
             sel = beta2uni(sel);
         }
         return sel;
@@ -1550,11 +1500,9 @@ window.site100oxen = {
             case 3: // goto butler
                 if (index === 0) {
                     showAndGotoAnyLine(s, true);
-                }
-                else if (index === 2) {
+                } else if (index === 2) {
                     perseusLookup(0);
-                }
-                else if (index === 3) {
+                } else if (index === 3) {
                     perseusLookup(1);
                 }
                 break;
@@ -1572,6 +1520,7 @@ window.site100oxen = {
                 break;
         }
     }
+
     //endregion
 
     //region blob & filereader
@@ -1624,6 +1573,7 @@ window.site100oxen = {
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
+
     //endregion
 
     //region notepad
@@ -1694,6 +1644,7 @@ window.site100oxen = {
         }
         inp.selectionStart = inp.selectionEnd;
     }
+
     //endregion
 
     //region menu items
@@ -1775,28 +1726,10 @@ window.site100oxen = {
             showSelOnly();
         }
     }
+
     //endregion
 
     //region Tree manip
-    /**********************************************************************/
-    /*! Tree manipulation:                                                */
-    /**********************************************************************/
-    /**
-     * function setplusminus
-     * set the proper + and - signs in treeframe after expand/collapse
-     */
-    function setplusminus() {
-        jbNS.OL_level.each(function () {
-            let $this = $(this);
-            if ($this.length) {
-                $this.children("li").each(function () {
-                    let $that = $(this);
-                    $that.children("ol:visible").prev("span").replaceWith("<span class='plm'>&ominus;</span>"); // its children
-                    $that.children("ol:hidden").prev("span").replaceWith("<span class='plm'>&oplus;</span>");
-                });
-            }
-        });
-    }
 
     /**
      * function getindex
@@ -1827,33 +1760,6 @@ window.site100oxen = {
     }
 
     /**
-     * function klap
-     * expand/collapse list acc. to menu-choice
-     * @param level : number // 1-8
-     */
-    function klap(level) { //expand/collapse list acc. to menu-choice (level)
-        let ols;
-
-        jbNS.currentLevel = level;
-        ols = jbNS.OL_level;
-        ols.each(function () {
-            let $this, val;
-
-            $this = $(this);
-            val = $this.data("level");
-            if (val > level) {
-                $this.slideUp(600);
-            } else {
-                $this.slideDown(600);
-            }
-        });
-        ols.promise().done(function () {
-            scrolltree(jbNS.treetop_el_index);
-            setplusminus();
-        });
-    }
-
-    /**
      * function handleRemClick
      * show the "rem' data-attribute text or hide it and save the text back to the DOM
      * @param {*} $element - the clicked html element: either .hasrem or .norem
@@ -1866,8 +1772,7 @@ window.site100oxen = {
             txtrem.slideToggle(350, function () {
                 $(this).remove();
             });
-        }
-        else { // show it by creating a temporary <div> element with the text
+        } else { // show it by creating a temporary <div> element with the text
             $element.nextAll("span:last")
                 .after("<div class='remtxt'>" + $element.closest("li").data("rem") || "" + "</div>");
             $parent.find(".remtxt:first").slideToggle(350);
@@ -1897,8 +1802,7 @@ window.site100oxen = {
                 $trg.css("background-color", "lightblue");
             }
 
-        }
-        else if ($trg.is("span")) {
+        } else if ($trg.is("span")) {
             $prev = $trg.prev("span");
             if ($prev && $prev.hasClass("ln")) { /*click on text part*/
                 if (hovering) {
@@ -1906,19 +1810,17 @@ window.site100oxen = {
                 }
                 s = $prev.text();
                 showAndGotoAnyLine("il " + s, false);
-            }
-            else if (!hovering && $trg.is(".plm")) { /*click on + or - */
+            } else if (!hovering && $trg.is(".plm")) { /*click on + or - */
 
                 $ol = $trg.closest("li").eq(0).children("ol").eq(0);
                 $ol.slideToggle(400); //this = LI element
-                $ol.promise().done(function(){
-                        setplusminus();
-//                        utils.setnodeattributes("list");
-                        $("html").getNiceScroll().resize();
+                $ol.promise().done(function () {
+//                        setplusminus();
+                    utils.setnodeattributes("list");
+                    $("html").getNiceScroll().resize();
                 });
             }
-        }
-        else if ($trg.is("div.hasrem")) {
+        } else if ($trg.is("div.hasrem")) {
             handleRemClick($trg);
         }
     }
@@ -1948,8 +1850,7 @@ window.site100oxen = {
                     $trg.css("background-color", "lightblue");
                     loadAndGotoTextframeAnchor(anchor);
                 }
-            }
-            else { // 'hold'
+            } else { // 'hold'
                 if (!$trg.hasClass("ln")) {
                     return;
                 }
@@ -2006,8 +1907,7 @@ window.site100oxen = {
         }
         if ($parent.length === 0) {
             nd = "24.805"; // final li element
-        }
-        else {
+        } else {
             nd = $parent.next("li").children(".ln").text(); // only 1 .ln child
         }
         return {beginning: bg, last: nd};
@@ -2069,8 +1969,7 @@ window.site100oxen = {
                 if (jbNS.gr_beginLine > 0) {
                     scrollgreek();
                 }
-            }
-            else {
+            } else {
                 $frame = $("#butlerframe");
                 isgreek = false;
                 jbNS.butleranchors = $frame.contents().find("a");
@@ -2227,8 +2126,7 @@ window.site100oxen = {
             $(".viewport:visible").each(function (i) {
                 jbNS.width[i] = $(this).width(); //store widths
             });
-        }
-        else { //otherwise: resize to default widths
+        } else { //otherwise: resize to default widths
             doresize = true;
         }
         jbNS.oldcolnum = colnum;
@@ -2238,19 +2136,16 @@ window.site100oxen = {
         jbNS.pageframe.hide();
         if (col1 && colnum > 2) {
             colwidth = (scr / (colnum + 1)) - 8; //8 for resizer
-        }
-        else {
+        } else {
             colwidth = (scr / colnum) - 8;
         }
         if (doresize) {
             if (colnum > 2) {
                 w = 2 * colwidth;
-            }
-            else {
+            } else {
                 w = colwidth;
             }
-        }
-        else {
+        } else {
             w = jbNS.width[col_ix];
         }
         if (col1 === 1) {
@@ -2363,23 +2258,20 @@ window.site100oxen = {
                 configColumns(colnr, ix + 1, false); //-1
                 if (colnr === 2) {
                     goto_BM_on_load();
-                }
-                else {
+                } else {
                     jbNS.bm_to_goto = "";
                 }
                 if (colnr === 3) {
                     jbNS.textframe[0].src = jbNS.filenames[3][ix];
                 }
-            }
-            else { // list/pages
+            } else { // list/pages
                 if (jbNS.columns_config[0] === 2 && ix === 1) {
 
                     if ((!e.shiftKey && window.site100oxen.untouchable)
                         || (!window.site100oxen.untouchable && time2 < 1500)) {
                         if (jbNS.pageframe[0].src.split("/").pop() !== 'page1.html') {
                             jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
-                        }
-                        else {
+                        } else {
                             //jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
                             configColumns(0, 2, false);
                         }
@@ -2394,8 +2286,7 @@ window.site100oxen = {
                             $("#coverall").one("click", hidemenuitems);
                         }
                     }
-                }
-                else {
+                } else {
                     configColumns(colnr, ix + 1, false);
                 }
             }
@@ -2426,8 +2317,7 @@ window.site100oxen = {
         $(event.target).show();
         if (event.target.id === "columns") {
             trg = "#switchColumns";
-        }
-        else {
+        } else {
             trg = "#bm_nav";
         }
         $(trg).stop().show().animate({
@@ -2470,12 +2360,10 @@ window.site100oxen = {
                 }//make the middle button count as 3 (bit0 + bit1) so it performs a 'switch'
                 jbNS.columns_config[colnr] ^= ix;
             }
-        }
-        else {						// the other btns: not both
+        } else {						// the other btns: not both
             if (notoggle) {
                 jbNS.columns_config[colnr] = ix;
-            }
-            else {
+            } else {
                 jbNS.columns_config[colnr] = (jbNS.columns_config[colnr] === ix ? 0 : ix);
             }
         }
@@ -2486,8 +2374,7 @@ window.site100oxen = {
                 //fetchTexts( ix - 1 );
                 return; // because text in iframe is fetchText()-ed and setcolumns() etc is done by deferred callback
             }
-        }
-        else {// textframe
+        } else {// textframe
             if (jbNS.columns_config[colnr] & 1) {
                 $allbuttons.eq(0).addClass("switchselect");
             }
@@ -2506,6 +2393,7 @@ window.site100oxen = {
             scrolltree(jbNS.treetop_el_index);
         }
     }
+
     //endregion
 
     //region zoom functions
@@ -2555,12 +2443,11 @@ window.site100oxen = {
      * try to set font size of iframe
      */
     function setIframeFont(size) {
-        $("iframe:visible").each(function () {
+        $(".viewport:visible").each(function () { //hier
             try {
                 $(this).contents().find("html").css("font-size", size + "px");
                 //console.log(this.name);
-            }
-            catch (ignore) {
+            } catch (ignore) {
             }
         });
     }
@@ -2589,6 +2476,7 @@ window.site100oxen = {
         diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
         setfont(size - diff);
     }
+
     //endregion
 
     //region initialize
@@ -2649,8 +2537,7 @@ window.site100oxen = {
         for (t = 0; t < jbNS.OL_level.length; t += 1) {
             if (jbNS.OL_level[t].style.display === "none") {
                 jbNS.exp_state += "0";
-            }
-            else {
+            } else {
                 jbNS.exp_state += "1";
             }
         }
@@ -2670,8 +2557,7 @@ window.site100oxen = {
         for (t = 0; t < jbNS.OL_level.length; t += 1) {
             if (t < jbNS.exp_state.length && jbNS.exp_state[t] === "1") {
                 jbNS.OL_level[t].style.display = "";
-            }
-            else {
+            } else {
                 jbNS.OL_level[t].style.display = "none";
             }
         }
@@ -2780,11 +2666,10 @@ window.site100oxen = {
         s = localStorage.getItem("splash") || "";
         if (s !== "hide") {
             $("#splash").show();
-        }
-        else {
+        } else {
             $("#splash").hide();
         }
-        if(localStorage.getItem("messages") === $("#messages span").text()
+        if (localStorage.getItem("messages") === $("#messages span").text()
             && localStorage.getItem("showmsg") === "false") {
             $("#messages").hide();
         } else {
@@ -2810,7 +2695,6 @@ window.site100oxen = {
             "mousedown": lineIDmousedown
         });
         setExpansionstate();
-        setplusminus();
         scrolltree(jbNS.treetop_el_index);
     }
 
@@ -2915,8 +2799,7 @@ window.site100oxen = {
             if (window.innerWidth < 500) {
                 li.eq(0).text("expl");
                 li.eq(1).text("help");
-            }
-            else {
+            } else {
                 li.eq(0).text("explanation");
                 li.eq(1).text("help");
             }
@@ -2934,8 +2817,7 @@ window.site100oxen = {
             const diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
             $(this).contents().find("html").css("font-size",
                 (jbNS.basic_fontsize - diff) + "px");
-        }
-        catch (ignore) {
+        } catch (ignore) {
         }
     });
 
@@ -2987,8 +2869,7 @@ window.site100oxen = {
             jbNS.keepFontsize = true;
             jbNS.basic_fontsize = $("#setfontsize")[0].value;
             //localStorage.setItem( "fontsize", jbNS.basic_fontsize );
-        }
-        else {
+        } else {
             jbNS.keepFontsize = false;
             jbNS.basic_fontsize = 16;
             zoominout();
@@ -3191,7 +3072,7 @@ window.site100oxen = {
     });
     //endregion
 
-    /* load tree */
+    //region Ajax get xml
 
     $.ajax({
         type: "GET",
@@ -3201,8 +3082,7 @@ window.site100oxen = {
         success: function (xmlstring) {
             try {
                 window.site100oxen.XML = $.parseXML(xmlstring);
-            }
-            catch (e) {
+            } catch (e) {
                 utils.myAlert(e, true, null);
                 return;
             }
@@ -3211,7 +3091,9 @@ window.site100oxen = {
             localStorage.setItem("list_xml", xmlstring);
             localStorage.setItem("list_xml_loaded", "true");
             init_tree();
-            if (window.site100oxen.untouchable) { //} && !jbNS.is_firefox) {
+            window.site100oxen.untouchable = // are we on a touch device?
+                !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+            if (window.site100oxen.untouchable) {
                 $("#treeframe").niceScroll({
                     cursorcolor: "#888",
                     cursorwidth: "7px",
@@ -3231,5 +3113,6 @@ window.site100oxen = {
             utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
         }
     });
+    //endregion
 
 })(jQuery);

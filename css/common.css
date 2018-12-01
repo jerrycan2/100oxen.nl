@@ -206,7 +206,7 @@ button.accordion:after {
 div.panel {
   padding-left: 1rem;
   /*background-color: white;*/
-  /*max-height: 0;*/
+  max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease-out;
   font-size: 1rem;

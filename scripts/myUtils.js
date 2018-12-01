@@ -353,6 +353,18 @@ export function setlevel($node, level, highest) {
 }
 
 /**
+ * function disableButtons
+ * highest available level has been determined by setnodeattributes()
+ * disable buttons outside that range
+ * @param {number} highest
+ */
+function disableButtons(highest) {
+    const $butts = $(".lvlbutt");
+    $butts.attr('disabled', false);
+    $butts.filter(":gt(" + (highest - 1) + ")").attr('disabled', 'true');
+}
+
+/**
  * function setnodeattributes
  * loop through all OL nodes
  * 1: set the proper + and - signs in tree after expand/collapse
@@ -361,14 +373,7 @@ export function setlevel($node, level, highest) {
  * @param {string} target
  */
 export function setnodeattributes(target) {
-    let highest = setlevel($("#" + target).find("ol:first"), 0, 0);
-    // disableButtons(highest);
-    // if (parent.site100oxen.untouchable) {
-    //     setTimeout(function () { //wait for transition?
-    //         $("html").getNiceScroll().resize();
-    //     }, 500);
-    //
-    // }
+    disableButtons(setlevel($("#" + target).find("ol:first"), 0, 0));
 }
 
 /**

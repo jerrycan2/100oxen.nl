@@ -40,18 +40,6 @@ import { MD5 } from '../scripts/md5.js';
     //region UI
 
     /**
-     * function disableButtons
-     * highest available level has been determined by setnodeattributes()
-     * disable buttons outside that range
-     * @param {number} highest
-     */
-    function disableButtons(highest) {
-        const $butts = $(".lvlbutt");
-        $butts.attr('disabled', false);
-        $butts.filter(":gt(" + (highest - 1) + ")").attr('disabled', 'true');
-    }
-
-    /**
      * function updateUndoSelect
      * after push or pop, update option list
      * and maintain item count in option[0] of select box
@@ -1081,8 +1069,8 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     checkbox_clicked($clicktarget);
                     break;
 
-                case "norem":
                 case "hasrem":
+                case "norem":
                     handleRemClick($clicktarget);
                     break;
 
@@ -1298,25 +1286,11 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     }
 
     if (parent.site100oxen) {
+        $("#struct").children().remove().end()
+            .append($("#list", parent.document).find("ol:first"));
         glob.XML = parent.site100oxen.XML;
-        utils.createTreeFromXML(glob.XML.firstChild, "struct");
         loadPageState(); // from localStorage
-    } else {
-        $.ajax({
-            type: "GET",
-            url: "iliad.xml",
-            dataType: "xml",
-            success: function (xml) {
-                glob.XML = xml;
-                utils.createTreeFromXML(xml.firstChild, "struct");
-                loadPageState(); // from localStorage
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                // console.log(`${textStatus}, ${errorThrown}`);
-                //  myAlert("Can't load iliad.xml", false);
-                utils.myAlert(`iliad.xml\n${textStatus}, ${errorThrown}`, true);
-            }
-        });
+        utils.setnodeattributes("struct");
     }
 
     /**
