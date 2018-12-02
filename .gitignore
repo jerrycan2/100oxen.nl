@@ -6,6 +6,7 @@ gen
 new
 old
 sitemaps
+unused
 *.orig
 *.bak
 *.bup
