@@ -62,7 +62,8 @@ window.site100oxen = {
             ["likenesses.html", "Likenesses"],
             ["thegods.html", "The Gods"],
             ["rhetoric.html", "on rhetoric"],
-            ["apollo.html", "Apollo"]
+            ["apollo.html", "Apollo"],
+            ["plato.html", "Politeia"]
         ],
         pages_extern: [
             ["", ""],
