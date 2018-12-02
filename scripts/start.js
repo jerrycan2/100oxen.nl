@@ -17,7 +17,8 @@ window.site100oxen = {
     createlist: null,
     setnodeattributes: null,
     find_xml_node: null,
-    untouchable: true
+    untouchable: true,
+    storePage: null,
 //    iframe_mouseup: null
 };
 //endregion Site global vars
@@ -52,17 +53,9 @@ window.site100oxen = {
         perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
 
         pages_local: [
-            ["editor.html", "editor"],
-            ["page1.html", "Proportional View"],
             ["100oxen.html", "100 Oxen"],
-            ["gtb.html", "the Good, the True, the Beautiful"],
-            ["ring.html", "Ring Composition"],
-            ["smyrna.html", "Homer's Birthplace?"],
-            ["summary.html", "History"],
-            ["likenesses.html", "Likenesses"],
-            ["thegods.html", "The Gods"],
-            ["rhetoric.html", "on rhetoric"],
-            ["apollo.html", "Apollo"]
+            ["editor.html", "editor"],
+            ["blocks.html", "Proportional View"],
         ],
         pages_extern: [
             ["", ""],
@@ -1862,6 +1855,10 @@ window.site100oxen = {
             jbNS.pageframe[0].src = txt;
         }
     }
+    function storePage(href){
+        jbNS.currentPage = href.split("/").pop();
+
+    }
 
     /**
      * loadIframeToPage
@@ -2202,10 +2199,10 @@ window.site100oxen = {
 
                     if ((!e.shiftKey && window.site100oxen.untouchable)
                         || (!window.site100oxen.untouchable && time2 < 1500)) {
-                        if (jbNS.pageframe[0].src.split("/").pop() !== 'page1.html') {
-                            jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
+                        if (jbNS.currentPage !== 'sitemap.html') {
+                            jbNS.pageframe[0].src = jbNS.currentPage = 'sitemap.html';
                         } else {
-                            //jbNS.pageframe[0].src = jbNS.currentPage = 'page1.html';
+                            //jbNS.pageframe[0].src = jbNS.currentPage = 'blocks.html';
                             configColumns(0, 2, false);
                         }
                     } else if (e.shiftKey || time2 > 1500) {
@@ -2610,7 +2607,7 @@ window.site100oxen = {
             $("#messages").show();
         }
         setSelButtonText();
-        jbNS.currentPage = localStorage.getItem("currentpage") || "page1.html";
+        jbNS.currentPage = localStorage.getItem("currentpage") || "sitemap.html";
         jbNS.pageframe[0].src = jbNS.currentPage;
         zoominout();
     }
@@ -2707,6 +2704,7 @@ window.site100oxen = {
     //region set globals
     window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
     window.site100oxen.init_tree = init_tree;
+    window.site100oxen.storePage = storePage;
     //endregion
 
     //region bound event handlers

@@ -100,6 +100,12 @@ $(document).ready(function () {
         }
     });
 
+    $(".textlink").on({
+        "click": function (event) {
+            parent.site100oxen.storePage(this.href);
+        }
+    });
+
     $(".accordion, .citation .cithead").on("click tap", accordionclick);
 
     /* footnotes */
