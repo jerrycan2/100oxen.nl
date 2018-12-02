@@ -1,39 +1,34 @@
-import * as utils from '../scripts/myUtils.js';
 /**
  * Created by jeroen on 17/02/2017.
  * this goes into files, loaded into pageframe
  */
 'use strict';
+var untouchable;
 
 function accordionclick(event) {
     var button, panel;
 
-    //event.stopImmediatePropagation();
+    event.stopImmediatePropagation();
     button = event.target;
     button.classList.toggle("active");
     panel = $(button).next(".panel");
     if (panel) {
         if (panel[0].style.maxHeight) {
             panel[0].style.maxHeight = null;
-            panel[0].style.height = null;
         } else {
             panel[0].style.maxHeight = panel[0].scrollHeight + "px";
-            panel[0].style.height = panel[0].style.maxHeight;
         }
     }
-    if (parent.site100oxen.untouchable) {
-        setTimeout(function () { //wait for transition?
-            $("html").getNiceScroll().resize();
-        }, 500);
-
+    if (untouchable) {
+        $("html").getNiceScroll().resize();
     }
 }
 
 $(document).ready(function () {
-    let acc, frags;
 
+    untouchable = !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
 
-    if (parent.site100oxen.untouchable) {
+    if (untouchable) {
         $("html").niceScroll({
             cursorcolor: "#888",
             cursorwidth: "7px",
@@ -45,24 +40,130 @@ $(document).ready(function () {
         });
     }
 
-    $("body").on("mouseup touchend", function (e) {
-        parent.site100oxen.iframe_mouseup(e);
-    });
+    $("body").on("mouseup touchend", function () {
+        let doc, range, txt, bg, nd, ok, txtID, count, sel;
+        function isNumberOrDot(c) {
+            return ((c >= "0" && c <= "9") || c === ".");
+        }
 
-    //acc = document.getElementsByClassName("accordion");
+        if (event.view.name === "pageframe") {
+            doc = parent.document.getElementById("pageframe");
+        } else if (event.view.name === "textframe") {
+            doc = parent.document.getElementById("textframe");
+        }
+        sel = doc.contentWindow.getSelection();
+        if (sel && sel.rangeCount > 0) {
+            range = sel.getRangeAt(0);
+        } else {
+            return;
+        }
+        bg = range.startOffset;
+        nd = range.endOffset;
+        txt = range.commonAncestorContainer.data; //element text excluding any child elements
+        ok = false;
+        count = 0;
+        //linenr: xx nn.nnn
+        while (!isNumberOrDot(txt[nd])) { //clicked left of nn.nnn
+            count += 1;
+            nd += 1;
+            bg = nd;
+            if (count > 3) {
+                return;
+            } // 3 letters: xx space. these are oprional
+        }
+        while (isNumberOrDot(txt[nd])) {
+            ok = true;
+            nd += 1;
+        } //clicked on nn.nnn
+        if (ok) {
+            ok = false;
+            while (bg > 0 && isNumberOrDot(txt[bg])) {
+                ok = true;
+                bg -= 1;
+            }
+        } else {
+            return;
+        }
+
+        if (ok) {
+            bg -= 2;
+        } else {
+            return;
+        }
+        txt = txt.substring(bg, nd);
+        txtID = txt.substr(0, 2).toLowerCase();
+        if (!(txtID === "il" || txtID === "od" || txtID === "wd" || txtID === "th")) {
+            txt = txt.substr(3);
+        }
+        if (txt.length > 1) {
+            parent.site100oxen.showAndGotoAnyLine(txt, true);
+        }
+    });
 
     $(".accordion, .citation .cithead").on("click tap", accordionclick);
 
-    frags = $(".treefragment");
-    if(frags.length){
-        frags.each(function (i, el) {
-            const lnr = "" + $(el).data("lnr"); //the data is a number!
-            const title = $(el).data("title");
-            const lvl = $(el).data("lvl");
-            let node = utils.find_xml_node(parent.site100oxen.XML, lnr, title);
-            utils.createTreeFromXML(node, "frag");
-            utils.setnodeattributes("frag");
-            utils.expand("frag", 1, false);
-        });
+    /* footnotes */
+    var FOOTNOTE_REGEX = /^\([0-9]+\)$/;
+    var REFERENCE_REGEX = /^\[[0-9]+\]$/;
+
+    var oldOnLoad = window.onload;
+    window.onload = function (event) {
+        if (document.getElementsByClassName) {
+            var elems = document.getElementsByClassName("ptr");
+            for (var i = 0; i<elems.length; i++) {
+                var elem = elems[i];
+                var ptrText = elem.innerHTML;
+                if (FOOTNOTE_REGEX.test(ptrText)) {
+                    elem.className = "ptr footptr";
+                    elem.onclick = toggle;
+                } else if (REFERENCE_REGEX.test(ptrText)) {
+                    elem.className = "ptr refptr";
+                }
+                elem.setAttribute("href", "#"+ptrText);
+            }
+            addListItemIds("references", "[", "]");
+            addListItemIds("footnotes", "(", ")");
+        }
+
+        if (typeof oldOnLoad === "function") {
+            oldOnLoad(event);
+        }
+    };
+
+    function addListItemIds(parentId, before, after) {
+        var refs = document.getElementById(parentId);
+        if (refs && refs.getElementsByTagName) {
+            var elems = refs.getElementsByTagName("li");
+            for (var i = 0; i<elems.length; i++) {
+                var elem = elems[i];
+                elem.setAttribute("id", before+(i+1)+after);
+            }
+        }
     }
+
+    var currentDiv = null;
+    var currentId = null;
+    function toggle(event) {
+        var parent = this.parentNode;
+        if (currentDiv) {
+            parent.removeChild(currentDiv);
+            currentDiv = null;
+        }
+        var footnoteId = this.innerHTML;
+        if (currentId === footnoteId) {
+            currentId = null;
+        } else {
+            currentId = footnoteId;
+            currentDiv = document.createElement("div");
+            var footHtml = document.getElementById(footnoteId).innerHTML;
+            currentDiv.innerHTML = footHtml;
+            currentDiv.className = "foot-tooltip";
+            parent.insertBefore(currentDiv, this.nextSibling);
+            setTimeout(function () {
+                currentDiv.style.opacity = "1";
+            }, 0);
+        }
+        event.preventDefault();
+    }
+
 });

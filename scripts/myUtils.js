@@ -6,7 +6,7 @@ export default class Linenumber {
         } else if (arguments.length === 1) {
             this.fromstring(chap);
         } else {
-            console.log("Linenumber error");
+            myAlert("Linenumber error", true);
         }
     }
 

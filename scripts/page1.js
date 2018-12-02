@@ -28,12 +28,10 @@ function getXML(name) {
     loaded = localStorage.getItem("list_xml_loaded");
     if (loaded === "true") {
         str = localStorage.getItem("list_xml");
-        //console.log( "getxml local" );
         saveXML(str);
         return "local";
     }
     //localstorage not available and/or list not loaded and/or forced reload
-    //console.log( "remote" );
 
     $.ajax({
         type: "GET",

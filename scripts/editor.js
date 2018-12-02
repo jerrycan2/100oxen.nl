@@ -1,6 +1,6 @@
 import * as utils from '../scripts/myUtils.js';
 import Linenumber from '../scripts/myUtils.js';
-import { MD5 } from '../scripts/md5.js';
+//import { MD5 } from '../scripts/md5.js';
 
 /**
  * Created by jeroe on 07-Aug-18.
@@ -600,12 +600,6 @@ import { MD5 } from '../scripts/md5.js';
 
     //region Events
 
-    /**********************************************************************************************/
-    /*********************************** EVENTS ***************************************************/
-    /**********************************************************************************************/
-    /**
-     * unload event
-     */
     $(window).on({
         "unload": savePageState
     });
@@ -884,7 +878,6 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         'click': function (el) {
             let $trg = $(el.target);
             if ($trg.hasClass("ln")) {
-                console.log($trg.position().left);
                 $("#struct").animate({
                     scrollTop: $trg.position().top - $(".book").eq(0).position().top
                 }, 350);
@@ -993,28 +986,29 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     });
     $("#test").on({
         "click": function () {
-            const a = new Linenumber(1, 1);
-            let b = a.nextline().tostring();
-            console.log(b);
-            b = a.prevline().tostring();
-            console.log(b);
-            b = a.fromstring("2.870").tostring();
-            console.log(b);
-            let c = new Linenumber(1, 611);
-            console.log(c.nextline().tostring());
-            console.log(a.lessthan(c));
-            c.fromstring("3.10");
-            while (!c.prevline().lessthan(a)) {
-                console.log(c.tostring());
-            }
-
-            let txt = new XMLSerializer().serializeToString(parent.site100oxen.XML);
-
-            var result = MD5(txt);
-
-            console.log('hash: ' + result);
+            // const a = new Linenumber(1, 1);
+            // let b = a.nextline().tostring();
+            // console.log(b);
+            // b = a.prevline().tostring();
+            // console.log(b);
+            // b = a.fromstring("2.870").tostring();
+            // console.log(b);
+            // let c = new Linenumber(1, 611);
+            // console.log(c.nextline().tostring());
+            // console.log(a.lessthan(c));
+            // c.fromstring("3.10");
+            // while (!c.prevline().lessthan(a)) {
+            //     console.log(c.tostring());
+            // }
+            //
+            // let txt = new XMLSerializer().serializeToString(parent.site100oxen.XML);
+            //
+            // var result = MD5(txt);
+            //
+            // console.log('hash: ' + result);
         }
     });
+
     //endregion Events
 
     //region Tree Events
@@ -1084,6 +1078,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                     }
             }
         }
+
     });
     //endregion
 
@@ -1287,7 +1282,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
 
     if (parent.site100oxen) {
         $("#struct").children().remove().end()
-            .append($("#list", parent.document).find("ol:first"));
+            .append($("#list", parent.document).find("ol:first").clone());
         glob.XML = parent.site100oxen.XML;
         loadPageState(); // from localStorage
         utils.setnodeattributes("struct");

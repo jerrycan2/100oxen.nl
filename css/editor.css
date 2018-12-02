@@ -301,6 +301,10 @@ h5{
     background-color: #f0dd9d;
 }
 
+button {
+    cursor: pointer;
+}
+
 ol {
     background-color: rgba(0, 0, 0, 0);
 }

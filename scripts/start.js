@@ -17,8 +17,8 @@ window.site100oxen = {
     createlist: null,
     setnodeattributes: null,
     find_xml_node: null,
-    untouchable: true,
-    iframe_mouseup: null
+    untouchable: true
+//    iframe_mouseup: null
 };
 //endregion Site global vars
 
@@ -923,73 +923,6 @@ window.site100oxen = {
             txt = $.trim(rng.text);
         }
         return txt;
-    }
-
-    function isNumberOrDot(c) {
-        return ((c >= "0" && c <= "9") || c === ".");
-    }
-
-    /**
-     * function iframe_mouseup(event)
-     * iframe-mouseup. If clicked element contains a lineID, go there
-     * only used in in iframe-pages
-     * @param event
-     */
-    function iframe_mouseup(event) { //used in iframe pages
-        let doc, range, txt, bg, nd, ok, txtID, count, sel;
-
-        if (event.view.name === "pageframe") {
-            doc = document.getElementById("pageframe");
-        } else if (event.view.name === "textframe") {
-            doc = document.getElementById("textframe");
-        }
-        sel = doc.contentWindow.getSelection();
-        if (sel && sel.rangeCount > 0) {
-            range = sel.getRangeAt(0);
-        } else {
-            return;
-        }
-        bg = range.startOffset;
-        nd = range.endOffset;
-        txt = range.commonAncestorContainer.data; //element text excluding any child elements
-        ok = false;
-        count = 0;
-        //linenr: xx nn.nnn
-        while (!isNumberOrDot(txt[nd])) { //clicked left of nn.nnn
-            count += 1;
-            nd += 1;
-            bg = nd;
-            if (count > 3) {
-                return;
-            } // 3 letters: xx space. these are oprional
-        }
-        while (isNumberOrDot(txt[nd])) {
-            ok = true;
-            nd += 1;
-        } //clicked on nn.nnn
-        if (ok) {
-            ok = false;
-            while (bg > 0 && isNumberOrDot(txt[bg])) {
-                ok = true;
-                bg -= 1;
-            }
-        } else {
-            return;
-        }
-
-        if (ok) {
-            bg -= 2;
-        } else {
-            return;
-        }
-        txt = txt.substring(bg, nd);
-        txtID = txt.substr(0, 2).toLowerCase();
-        if (!(txtID === "il" || txtID === "od" || txtID === "wd" || txtID === "th")) {
-            txt = txt.substr(3);
-        }
-        if (txt.length > 1) {
-            showAndGotoAnyLine(txt, true);
-        }
     }
 
     //endregion
@@ -1941,7 +1874,7 @@ window.site100oxen = {
         event.stopImmediatePropagation();
         get_page_from_menu(ix);
         hidemenuitems();
-        let [c1, c2, c3, c4] = jbNS.columns_config;
+        //let [c1, c2, c3, c4] = jbNS.columns_config;
         configColumns(0, 2, true);
     }
 
@@ -2772,9 +2705,6 @@ window.site100oxen = {
     //endregion
 
     //region set globals
-
-    /* set global vars */
-    window.site100oxen.iframe_mouseup = iframe_mouseup;
     window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
     window.site100oxen.init_tree = init_tree;
     //endregion
@@ -3056,11 +2986,13 @@ window.site100oxen = {
         }
     });
     $("#editor").click(function () {
-        get_page_from_menu(0);
+        if (jbNS.pageframe[0].src !== "editor.html") {
+            jbNS.pageframe[0].src = "editor.html";
+        }
         configColumns(0, 2, true);
         //configColumns(1, 0, true);
-        configColumns(2, 0, true);
-        configColumns(3, 0, true);
+        //configColumns(2, 0, true);
+        //configColumns(3, 0, true);
     });
     $("#showcolnav, #showbmnav").click(swcol_down);
     $("#savefile").click(saveBlob);
