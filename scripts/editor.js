@@ -678,22 +678,23 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     });
     $("#sender").on({
         "click": function (event) {
-            const $trg = $(event.target);
-            if ($trg.attr("id") === "sendbutton") {
-                let data$ = `name=${$("#myname").val()}&mail=${$("#mymail").val()}&text=${$("#mytext").val()}`;
-                let request = $.ajax({
-                    url: '/cgi/send.cgi',
-                    method: "POST",
-                    data: data$,
-                    dataType: "text"
-                });
-                request.done(function (html) {
-                    $("#page").append(html); //.children().remove().end()
-                });
-                request.fail(function () {
-                    alert("Request failed!");
-                });
-            }
+
+            // const $trg = $(event.target);
+            // if ($trg.attr("id") === "sendbutton") {
+            //     let data$ = `name=${$("#myname").val()}&mail=${$("#mymail").val()}&text=${$("#mytext").val()}`;
+            //     let request = $.ajax({
+            //         url: '/cgi/send.cgi',
+            //         method: "POST",
+            //         data: data$,
+            //         dataType: "text"
+            //     });
+            //     request.done(function (html) {
+            //         $("#page").append(html); //.children().remove().end()
+            //     });
+            //     request.fail(function () {
+            //         alert("Request failed!");
+            //     });
+            // }
         }
     });
     /**

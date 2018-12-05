@@ -3,30 +3,9 @@
  * this goes into files, loaded into pageframe
  */
 'use strict';
-var untouchable;
-
-function accordionclick(event) {
-    var button, panel;
-
-    event.stopImmediatePropagation();
-    button = event.target;
-    button.classList.toggle("active");
-    panel = $(button).next(".panel");
-    if (panel) {
-        if (panel[0].style.maxHeight) {
-            panel[0].style.maxHeight = null;
-        } else {
-            panel[0].style.maxHeight = panel[0].scrollHeight + "px";
-        }
-    }
-    if (untouchable) {
-        $("html").getNiceScroll().resize();
-    }
-}
-
 $(document).ready(function () {
 
-    untouchable = !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+    const untouchable = !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
 
     if (untouchable) {
         $("html").niceScroll({
@@ -38,6 +17,27 @@ $(document).ready(function () {
             zindex: 2,
             horizrailenabled: true
         });
+    }
+
+    function accordionclick(event) {
+        let button, panel;
+
+        event.stopImmediatePropagation();
+        button = event.target;
+        button.classList.toggle("active");
+        panel = $(button).next(".panel");
+        if (panel) {
+            if (panel[0].style.maxHeight) {
+                panel[0].style.maxHeight = null;
+            } else {
+                panel[0].style.maxHeight = panel[0].scrollHeight + "px";
+            }
+        }
+        if (untouchable) {
+            setTimeout(function () { //wait for transition!
+                $("html").getNiceScroll().resize();
+            }, 500);
+        }
     }
 
     $("body").on("mouseup touchend", function () {
@@ -102,23 +102,27 @@ $(document).ready(function () {
 
     $(".textlink").on({
         "click": function (event) {
-            parent.site100oxen.storePage(this.href);
+            //event.preventDefault();
+            let href = event.target.href;
+            const fname = href.split("/").pop();
+            parent.site100oxen.getNewIframeFile(fname, "pageframe");
+            return false;
         }
     });
 
     $(".accordion, .citation .cithead").on("click tap", accordionclick);
 
     /* footnotes */
-    var FOOTNOTE_REGEX = /^\([0-9]+\)$/;
-    var REFERENCE_REGEX = /^\[[0-9]+\]$/;
+    const FOOTNOTE_REGEX = /^\([0-9]+\)$/;
+    const REFERENCE_REGEX = /^\[[0-9]+\]$/;
 
-    var oldOnLoad = window.onload;
+    let oldOnLoad = window.onload;
     window.onload = function (event) {
         if (document.getElementsByClassName) {
-            var elems = document.getElementsByClassName("ptr");
-            for (var i = 0; i<elems.length; i++) {
-                var elem = elems[i];
-                var ptrText = elem.innerHTML;
+            const elems = document.getElementsByClassName("ptr");
+            for (let i = 0; i<elems.length; i++) {
+                const elem = elems[i];
+                let ptrText = elem.innerHTML;
                 if (FOOTNOTE_REGEX.test(ptrText)) {
                     elem.className = "ptr footptr";
                     elem.onclick = toggle;
@@ -137,32 +141,30 @@ $(document).ready(function () {
     };
 
     function addListItemIds(parentId, before, after) {
-        var refs = document.getElementById(parentId);
+        const refs = document.getElementById(parentId);
         if (refs && refs.getElementsByTagName) {
-            var elems = refs.getElementsByTagName("li");
-            for (var i = 0; i<elems.length; i++) {
-                var elem = elems[i];
-                elem.setAttribute("id", before+(i+1)+after);
+            const elems = refs.getElementsByTagName("li");
+            for (let i = 0; i<elems.length; i++) {
+                elems[i].setAttribute("id", before+(i+1)+after);
             }
         }
     }
 
-    var currentDiv = null;
-    var currentId = null;
+    let currentDiv = null;
+    let currentId = null;
     function toggle(event) {
-        var parent = this.parentNode;
+        const parent = this.parentNode;
         if (currentDiv) {
             parent.removeChild(currentDiv);
             currentDiv = null;
         }
-        var footnoteId = this.innerHTML;
+        const footnoteId = this.innerHTML;
         if (currentId === footnoteId) {
             currentId = null;
         } else {
             currentId = footnoteId;
             currentDiv = document.createElement("div");
-            var footHtml = document.getElementById(footnoteId).innerHTML;
-            currentDiv.innerHTML = footHtml;
+            currentDiv.innerHTML = document.getElementById(footnoteId).innerHTML;
             currentDiv.className = "foot-tooltip";
             parent.insertBefore(currentDiv, this.nextSibling);
             setTimeout(function () {

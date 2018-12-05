@@ -18,8 +18,8 @@ window.site100oxen = {
     setnodeattributes: null,
     find_xml_node: null,
     untouchable: true,
-    storePage: null,
-//    iframe_mouseup: null
+    getNewIframeFile: null,
+    currentPage: "",
 };
 //endregion Site global vars
 
@@ -56,6 +56,7 @@ window.site100oxen = {
             ["100oxen.html", "100 Oxen"],
             ["editor.html", "editor"],
             ["blocks.html", "Proportional View"],
+            ["send.php", "contact"],
         ],
         pages_extern: [
             ["", ""],
@@ -113,7 +114,7 @@ window.site100oxen = {
         dontSetColumns: false,
         colResizeStep: 96,
         currentLevel: 2,
-        currentPage: ""
+        newXML: true,
     };
     //endregion Page global
 
@@ -280,7 +281,7 @@ window.site100oxen = {
             lnr = n = parseInt(lineID, 10);
             if (n) { // Hesiod greek
                 chap = 1;
-                if (wd_loaded()) {
+                if (jbNS.columns_config[1] === 4) { // if WD loaded
                     if (n === 169) {
                         n = 173.5;
                     } // hack: W&D lines out of order (169a etc. between 173 & 174)
@@ -1855,9 +1856,42 @@ window.site100oxen = {
             jbNS.pageframe[0].src = txt;
         }
     }
-    function storePage(href){
-        jbNS.currentPage = href.split("/").pop();
 
+    function getNewIframeFile(url, targetframe){
+        let getnew = true;
+
+        site100oxen.currentPage = url;
+
+        $.ajax({
+            type: "HEAD",
+            async: true,
+            cache: false,
+            url: url,
+        }).done(function(message,textStatus,jqXHR){
+            const resp = jqXHR.getAllResponseHeaders();
+            const etag = resp.match(/etag: \"(.*)\"/i);
+            const here = localStorage.getItem(url);
+            if(here && here === etag[1]){
+                getnew = false;
+            }
+            if( getnew ) {
+                localStorage.setItem(url, etag[1]);
+            }
+            $.ajax({
+                type: "GET",
+                async: true,
+                cache: !getnew,
+                url: url,
+                dataType: 'html',
+            }).done(function (data, textStatus, jqXHR) {
+                let iframe = document.getElementById(targetframe);
+                iframe.srcdoc = data;
+                console.log(url + " from cache: "+!getnew);
+            });
+        })
+            .fail( function(jqXHR, textStatus, errorThrown) {
+                myAlert(errorThrown);
+            } );
     }
 
     /**
@@ -2194,27 +2228,12 @@ window.site100oxen = {
                 if (colnr === 3) {
                     jbNS.textframe[0].src = jbNS.filenames[3][ix];
                 }
-            } else { // list/pages
+            } else { // pages in/out
                 if (jbNS.columns_config[0] === 2 && ix === 1) {
-
-                    if ((!e.shiftKey && window.site100oxen.untouchable)
-                        || (!window.site100oxen.untouchable && time2 < 1500)) {
-                        if (jbNS.currentPage !== 'sitemap.html') {
-                            jbNS.pageframe[0].src = jbNS.currentPage = 'sitemap.html';
-                        } else {
-                            //jbNS.pageframe[0].src = jbNS.currentPage = 'blocks.html';
-                            configColumns(0, 2, false);
-                        }
-                    } else if (e.shiftKey || time2 > 1500) {
-                        jbNS.pages_menu_expanded = !jbNS.pages_menu_expanded;
-                        if (jbNS.pages_menu_expanded) {
-                            $("#filesmenu").animate({
-                                "left": "2rem",
-                                "opacity": "1"
-                            }, 800);
-                            utils.cover(4, 0.35);
-                            $("#coverall").one("click", hidemenuitems);
-                        }
+                    if (site100oxen.currentPage !== 'sitemap.html') {
+                        getNewIframeFile('sitemap.html', 'pageframe');
+                    } else {
+                        configColumns(0, 2, false);
                     }
                 } else {
                     configColumns(colnr, ix + 1, false);
@@ -2412,35 +2431,6 @@ window.site100oxen = {
     //region initialize
 
     /**
-     * function get_pages_list
-     * load list of available pages: (#filesmenu)
-     */
-    function get_pages_list() {
-        let i, str, $pg;
-
-        $pg = $("#filesmenu");
-        $pg.find("li").remove();
-        str = "";
-        for (i = 0; i < jbNS.pages_local.length; ++i) {
-            str += "<li><a>" + jbNS.pages_local[i][1] + "</a></li>";
-        }
-        str += "<li class='grey'><span>---external links---</span></li>";
-        for (i = 1; i < jbNS.pages_extern.length; ++i) {
-            str += "<li><a>" + jbNS.pages_extern[i][1] + "</a></li>";
-        }
-        $pg.children("ul").eq(0).append(str);
-        $pg.find("li").addClass("menuitems").children("a").click(loadIframeToPage);
-        $pg.css({
-            "left": "-" + $pg.width(),
-            //"bottom" : "4rem",
-            "opacity": 0
-        });
-        $(".menuitems").on("mousedown touchstart", function (event) {
-            $(event.currentTarget).css("background-color", "red");
-        });
-    }
-
-    /**
      * function hidemenuitems
      * hide sliding menu
      */
@@ -2496,7 +2486,8 @@ window.site100oxen = {
     function doReset() {
         window.site100oxen.forcereload = true;
         localStorage.clear();
-        window.location.reload(true); //can't do anything after this! or the reload is aborted
+        setTimeout(function () { window.location.reload(true); }, 0);
+        //can't do anything after this! or the reload is aborted
                                       //also: doesn't work on ipad
     }
 
@@ -2523,7 +2514,7 @@ window.site100oxen = {
         localStorage.setItem("keepfontsize", jbNS.keepFontsize ? "1" : "0");
         localStorage.setItem("fontsize", jbNS.basic_fontsize);
         //6: save current page in left iframe
-        localStorage.setItem("currentpage", jbNS.pageframe[0].src);
+        localStorage.setItem("currentpage", site100oxen.currentPage);
     }
 
     function read_in_Bookmarx(s) {
@@ -2607,8 +2598,8 @@ window.site100oxen = {
             $("#messages").show();
         }
         setSelButtonText();
-        jbNS.currentPage = localStorage.getItem("currentpage") || "sitemap.html";
-        jbNS.pageframe[0].src = jbNS.currentPage;
+        site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.html";
+        jbNS.pageframe[0].src = site100oxen.currentPage;
         zoominout();
     }
 
@@ -2704,7 +2695,7 @@ window.site100oxen = {
     //region set globals
     window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
     window.site100oxen.init_tree = init_tree;
-    window.site100oxen.storePage = storePage;
+    window.site100oxen.getNewIframeFile = getNewIframeFile;
     //endregion
 
     //region bound event handlers
@@ -2984,13 +2975,17 @@ window.site100oxen = {
         }
     });
     $("#editor").click(function () {
-        if (jbNS.pageframe[0].src !== "editor.html") {
-            jbNS.pageframe[0].src = "editor.html";
-        }
+        getNewIframeFile('editor.html', 'pageframe');
+        // if (jbNS.pageframe[0].src !== "editor.html") {
+        //     jbNS.pageframe[0].src = "editor.html";
+        // }
         configColumns(0, 2, true);
         //configColumns(1, 0, true);
         //configColumns(2, 0, true);
         //configColumns(3, 0, true);
+    });
+    $("#contact").click(function () {
+        get_page_from_menu(3);
     });
     $("#showcolnav, #showbmnav").click(swcol_down);
     $("#savefile").click(saveBlob);
@@ -3003,46 +2998,61 @@ window.site100oxen = {
     //endregion
 
     //region Ajax get xml
-
+    jbNS.newXML = true;
     $.ajax({
-        type: "GET",
+        type: "HEAD",
+        async: true,
+        cache: false,
         url: "iliad.xml",
-        cache: !window.site100oxen.forcereload,
-        dataType: "text",
-        success: function (xmlstring) {
-            try {
-                window.site100oxen.XML = $.parseXML(xmlstring);
-            } catch (e) {
-                utils.myAlert(e, true, null);
-                return;
-            }
-            window.site100oxen.forcereload = false;
-            window.site100oxen.xml_loaded = true;
-            localStorage.setItem("list_xml", xmlstring);
-            localStorage.setItem("list_xml_loaded", "true");
-            init_tree();
-            window.site100oxen.untouchable = // are we on a touch device?
-                !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-            if (window.site100oxen.untouchable) {
-                $("#treeframe").niceScroll({
-                    cursorcolor: "#888",
-                    cursorwidth: "7px",
-                    background: "rgba(0,0,0,0.1)",
-                    cursoropacitymin: 0.2,
-                    hidecursordelay: 0,
-                    zindex: 2,
-                    horizrailenabled: true
-                });
-            }
-            get_pages_list();
-            loadPageState(); // from localStorage
-            //zoominout();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            window.site100oxen.xml_loaded = false;
-            utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+    }).done(function(message,textStatus,jqXHR){
+        const resp = jqXHR.getAllResponseHeaders();
+        const etag = resp.match(/etag: \"(.*)\"/i);
+        const here = localStorage.getItem("iliad.xml");
+        if(here && here === etag[1]){
+            jbNS.newXML = false;
         }
+        if( jbNS.newXML ) {
+            localStorage.setItem("iliad.xml", etag[1]);
+        }
+        console.log("iliad.xml from cache: " + !jbNS.newXML);
+        $.ajax({
+            type: "GET",
+            url: "iliad.xml",
+            cache: !window.site100oxen.forcereload || !jbNS.newXML,
+            dataType: "text",
+            success: function (xmlstring) {
+                try {
+                    window.site100oxen.XML = $.parseXML(xmlstring);
+                } catch (e) {
+                    utils.myAlert(e, true, null);
+                    return;
+                }
+                window.site100oxen.forcereload = false;
+                window.site100oxen.xml_loaded = true;
+                init_tree();
+                window.site100oxen.untouchable = // are we on a touch device?
+                    !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+                if (window.site100oxen.untouchable) {
+                    $("#treeframe").niceScroll({
+                        cursorcolor: "#888",
+                        cursorwidth: "7px",
+                        background: "rgba(0,0,0,0.1)",
+                        cursoropacitymin: 0.2,
+                        hidecursordelay: 0,
+                        zindex: 2,
+                        horizrailenabled: true
+                    });
+                }
+                loadPageState(); // from localStorage
+                //zoominout();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                window.site100oxen.xml_loaded = false;
+                utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+            }
+        });
     });
+
     //endregion
 
 })(jQuery);

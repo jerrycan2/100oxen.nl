@@ -333,8 +333,8 @@ function autoversion($file)
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="scripts/jquery.nicescroll.min.js"></script>
 <script src="scripts/jquery.mobile.custom.min.js"></script>
-<script src="<?php echo autoversion('scripts/start.js');?>" type="module"></script>
-<script src="<?php echo autoversion('scripts/myUtils.js');?>" type="module"></script>
+<script src="<?php echo autoversion('/scripts/start.js');?>" type="module"></script>
 <script src="scripts/beta.js" type="module"></script>
+<script src="scripts/myUtils.js" type="module"></script>
 </body>
 </html>
