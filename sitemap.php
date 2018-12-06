@@ -1,4 +1,17 @@
 <!DOCTYPE html>
+<?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+header('Cache-Control: public');
+function autoversion($file)
+{
+  if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
+    return $file;
+
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+}
+?>
 <html lang="en">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
@@ -6,12 +19,12 @@
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
       rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/sitemap.css">
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+    <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
   </head>
   <body class="latin">
-    <h1>What was, what is and what will be</h1>
-    <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.html">
+    <h1>What waz, what is and what will be</h1>
+    <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.php">
         One hundred oxen</a><br>
       2. Chapters:
       <ul>
@@ -19,14 +32,14 @@
           <ul>
             <li> Charter Myth
               <ul>
-                <li>the Ionian migration <a class="textlink" href="history.html">⇨
+                <li>the Ionian migration <a class="textlink" href="history.php">⇨
                     History</a></li>
               </ul>
             </li>
             <li> Renaissance and Reform
               <ul>
                 <li>Homer's <a class="textlink" target="_self"
-                                    title="Homer's Politeia" href="politeia.html">Politeia </a></li>
+                                    title="Homer's Politeia" href="politeia.php">Politeia </a></li>
               </ul>
             </li>
             <li>Smyrna and Lydia
@@ -42,25 +55,25 @@
               <ul>
                 <li>aoidic style, epithets, typical scenes, formulas</li>
                 <li><a class="textlink" target="_self" title="likenesses"
-                       href="likenesses.html">Likenesses</a></li>
+                       href="likenesses.php">Likenesses</a></li>
                 <li>type, character and 'position'</li>
               </ul>
             </li>
             <li> Structures
               <ul>
                 <li><a class="textlink" target="_self" title="proportional view"
-                       href="blocks.html">A proportional view of the summary</a></li>
-                <li>Geometrics: <a class="textlink" href="ring.html">ring composition</a>,
+                       href="blocks.php">A proportional view of the summary</a></li>
+                <li>Geometrics: <a class="textlink" href="ring.php">ring composition</a>,
                   balanced expansion, catalogues</li>
                 <li><a class="textlink" target="_self" title="Stitched verse"
-                       href="stitches.html">Stitched verse - alterations? </a></li>
+                       href="stitches.php">Stitched verse - alterations? </a></li>
               </ul>
             </li>
-            <li> "<a class="textlink" href="apollo.html">Apollo and the Art of Archery</a>"
+            <li> "<a class="textlink" href="apollo.php">Apollo and the Art of Archery</a>"
               <ul>
                 <li><a class="textlink" target="_self" title="Persuasive rhetoric"
-                       href="rhetoric.html">persuasive rhetoric</a> </li>
-                <li><a class="textlink" target="_self" title=" Poetry, Prophecy, Healing" href="apollo.html"> Poetry, Prophecy, Healing</a></li>
+                       href="rhetoric.php">persuasive rhetoric</a> </li>
+                <li><a class="textlink" target="_self" title=" Poetry, Prophecy, Healing" href="apollo.php"> Poetry, Prophecy, Healing</a></li>
               </ul>
             </li>
           </ul>
@@ -82,10 +95,10 @@
             </li>
             <li> the Good, the True, the Beautiful
               <ul>
-                <li><a class="textlink" href="thegods.html">'What we obey'</a></li>
+                <li><a class="textlink" href="thegods.php">'What we obey'</a></li>
                 <li>Paris', Achilles' judgement, the Deception of Zeus</li>
                 <li>shame, the Plan of Zeus, the new Polis</li>
-                <li><a class="textlink" href="gtb.html">Plato</a>, the Good</li>
+                <li><a class="textlink" href="gtb.php">Plato</a>, the Good</li>
               </ul>
             </li>
           </ul>
@@ -100,7 +113,7 @@
                 <li>Iliad: Fantasy &amp; Reality, Od: Lie &amp; Truth</li>
               </ul>
             </li>
-            <li><a class="textlink" href="smyrna.html">Smyrna</a>, Melesigenes, 2 brothers -
+            <li><a class="textlink" href="smyrna.php">Smyrna</a>, Melesigenes, 2 brothers -
               theme</li>
             <li>Chios, Phoenix, Nausikaa</li>
           </ul>
@@ -113,8 +126,9 @@
         </li>
       </ul>
     </div>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div><br>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
     <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
-    <script src="scripts/iframes.js" type="module"></script>
+    <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
   </body>
 </html>

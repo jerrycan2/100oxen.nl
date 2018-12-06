@@ -69,7 +69,7 @@ $(document).ready(function () {
             bg = nd;
             if (count > 3) {
                 return;
-            } // 3 letters: xx space. these are oprional
+            } // 3 letters: xx space. these are optional
         }
         while (isNumberOrDot(txt[nd])) {
             ok = true;

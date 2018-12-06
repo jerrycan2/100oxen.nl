@@ -44,7 +44,7 @@ window.site100oxen = {
             ["list.html", ""],
             ["greek_il.html", "greek_od.html", "hesiod_theo_greek.html", "hesiod_wd_greek.html"],
             ["butler_il.html", "butler_od.html", "hesiod_theo_transl.html", "hesiod_wd_transl.html"],
-            ["textframe.html", "help.html"]
+            ["textframe.html", "help.php"]
         ],
         perseus_names: [
             ["1999.01.0133", "1999.01.0135", "1999.01.0129", "1999.01.0131"],//iliad, odyssey
@@ -53,9 +53,9 @@ window.site100oxen = {
         perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
 
         pages_local: [
-            ["100oxen.html", "100 Oxen"],
-            ["editor.html", "editor"],
-            ["blocks.html", "Proportional View"],
+            ["100oxen.php", "100 Oxen"],
+            ["editor.php", "editor"],
+            ["blocks.php", "Proportional View"],
             ["send.php", "contact"],
         ],
         pages_extern: [
@@ -1866,6 +1866,7 @@ window.site100oxen = {
             type: "HEAD",
             async: true,
             cache: false,
+            datatype: "text",
             url: url,
         }).done(function(message,textStatus,jqXHR){
             const resp = jqXHR.getAllResponseHeaders();
@@ -1874,7 +1875,7 @@ window.site100oxen = {
             if(here && here === etag[1]){
                 getnew = false;
             }
-            if( getnew ) {
+            if( getnew && etag ) {
                 localStorage.setItem(url, etag[1]);
             }
             $.ajax({
@@ -2230,8 +2231,8 @@ window.site100oxen = {
                 }
             } else { // pages in/out
                 if (jbNS.columns_config[0] === 2 && ix === 1) {
-                    if (site100oxen.currentPage !== 'sitemap.html') {
-                        getNewIframeFile('sitemap.html', 'pageframe');
+                    if (site100oxen.currentPage !== 'sitemap.php') {
+                        getNewIframeFile('sitemap.php', 'pageframe');
                     } else {
                         configColumns(0, 2, false);
                     }
@@ -2598,8 +2599,8 @@ window.site100oxen = {
             $("#messages").show();
         }
         setSelButtonText();
-        site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.html";
-        jbNS.pageframe[0].src = site100oxen.currentPage;
+        site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.php";
+        getNewIframeFile(site100oxen.currentPage, "pageframe");
         zoominout();
     }
 
@@ -2699,6 +2700,7 @@ window.site100oxen = {
     //endregion
 
     //region bound event handlers
+
     $("#switchColumns").on({
         "mousedown touchstart": switchColMousedown
         //"click": swcol_up
@@ -2975,9 +2977,9 @@ window.site100oxen = {
         }
     });
     $("#editor").click(function () {
-        getNewIframeFile('editor.html', 'pageframe');
-        // if (jbNS.pageframe[0].src !== "editor.html") {
-        //     jbNS.pageframe[0].src = "editor.html";
+        getNewIframeFile('editor.php', 'pageframe');
+        // if (jbNS.pageframe[0].src !== "editor.php") {
+        //     jbNS.pageframe[0].src = "editor.php";
         // }
         configColumns(0, 2, true);
         //configColumns(1, 0, true);

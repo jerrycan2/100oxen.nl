@@ -1,12 +1,25 @@
 <!DOCTYPE html>
+<?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+header('Cache-Control: public');
+function autoversion($file)
+{
+  if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
+    return $file;
+
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+}
+?>
 <html lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>XML editing test</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
           rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/huebee.css">
-    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="/css/huebee.css">
+    <link rel="stylesheet" href="<?= autoversion('/css/editor.css');?>">
 </head>
 <body>
 <header>
@@ -95,9 +108,11 @@
     <div id="ok">OK</div>
     <div id="cancel">Cancel</div>
 </div>
+<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div>
+
 <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
 <script src="scripts/huebee.pkgd.js"></script>
-<script src="scripts/editor.js" type="module"></script>
-<script src="scripts/myUtils.js" type="module"></script>
+<script src="<?= autoversion('/scripts/editor.js');?>"></script>
+<script src="/scripts/myUtils.js" type="module"></script>
 </body>
 </html>

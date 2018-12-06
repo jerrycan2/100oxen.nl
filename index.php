@@ -1,17 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>the Iliad: Structure and interpretation</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-
-          rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/start.css">
-</head>
-<body id="mainbody" class="latin">
 <?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+header('Cache-Control: public');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -21,6 +12,19 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>the Iliad: Structure and interpretation</title>
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
+
+          rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+    <link rel="stylesheet" href="<?= autoversion('/css/start.css');?>">
+    <script>console.log("index loading");</script>
+</head>
+<body id="mainbody" class="latin">
 <nav id="switchColumns">
     <ul>
         <li class="switch">
@@ -331,10 +335,10 @@ function autoversion($file)
     </table>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="scripts/jquery.nicescroll.min.js"></script>
-<script src="scripts/jquery.mobile.custom.min.js"></script>
+<script src="/scripts/jquery.nicescroll.min.js"></script>
+<script src="/scripts/jquery.mobile.custom.min.js"></script>
 <script src="<?php echo autoversion('/scripts/start.js');?>" type="module"></script>
-<script src="scripts/beta.js" type="module"></script>
-<script src="scripts/myUtils.js" type="module"></script>
+<script src="<?php echo autoversion('/scripts/myUtils.js');?>" type="module"></script>
+<script src="/scripts/beta.js" type="module"></script>
 </body>
 </html>
