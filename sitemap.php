@@ -23,7 +23,7 @@ function autoversion($file)
     <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
   </head>
   <body class="latin">
-    <h1>What waz, what is and what will be</h1>
+    <h1>What was, what is and what will be</h1>
     <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.php">
         One hundred oxen</a><br>
       2. Chapters:

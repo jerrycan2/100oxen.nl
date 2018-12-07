@@ -72,7 +72,7 @@ function autoversion($file)
           <li>birds of prey and carrion-eaters: they sit safely just outside or
             hover above the battlefield: it is a feast to them (as it is to the
             public: 'a prey for the dogs and a feast for the birds'). </li>
-          <li><a class="textlink" id="prophetic_birds">prophetic birds</a>:
+          <li><a id="prophetic_birds">prophetic birds</a>:
             mostly birds of prey. The eagle, highest-flying, is therefore bird
             of Zeus. All other birds are less than he. Its characteristic
             action: soaring high - surveying all - seeing a target - pouncing
@@ -516,7 +516,7 @@ function autoversion($file)
         </ul>
       </li>
     </ul>
-    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div>
+    <span class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></span>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
     <script src="<?= autoversion('/scripts/iframes.js');?>"></script>

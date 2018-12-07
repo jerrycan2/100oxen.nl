@@ -42,6 +42,7 @@ $(document).ready(function () {
 
     $("body").on("mouseup touchend", function () {
         let doc, range, txt, bg, nd, ok, txtID, count, sel;
+
         function isNumberOrDot(c) {
             return ((c >= "0" && c <= "9") || c === ".");
         }
@@ -104,8 +105,21 @@ $(document).ready(function () {
         "click": function (event) {
             //event.preventDefault();
             let href = event.target.href;
-            const fname = href.split("/").pop();
-            parent.site100oxen.getNewIframeFile(fname, "pageframe");
+            const pos = href.indexOf('#');
+            if (pos < 0) {
+                const fname = href.split("/").pop();
+                parent.site100oxen.getNewIframeFile(fname, "pageframe");
+            }
+            else { //this is not right yet: it will only go to anchors on the same page
+                const target = href.substr(pos+1);
+                const refs = $("ul").find("a");
+                refs.each(function(i, el){
+                    if( $(el).attr("id") === target) {
+                        el.scrollIntoView();
+                        return false;
+                    }
+                });
+            }
             return false;
         }
     });
@@ -118,9 +132,10 @@ $(document).ready(function () {
 
     let oldOnLoad = window.onload;
     window.onload = function (event) {
+        console.log("iframe loaded");
         if (document.getElementsByClassName) {
             const elems = document.getElementsByClassName("ptr");
-            for (let i = 0; i<elems.length; i++) {
+            for (let i = 0; i < elems.length; i++) {
                 const elem = elems[i];
                 let ptrText = elem.innerHTML;
                 if (FOOTNOTE_REGEX.test(ptrText)) {
@@ -129,7 +144,7 @@ $(document).ready(function () {
                 } else if (REFERENCE_REGEX.test(ptrText)) {
                     elem.className = "ptr refptr";
                 }
-                elem.setAttribute("href", "#"+ptrText);
+                elem.setAttribute("href", "#" + ptrText);
             }
             addListItemIds("references", "[", "]");
             addListItemIds("footnotes", "(", ")");
@@ -144,14 +159,15 @@ $(document).ready(function () {
         const refs = document.getElementById(parentId);
         if (refs && refs.getElementsByTagName) {
             const elems = refs.getElementsByTagName("li");
-            for (let i = 0; i<elems.length; i++) {
-                elems[i].setAttribute("id", before+(i+1)+after);
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].setAttribute("id", before + (i + 1) + after);
             }
         }
     }
 
     let currentDiv = null;
     let currentId = null;
+
     function toggle(event) {
         const parent = this.parentNode;
         if (currentDiv) {

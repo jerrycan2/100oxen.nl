@@ -1857,25 +1857,25 @@ window.site100oxen = {
         }
     }
 
-    function getNewIframeFile(url, targetframe){
+    function getNewIframeFile(url, targetframe) {
         let getnew = true;
 
         site100oxen.currentPage = url;
 
-        $.ajax({
+        return $.ajax({
             type: "HEAD",
             async: true,
             cache: false,
             datatype: "text",
             url: url,
-        }).done(function(message,textStatus,jqXHR){
+        }).done(function (message, textStatus, jqXHR) {
             const resp = jqXHR.getAllResponseHeaders();
             const etag = resp.match(/etag: \"(.*)\"/i);
             const here = localStorage.getItem(url);
-            if(here && here === etag[1]){
+            if (here && here === etag[1]) {
                 getnew = false;
             }
-            if( getnew && etag ) {
+            if (getnew && etag) {
                 localStorage.setItem(url, etag[1]);
             }
             $.ajax({
@@ -1887,12 +1887,12 @@ window.site100oxen = {
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
                 iframe.srcdoc = data;
-                console.log(url + " from cache: "+!getnew);
+                console.log(url + " from cache: " + !getnew);
             });
         })
-            .fail( function(jqXHR, textStatus, errorThrown) {
+            .fail(function (jqXHR, textStatus, errorThrown) {
                 myAlert(errorThrown);
-            } );
+            });
     }
 
     /**
@@ -1968,6 +1968,51 @@ window.site100oxen = {
                 adjustColWidth();
                 goto_BM_on_load();
             });
+    }
+    function fetchTexts1(filenr) {
+        $.when(
+            getNewIframeFile(jbNS.filenames[1][filenr], "greekframe")
+                .then(function () { //what to do after the individual frame has been loaded
+                    let $frame;
+
+                    $frame = $("#greekframe");
+                    $("#selonly").text("Show only selection");
+                    jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
+                    if (jbNS.gr_beginLine > 0) {
+                        scrollgreek();
+                    }
+                    $frame.contents().find("body").on({
+                        "mousedown": gr_bu_MouseDown,
+                        "touchmove": function () {
+                            jbNS.touchcancel = true;
+                        }
+                    });
+                    putbackBookmarks(true); // false = butler, true = greek
+                    console.log("greek");
+                }),
+            getNewIframeFile(jbNS.filenames[2][filenr], "butlerframe"))
+            .then(function () { //what to do after the individual frame has been loaded
+                let $frame, isgreek;
+
+                $frame = $("#butlerframe");
+                jbNS.butleranchors = $frame.contents().find("a");
+                $frame.contents().find("body").on({
+                    "mousedown": gr_bu_MouseDown,
+                    "touchmove": function () {
+                        jbNS.touchcancel = true;
+                    }
+                });
+                putbackBookmarks(false); // false = butler, true = greek
+                console.log("butler");
+            }).done(function () { //what to do after both frames have been loaded:
+            setColumns();
+            if (window.site100oxen.untouchable) {
+                createSplitter();
+            }
+            adjustColWidth();
+            goto_BM_on_load();
+            console.log("both");
+        });
     }
 
 
@@ -2487,9 +2532,11 @@ window.site100oxen = {
     function doReset() {
         window.site100oxen.forcereload = true;
         localStorage.clear();
-        setTimeout(function () { window.location.reload(true); }, 0);
+        setTimeout(function () {
+            window.location.reload(true);
+        }, 0);
         //can't do anything after this! or the reload is aborted
-                                      //also: doesn't work on ipad
+        //also: doesn't work on ipad
     }
 
     /**
@@ -2978,13 +3025,7 @@ window.site100oxen = {
     });
     $("#editor").click(function () {
         getNewIframeFile('editor.php', 'pageframe');
-        // if (jbNS.pageframe[0].src !== "editor.php") {
-        //     jbNS.pageframe[0].src = "editor.php";
-        // }
         configColumns(0, 2, true);
-        //configColumns(1, 0, true);
-        //configColumns(2, 0, true);
-        //configColumns(3, 0, true);
     });
     $("#contact").click(function () {
         get_page_from_menu(3);
@@ -3006,14 +3047,14 @@ window.site100oxen = {
         async: true,
         cache: false,
         url: "iliad.xml",
-    }).done(function(message,textStatus,jqXHR){
+    }).done(function (message, textStatus, jqXHR) {
         const resp = jqXHR.getAllResponseHeaders();
         const etag = resp.match(/etag: \"(.*)\"/i);
         const here = localStorage.getItem("iliad.xml");
-        if(here && here === etag[1]){
+        if (here && here === etag[1]) {
             jbNS.newXML = false;
         }
-        if( jbNS.newXML ) {
+        if (jbNS.newXML) {
             localStorage.setItem("iliad.xml", etag[1]);
         }
         console.log("iliad.xml from cache: " + !jbNS.newXML);
