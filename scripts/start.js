@@ -1872,7 +1872,6 @@ window.site100oxen = {
             const resp = jqXHR.getAllResponseHeaders();
             const etag = resp.match(/etag: \"(.*)\"/i);
             const here = localStorage.getItem(url);
-            console.log("head " + url + "," + targetframe);
             if (here && here === etag[1]) {
                 getnew = false;
             }
@@ -1887,7 +1886,6 @@ window.site100oxen = {
                 dataType: 'html',
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
-                console.log("body " + url + "," + targetframe);
                 iframe.srcdoc = data;
                 console.log(url + " from cache: " + !getnew);
             });
@@ -1937,7 +1935,6 @@ window.site100oxen = {
 
                 deferred.done(function () { //what to do after the individual frame has been loaded
                     let $frame, isgreek;
-                    console.log(`iframeload ${id}, ${src}`)
                     if (id === "greekframe") {
                         $frame = $("#greekframe");
                         isgreek = true;
@@ -1980,7 +1977,6 @@ window.site100oxen = {
                 const etag = resp.match(/etag: \"(.*)\"/i);
                 const here = localStorage.getItem(src);
                 let getnew = true;
-                console.log("head " + src + "," + id);
                 if (here && here === etag[1]) {
                     getnew = false;
                 }
@@ -1997,7 +1993,6 @@ window.site100oxen = {
         iFrameLoad("greekframe", jbNS.filenames[1][filenr]);
         iFrameLoad("butlerframe", jbNS.filenames[2][filenr]);
         dfd.done(function () { //what to do after both frames have been loaded:
-            console.log(`text ${filenr} fetched`);
             setColumns();
             if (window.site100oxen.untouchable) {
                 createSplitter();
@@ -2432,7 +2427,6 @@ window.site100oxen = {
         $(".viewport:visible").each(function () { //hier
             try {
                 $(this).contents().find("html").css("font-size", size + "px");
-                //console.log(this.name);
             } catch (ignore) {
             }
         });

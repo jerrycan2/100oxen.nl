@@ -132,7 +132,6 @@ $(document).ready(function () {
 
     let oldOnLoad = window.onload;
     window.onload = function (event) {
-        console.log("iframe loaded");
         if (document.getElementsByClassName) {
             const elems = document.getElementsByClassName("ptr");
             for (let i = 0; i < elems.length; i++) {

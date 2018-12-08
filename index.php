@@ -22,7 +22,6 @@ function autoversion($file)
           rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/start.css');?>">
-    <script>console.log("index loading");</script>
 </head>
 <body id="mainbody" class="latin">
 <nav id="switchColumns">
