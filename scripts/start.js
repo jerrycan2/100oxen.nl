@@ -1862,7 +1862,7 @@ window.site100oxen = {
 
         site100oxen.currentPage = url;
 
-        return $.ajax({
+        $.ajax({
             type: "HEAD",
             async: true,
             cache: false,
@@ -1872,6 +1872,7 @@ window.site100oxen = {
             const resp = jqXHR.getAllResponseHeaders();
             const etag = resp.match(/etag: \"(.*)\"/i);
             const here = localStorage.getItem(url);
+            console.log("head " + url + "," + targetframe);
             if (here && here === etag[1]) {
                 getnew = false;
             }
@@ -1886,6 +1887,7 @@ window.site100oxen = {
                 dataType: 'html',
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
+                console.log("body " + url + "," + targetframe);
                 iframe.srcdoc = data;
                 console.log(url + " from cache: " + !getnew);
             });
@@ -1917,104 +1919,93 @@ window.site100oxen = {
      * @param src : string //url
      * @returns {*}
      */
-    function iFrameLoad(id, src) {
-        let deferred = $.Deferred(),
-            iframe = document.getElementById(id);
-        iframe.src = src;
-        $(iframe).load(deferred.resolve);
-
-        deferred.done(function () { //what to do after the individual frame has been loaded
-            let $frame, isgreek;
-
-            if (id === "greekframe") {
-                $frame = $("#greekframe");
-                isgreek = true;
-                $("#selonly").text("Show only selection");
-                jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                if (jbNS.gr_beginLine > 0) {
-                    scrollgreek();
-                }
-            } else {
-                $frame = $("#butlerframe");
-                isgreek = false;
-                jbNS.butleranchors = $frame.contents().find("a");
-            }
-            $frame.contents().find("body").on({
-                //"touchhold": gr_bu_hold,
-                "mousedown": gr_bu_MouseDown,
-                "touchmove": function () {
-                    jbNS.touchcancel = true;
-                }
-            });
-            putbackBookmarks(isgreek); // false = butler, true = greek
-        });
-        return deferred.promise();
-    }
-
     /**
      * function fetchTexts
      * fetch greek/butler texts acc. to columns_config
      * @param filenr : number // index to filenames array
      */
     function fetchTexts(filenr) {
-        $.when(
-            iFrameLoad("greekframe", jbNS.filenames[1][filenr]),
-            iFrameLoad("butlerframe", jbNS.filenames[2][filenr]))
-            .then(function () { //what to do after both frames have been loaded:
-                setColumns();
-                if (window.site100oxen.untouchable) {
-                    createSplitter();
-                }
-                adjustColWidth();
-                goto_BM_on_load();
-            });
-    }
-    function fetchTexts1(filenr) {
-        $.when(
-            getNewIframeFile(jbNS.filenames[1][filenr], "greekframe")
-                .then(function () { //what to do after the individual frame has been loaded
-                    let $frame;
+        let dfd = $.Deferred();
+        let done = false;
 
-                    $frame = $("#greekframe");
-                    $("#selonly").text("Show only selection");
-                    jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                    if (jbNS.gr_beginLine > 0) {
-                        scrollgreek();
+        function iFrameLoad(id, src) {
+            function iFrameLoad1(id, src) {
+                let deferred = $.Deferred(),
+                    iframe = document.getElementById(id);
+                iframe.src = src;
+                $(iframe).load(deferred.resolve);
+
+                deferred.done(function () { //what to do after the individual frame has been loaded
+                    let $frame, isgreek;
+                    console.log(`iframeload ${id}, ${src}`)
+                    if (id === "greekframe") {
+                        $frame = $("#greekframe");
+                        isgreek = true;
+                        $("#selonly").text("Show only selection");
+                        jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
+                        putbackBookmarks(isgreek); // false = butler, true = greek
+                        if (jbNS.gr_beginLine > 0) {
+                            scrollgreek();
+                        }
+                    } else {
+                        $frame = $("#butlerframe");
+                        isgreek = false;
+                        jbNS.butleranchors = $frame.contents().find("a");
+                        putbackBookmarks(isgreek); // false = butler, true = greek
                     }
                     $frame.contents().find("body").on({
+                        //"touchhold": gr_bu_hold,
                         "mousedown": gr_bu_MouseDown,
                         "touchmove": function () {
                             jbNS.touchcancel = true;
                         }
                     });
-                    putbackBookmarks(true); // false = butler, true = greek
-                    console.log("greek");
-                }),
-            getNewIframeFile(jbNS.filenames[2][filenr], "butlerframe"))
-            .then(function () { //what to do after the individual frame has been loaded
-                let $frame, isgreek;
-
-                $frame = $("#butlerframe");
-                jbNS.butleranchors = $frame.contents().find("a");
-                $frame.contents().find("body").on({
-                    "mousedown": gr_bu_MouseDown,
-                    "touchmove": function () {
-                        jbNS.touchcancel = true;
+                    if (!done) {
+                        done = true;
+                    } else {
+                        dfd.resolve();
                     }
                 });
-                putbackBookmarks(false); // false = butler, true = greek
-                console.log("butler");
-            }).done(function () { //what to do after both frames have been loaded:
+                return deferred.promise();
+            }
+
+            return $.ajax({
+                type: "HEAD",
+                async: true,
+                cache: false,
+                datatype: "text",
+                url: src,
+            }).done(function (message, textStatus, jqXHR) {
+                const resp = jqXHR.getAllResponseHeaders();
+                const etag = resp.match(/etag: \"(.*)\"/i);
+                const here = localStorage.getItem(src);
+                let getnew = true;
+                console.log("head " + src + "," + id);
+                if (here && here === etag[1]) {
+                    getnew = false;
+                }
+                if (getnew && etag) {
+                    localStorage.setItem(src, etag[1]);
+                }
+                if (getnew) {
+                    src += `?_=${(new Date()).getTime()}`
+                }
+                iFrameLoad1(id, src);
+            });
+        }
+
+        iFrameLoad("greekframe", jbNS.filenames[1][filenr]);
+        iFrameLoad("butlerframe", jbNS.filenames[2][filenr]);
+        dfd.done(function () { //what to do after both frames have been loaded:
+            console.log(`text ${filenr} fetched`);
             setColumns();
             if (window.site100oxen.untouchable) {
                 createSplitter();
             }
             adjustColWidth();
             goto_BM_on_load();
-            console.log("both");
         });
     }
-
 
     //endregion
 
@@ -2780,12 +2771,14 @@ window.site100oxen = {
         unload: savePageState
     });
 
-    $("iframe").on("load", function () {
-        try {
-            const diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
-            $(this).contents().find("html").css("font-size",
-                (jbNS.basic_fontsize - diff) + "px");
-        } catch (ignore) {
+    $("iframe").on({
+        "load": function () {
+            try {
+                const diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
+                $(this).contents().find("html").css("font-size",
+                    (jbNS.basic_fontsize - diff) + "px");
+            } catch (ignore) {
+            }
         }
     });
 
