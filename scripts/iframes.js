@@ -103,7 +103,6 @@ $(document).ready(function () {
 
     $(".textlink").on({
         "click": function (event) {
-            //event.preventDefault();
             let href = event.target.href;
             const pos = href.indexOf('#');
             if (pos < 0) {
