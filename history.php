@@ -25,7 +25,7 @@ function autoversion($file)
 <body class="latin">
 <p align="center"></p>
 <h1>Summary of the history</h1>
-<p>The story Helen and the Trojan War was a Charter Myth
+<p>The story of Helen and the Trojan War was a Charter Myth
     for the Ionian migration in the same way the story of
     Heracles' children claiming their inheritance was a charter
     for the Dorian invasion. These stories functioned as political banners
