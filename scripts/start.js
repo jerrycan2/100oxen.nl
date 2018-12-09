@@ -46,6 +46,7 @@ window.site100oxen = {
             ["butler_il.html", "butler_od.html", "hesiod_theo_transl.html", "hesiod_wd_transl.html"],
             ["textframe.html", "help.php"]
         ],
+        xml_names: ["iliad.xml", "odyssey.xml", "", ""],
         perseus_names: [
             ["1999.01.0133", "1999.01.0135", "1999.01.0129", "1999.01.0131"],//iliad, odyssey
             ["1999.01.0134", "1999.01.0136", "1999.01.0130", "1999.01.0132"] //theo, wd
@@ -3012,6 +3013,8 @@ window.site100oxen = {
     });
     $("#editor").click(function () {
         getNewIframeFile('editor.php', 'pageframe');
+        //$("#pageframe").load('editor.php');
+        //site100oxen.currentPage = 'editor.php';
         configColumns(0, 2, true);
     });
     $("#contact").click(function () {
@@ -3026,63 +3029,86 @@ window.site100oxen = {
         localStorage.setItem("messages", $("#messages span").text());
     });
     //endregion
-
+    function init_all() {
+        window.site100oxen.forcereload = false;
+        window.site100oxen.xml_loaded = true;
+        init_tree();
+        window.site100oxen.untouchable = // are we on a touch device?
+            !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+        if (window.site100oxen.untouchable) {
+            $("#treeframe").niceScroll({
+                cursorcolor: "#888",
+                cursorwidth: "7px",
+                background: "rgba(0,0,0,0.1)",
+                cursoropacitymin: 0.2,
+                hidecursordelay: 0,
+                zindex: 2,
+                horizrailenabled: true
+            });
+        }
+        loadPageState(); // from localStorage
+        //zoominout();
+    }
     //region Ajax get xml
-    jbNS.newXML = true;
-    $.ajax({
-        type: "HEAD",
-        async: true,
-        cache: false,
-        url: "iliad.xml",
-    }).done(function (message, textStatus, jqXHR) {
-        const resp = jqXHR.getAllResponseHeaders();
-        const etag = resp.match(/etag: \"(.*)\"/i);
-        const here = localStorage.getItem("iliad.xml");
-        if (here && here === etag[1]) {
-            jbNS.newXML = false;
-        }
-        if (jbNS.newXML) {
-            localStorage.setItem("iliad.xml", etag[1]);
-        }
-        console.log("iliad.xml from cache: " + !jbNS.newXML);
-        $.ajax({
-            type: "GET",
-            url: "iliad.xml",
-            cache: !window.site100oxen.forcereload || !jbNS.newXML,
-            dataType: "text",
-            success: function (xmlstring) {
-                try {
-                    window.site100oxen.XML = $.parseXML(xmlstring);
-                } catch (e) {
-                    utils.myAlert(e, true, null);
-                    return;
-                }
-                window.site100oxen.forcereload = false;
-                window.site100oxen.xml_loaded = true;
-                init_tree();
-                window.site100oxen.untouchable = // are we on a touch device?
-                    !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-                if (window.site100oxen.untouchable) {
-                    $("#treeframe").niceScroll({
-                        cursorcolor: "#888",
-                        cursorwidth: "7px",
-                        background: "rgba(0,0,0,0.1)",
-                        cursoropacitymin: 0.2,
-                        hidecursordelay: 0,
-                        zindex: 2,
-                        horizrailenabled: true
-                    });
-                }
-                loadPageState(); // from localStorage
-                //zoominout();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                window.site100oxen.xml_loaded = false;
-                utils.myAlert("can't load iliad.xml" + textStatus + ";" + errorThrown, true);
+    function getXML(filename) {
+        if(!filename){
+            filename = localStorage.getItem('textToLoad');
+            if(!filename){
+                filename = 'iliad.xml';
             }
+        }
+        let fileindex = jbNS.xml_names.indexOf(filename);
+        if(fileindex < 0){
+            utils.myAlert(`unknown filename ${filename}`, true);
+            return;
+        }
+        else {
+            jbNS.columns_config[1] = fileindex + 1;
+        }
+        localStorage.setItem('textToLoad', filename);
+        jbNS.newXML = true;
+        let dfr = $.Deferred();
+        $.ajax({
+            type: "HEAD",
+            async: true,
+            cache: false,
+            url: filename,
+        }).done(function (message, textStatus, jqXHR) {
+            const resp = jqXHR.getAllResponseHeaders();
+            const etag = resp.match(/etag: \"(.*)\"/i);
+            const here = localStorage.getItem(filename);
+            if (here && here === etag[1]) {
+                jbNS.newXML = false;
+            }
+            if (jbNS.newXML) {
+                localStorage.setItem(filename, etag[1]);
+            }
+            console.log(`${filename} from cache: ${!jbNS.newXML}`);
+            $.ajax({
+                type: "GET",
+                url: filename,
+                cache: !window.site100oxen.forcereload || !jbNS.newXML,
+                dataType: "text",
+                success: function (xmlstring) {
+                    try {
+                        window.site100oxen.XML = $.parseXML(xmlstring);
+                    } catch (e) {
+                        dfr.reject(e);
+                    }
+                    dfr.resolve(xmlstring);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.site100oxen.xml_loaded = false;
+                    dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
+                }
+            });
+        }).fail((xhr)=>{utils.myAlert(`${xhr.status} ${xhr.statusText}`, true);});
+        return dfr.promise();
+    };
+    getXML('iliad.xml').done((xmlstring)=>{init_all(xmlstring);})
+        .fail((msg)=>{
+            utils.myAlert(msg, true);
         });
-    });
-
     //endregion
 
 })(jQuery);

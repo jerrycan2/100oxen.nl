@@ -112,7 +112,7 @@ function autoversion($file)
 
 <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
 <script src="scripts/huebee.pkgd.js"></script>
-<script src="<?= autoversion('/scripts/editor.js');?>"></script>
 <script src="/scripts/myUtils.js" type="module"></script>
+<script src="<?= autoversion('/scripts/editor.js');?>" type="module"></script>
 </body>
 </html>
