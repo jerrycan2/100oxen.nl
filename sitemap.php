@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
@@ -24,6 +24,7 @@ function autoversion($file)
   </head>
   <body class="latin">
     <h1>What was, what is and what will be</h1>
+    <h4>Sitemap</h4>
     <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.php">
         One hundred oxen</a><br>
       2. Chapters:
@@ -34,6 +35,7 @@ function autoversion($file)
               <ul>
                 <li>the Ionian migration <a class="textlink" href="history.php">⇨
                     History</a></li>
+                <li><a class="textlink" target="_self" title="Poseidon" href="poseidon.php">Poseidon</a></li>
               </ul>
             </li>
             <li> Renaissance and Reform
@@ -69,7 +71,7 @@ function autoversion($file)
                        href="stitches.php">Stitched verse - alterations? </a></li>
               </ul>
             </li>
-            <li> "<a class="textlink" href="apollo.php">Apollo and the Art of Archery</a>"
+            <li> Apollo and the Art of Archery
               <ul>
                 <li><a class="textlink" target="_self" title="Persuasive rhetoric"
                        href="rhetoric.php">persuasive rhetoric</a> </li>
@@ -126,7 +128,7 @@ function autoversion($file)
         </li>
       </ul>
     </div>
-    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div><br>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
     <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
     <script src="<?= autoversion('/scripts/iframes.js');?>"></script>

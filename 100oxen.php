@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -257,7 +257,7 @@ function autoversion($file)
         which must have been under pressure in Homer's day. Also it is a
         prophecy in a political and ethical sense of the word.</p>
     <p>The poem may reflexively refer to the poet or to itself or its
-        companion-poem (though the Iliad never seems to refer to the Iliad).</p>
+        companion-poem (though the Iliad never seems to refer to the Odyssey).</p>
     <p>In these pages I am mainly concerned with pointing out some of the
         myriad examples so the reader can learn to recognize them where they
         occur. An example of almost-open self reference would be 'Phoenix': I
@@ -336,7 +336,7 @@ function autoversion($file)
 <br>
 <br>
 <br>
-<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div><br>
+<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
 <script src="<?php echo autoversion('/scripts/iframes.js');?>"></script>

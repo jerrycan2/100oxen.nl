@@ -1,8 +1,7 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: public');
+header('Cache-Control: no-cache');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -203,15 +203,15 @@ function autoversion($file)
     <div class="floatright"></div>
 </div>
 <!--end of splash-->
+<iframe id="hiddenframe"></iframe>
 <div id="colwrap" class="bgbot" style="top: 6rem">
     <div id="treeframe" name="treeframe" class="viewport">
         <div id="messages">
             <label>
                 <button>↑</button>
             </label>
-            <span>New &amp; updated 2 dec 2018</span>
-            <p>1. sitemap now active</p>
-            <p>2. error corrections</p>
+            <span>New &amp; updated 11 dec 2018</span>
+            <p>The switch to HTTPS apparently broke the Perseus lookup. Trying to solve this.</p>
         </div>
         <div class="contents" id="list">
             <ol></ol>

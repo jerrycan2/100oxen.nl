@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -55,8 +55,9 @@ function autoversion($file)
     rulers in Pylos in the past and probably a "great house" dating back to
     Mycenean times, even claiming descendance from Poseidon. They found a new
     powerbase in Athens but they had branches everywhere. In the Iliad they
-    are represented by Nestor and Poseidon (who 'has the sea but wants the
-    land'). </p>
+    are represented by Nestor and <a class="textlink" target="_self"
+                                     title="Poseidon" href="poseidon.php">Poseidon</a>).
+</p>
 <p>The aim of their policy was to increase the stability of the mainland by
     emigration (of landless younger sons of nobles and other 'superfluous'
     men) and with these people build an army in Ionia, aiming to conquer the
@@ -124,7 +125,7 @@ function autoversion($file)
     aid if anyone attempted to steal Helen (victory) from him. </p>
 
 
-<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div>
+<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script src="<?= autoversion('/scripts/iframes.js');?>"></script>

@@ -107,7 +107,9 @@ $(document).ready(function () {
             const pos = href.indexOf('#');
             if (pos < 0) {
                 const fname = href.split("/").pop();
-                parent.site100oxen.getNewIframeFile(fname, "pageframe");
+                parent.site100oxen.currentPage = fname;
+                //console.log("here");
+                return true;
             }
             else { //this is not right yet: it will only go to anchors on the same page
                 const target = href.substr(pos+1);
@@ -118,8 +120,8 @@ $(document).ready(function () {
                         return false;
                     }
                 });
+                return false;
             }
-            return false;
         }
     });
 

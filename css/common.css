@@ -21,7 +21,9 @@
 }
 .mtime {
   font-size: 70%;
-  float: bottom;
+  position: relative;
+  margin-bottom: 1rem;
+  bottom: 0;
 }
 button {
   cursor: pointer;
@@ -32,6 +34,7 @@ html {
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 .contents {
   padding: 0 0.3rem;
@@ -81,7 +84,6 @@ h4 {
 }
 em {
   font-style: italic;
-  font-weight: bold;
 }
 p {
   padding: 0;
@@ -185,6 +187,9 @@ figure img {
 }
 .icon {
   height: 1.7rem;
+}
+.indent {
+  margin: 1rem 1rem 1rem 3rem;
 }
 button.accordion {
   background-color: rgba(0, 0, 0, 0.1);

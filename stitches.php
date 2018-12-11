@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -76,7 +76,7 @@ function autoversion($file)
     <p><br>
     </p>
 
-    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
     <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
     <script src="<?= autoversion('/scripts/iframes.js');?>"></script>

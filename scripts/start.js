@@ -51,7 +51,7 @@ window.site100oxen = {
             ["1999.01.0133", "1999.01.0135", "1999.01.0129", "1999.01.0131"],//iliad, odyssey
             ["1999.01.0134", "1999.01.0136", "1999.01.0130", "1999.01.0132"] //theo, wd
         ],
-        perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
+        perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0072:entry=i(/hmi-contents'",
 
         pages_local: [
             ["100oxen.php", "100 Oxen"],
@@ -184,12 +184,19 @@ window.site100oxen = {
         result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
         result = result.replace(/hi/, "h|"); //(->Perseus beta code)
         url = 'http://www.perseus.tufts.edu/hopper/morph?l=' + result + '&la=greek';
-        $("#pageframe")[0].src = url;
-        try {
-            history.pushState(null, "", url);
-        } catch (ignore) {
-        }
-        configColumns(0, 2, true);
+        //$("#pageframe")[0].src = url;
+        getNewIframeFile(url, "hiddenframe");
+        let x = [];
+        $("#hiddenframe").contents().find(".lemma").each(function (i, el) {
+            x.push($(el).attr("id"));
+        });
+        alert(x.join(','));
+        $("#hiddenframe").contents().remove();
+        // try {
+        //     history.pushState(null, "", url);
+        // } catch (ignore) {
+        // }
+        //configColumns(0, 2, true);
     }
 
     //endregion Perseus
@@ -1860,6 +1867,7 @@ window.site100oxen = {
 
     function getNewIframeFile(url, targetframe) {
         let getnew = true;
+        let cache$ = 'no-cache';
 
         site100oxen.currentPage = url;
 
@@ -1875,20 +1883,24 @@ window.site100oxen = {
             const here = localStorage.getItem(url);
             if (here && here === etag[1]) {
                 getnew = false;
+                cache$ = 'max-age=1000';
             }
             if (getnew && etag) {
                 localStorage.setItem(url, etag[1]);
             }
             $.ajax({
                 type: "GET",
+                // headers: {
+                //     'Cache-Control': cache$
+                // },
                 async: true,
-                cache: !getnew,
+                cache: true,
                 url: url,
                 dataType: 'html',
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
                 iframe.srcdoc = data;
-                console.log(url + " from cache: " + !getnew);
+                console.log(url + " from cache: " + !getnew + "," + etag);
             });
         })
             .fail(function (jqXHR, textStatus, errorThrown) {
@@ -2263,8 +2275,10 @@ window.site100oxen = {
                 }
             } else { // pages in/out
                 if (jbNS.columns_config[0] === 2 && ix === 1) {
-                    if (site100oxen.currentPage !== 'sitemap.php') {
-                        getNewIframeFile('sitemap.php', 'pageframe');
+                    //let filename = $("#pageframe")[0].src.split('/').pop();
+                    if ( site100oxen.currentPage !== 'sitemap.php') {
+                        $("#pageframe")[0].src = 'sitemap.php';
+                        site100oxen.currentPage = 'sitemap.php';
                     } else {
                         configColumns(0, 2, false);
                     }
@@ -2633,7 +2647,7 @@ window.site100oxen = {
         }
         setSelButtonText();
         site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.php";
-        getNewIframeFile(site100oxen.currentPage, "pageframe");
+        $("#pageframe")[0].src = site100oxen.currentPage;
         zoominout();
     }
 
@@ -3012,9 +3026,8 @@ window.site100oxen = {
         }
     });
     $("#editor").click(function () {
-        getNewIframeFile('editor.php', 'pageframe');
-        //$("#pageframe").load('editor.php');
-        //site100oxen.currentPage = 'editor.php';
+        $("#pageframe")[0].src = 'editor.php';
+        site100oxen.currentPage = 'editor.php';
         configColumns(0, 2, true);
     });
     $("#contact").click(function () {

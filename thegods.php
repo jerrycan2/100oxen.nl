@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
@@ -12,6 +11,7 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -142,7 +142,7 @@ function autoversion($file)
       him must be seen as dependent on their marriage to the eldest daughter of
       their respective fathers. (More about the Titans and 'upward' marriages <a
 
-        class="textlink" target="_self" title="kronos" href="kronos.html">here</a>).
+        class="textlink" target="_self" title="kronos" href="kronos.php">here</a>).
       In the Iliad, Hera is always in conflict with Zeus about her power.<br>
       So the bribe that Hera offers is kingship, in other words power. Now note
       the following:<br>
@@ -169,7 +169,7 @@ function autoversion($file)
       there was a prophecy that a child of hers would overthrow him, so he
       swallowed the pregnant Mētis in order to make the child his own (ref. <a
 
-        class="textlink" target="_self" title="kronos" href="kronos.html">Kronos</a>).
+        class="textlink" target="_self" title="kronos" href="kronos.php">Kronos</a>).
       The child finally was born by splitting Zeus' head with an axe and a fully
       grown and armed maiden sprang out, his favourite daughter Athena.</p>
     <figure> <a class="piclink" target="_blank" title="Birth of Athena from Zeus' head"
@@ -275,7 +275,7 @@ function autoversion($file)
     </p>
     <br>
     <br>
-    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?></div>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
     <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
