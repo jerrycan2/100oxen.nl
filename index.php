@@ -22,6 +22,8 @@ function autoversion($file)
           rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/start.css');?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
 </head>
 <body id="mainbody" class="latin">
 <nav id="switchColumns">
@@ -203,15 +205,19 @@ function autoversion($file)
     <div class="floatright"></div>
 </div>
 <!--end of splash-->
-<iframe id="hiddenframe"></iframe>
+<div id="hiddendiv">
+    <h4>Doubleclick word to lookup in Alpheios</h4>
+    <div id="alphtext" class="alpheios-enabled"></div>
+</div>
 <div id="colwrap" class="bgbot" style="top: 6rem">
     <div id="treeframe" name="treeframe" class="viewport">
         <div id="messages">
             <label>
                 <button>↑</button>
             </label>
-            <span>New &amp; updated 11 dec 2018</span>
-            <p>The switch to HTTPS apparently broke the Perseus lookup. Trying to solve this.</p>
+            <span>New &amp; updated 12 dec 2018</span>
+            <p>New: Alpheios lookup. select a Greek word so it appears in the textbox,
+            then click 'word study', then doubleclick/double tap the word in the popup.</p>
         </div>
         <div class="contents" id="list">
             <ol></ol>
@@ -339,5 +345,18 @@ function autoversion($file)
 <script src="<?php echo autoversion('/scripts/start.js');?>" type="module"></script>
 <script src="<?php echo autoversion('/scripts/myUtils.js');?>" type="module"></script>
 <script src="/scripts/beta.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+        new Alpheios.Embedded({
+            clientId:"100oxen.nl",
+            eventTriggers:"dblclick,tap",
+            triggerPreCallback: function () {
+                console.log("was here");
+                return true;
+            }
+        }).activate();
+    });
+</script>
 </body>
 </html>

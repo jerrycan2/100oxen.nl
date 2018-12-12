@@ -168,6 +168,19 @@ window.site100oxen = {
         } catch (ignore) {
         }
     }
+    function selectText(containerid) {
+        let range;
+        if (document.selection) { // IE
+            range = document.body.createTextRange();
+            range.moveToElementText(document.getElementById(containerid));
+            range.select();
+        } else if (window.getSelection) {
+            range = document.createRange();
+            range.selectNode(document.getElementById(containerid));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        }
+    }
 
     /**
      * goto perseus word-study with word in #textinput
@@ -175,29 +188,20 @@ window.site100oxen = {
     function perseus_WS_search() {
         let result, url;
 
-        result = $.trim($("#textinput").val());
-        result = uni2beta(result, true);
-        if (result === "") {
-            myAlert("no selection!", false, null);
-            return;
-        }
-        result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
-        result = result.replace(/hi/, "h|"); //(->Perseus beta code)
-        url = 'http://www.perseus.tufts.edu/hopper/morph?l=' + result + '&la=greek';
-        //$("#pageframe")[0].src = url;
-        getNewIframeFile(url, "hiddenframe");
-        let x = [];
-        $("#hiddenframe").contents().find(".lemma").each(function (i, el) {
-            x.push($(el).attr("id"));
-        });
-        alert(x.join(','));
-        $("#hiddenframe").contents().remove();
-        // try {
-        //     history.pushState(null, "", url);
-        // } catch (ignore) {
+
+        //selectText("hiddendiv");
+        $("#hiddendiv").show();
+        $("#alphtext").text($("#textinput").val());
+
+        // result = $.trim($("#textinput").val());
+        // result = uni2beta(result, true);
+        // if (result === "") {
+        //     myAlert("no selection!", false, null);
+        //     return;
         // }
-        //configColumns(0, 2, true);
-    }
+        // result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
+        // result = result.replace(/hi/, "h|"); //(->Perseus beta code)
+      }
 
     //endregion Perseus
 
@@ -2747,6 +2751,14 @@ window.site100oxen = {
     //endregion
 
     //region bound event handlers
+    $("#hiddendiv").on({
+        "dblclick": function () {
+            setTimeout(function(){
+                $("#hiddendiv").hide();
+            }, 1000);
+            return true;
+        }
+    });
 
     $("#switchColumns").on({
         "mousedown touchstart": switchColMousedown
@@ -2957,7 +2969,7 @@ window.site100oxen = {
             //event.stopImmediatePropagation();
             return false;
         },
-        "dblclick": clrinp
+        //"dblclick": clrinp
     });
     $("#selonly").click(toggleSelOnly);
     $("#shownotes").click(showNotes);
