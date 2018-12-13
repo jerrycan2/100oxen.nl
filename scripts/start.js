@@ -95,10 +95,10 @@ window.site100oxen = {
         selectBtnMessages: [
             [""],
             ["???"],
-            ["Goto gr.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
-            ["Goto eng.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
+            ["Goto gr.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Greek", "English"],
+            ["Goto eng.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Greek", "English"],
             ["Goto"],
-            ["Find gr.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Word Study"],
+            ["Find gr.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Word Study"],
             ["Find eng."]
         ],
         selectBtnActions: [

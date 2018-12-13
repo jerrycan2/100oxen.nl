@@ -215,11 +215,6 @@ figure {
       content: 'greek:';
     }
   }
-  .panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: 0.4s;
-  }
 }
 
 .bmcolor {
@@ -271,18 +266,6 @@ button.accordion:after {
 
 .accordion.active:after {
   content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-div.panel {
-  padding-left: 1rem;
-  /*background-color: white;*/
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-out;
-  font-size: 1rem;
-  p {
-    margin-left: 1.1rem;
-  }
 }
 
 #thegods {
@@ -370,3 +353,15 @@ ol#footnotes > li:before {
   counter-increment: footcounter;
 }
 
+div.panel {
+  padding-left: 1rem;
+  /*background-color: white;*/
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+  p {
+    margin-left: 1.1rem;
+  }
+  font-size: 90%;
+  background-color: #3fafff;
+}

@@ -245,9 +245,10 @@ function autoversion($file)
         columns): try clicking on the frame, or either refreshing the whole page
         or right-clicking the column and choosing 'reload frame'. If this
         doesn't help, try menu-item 'reset'.</p>
-    <p> Mozilla Firefox Android: touch-hold selection of text doesn't work in
-        iframes. Just type the text in the search-box. Firefox PC, Chrome, Edge,
-        Opera and Safari are OK, on Windows, Mac or Android. </p>
+    <p> On Windows, with any up-to-date browser, things seem to work fine. On OSX things
+        used to work but it's a long time since I tested. Linux I do not know. On Android:
+        Chrome does best, Firefox gives some problems, others I do not know. On my
+        old Ipad, nothing works.</p>
 </div>
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

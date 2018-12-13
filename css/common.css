@@ -177,11 +177,6 @@ figure img {
 .citation .accordion.gr:before {
   content: 'greek:';
 }
-.citation .panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: 0.4s;
-}
 .bmcolor {
   color: red !important;
 }
@@ -221,17 +216,6 @@ button.accordion:after {
 .accordion.active:after {
   content: "\2796";
   /* Unicode character for "minus" sign (-) */
-}
-div.panel {
-  padding-left: 1rem;
-  /*background-color: white;*/
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-out;
-  font-size: 1rem;
-}
-div.panel p {
-  margin-left: 1.1rem;
 }
 #thegods header {
   background: linear-gradient(to bottom, #77beff 90%, #008000);
@@ -303,4 +287,16 @@ ol#footnotes {
 ol#footnotes > li:before {
   content: "(" counter(footcounter) ") ";
   counter-increment: footcounter;
+}
+div.panel {
+  padding-left: 1rem;
+  /*background-color: white;*/
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+  font-size: 90%;
+  background-color: #3fafff;
+}
+div.panel p {
+  margin-left: 1.1rem;
 }
