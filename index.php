@@ -215,9 +215,8 @@ function autoversion($file)
             <label>
                 <button>↑</button>
             </label>
-            <span>New &amp; updated 12 dec 2018</span>
-            <p>New: Alpheios lookup. select a Greek word so it appears in the textbox,
-            then click 'word study', then doubleclick/double tap the word in the popup.</p>
+            <span>New &amp; updated 13 dec 2018</span>
+            <p>New: started Odyssey collapsible list</p>
         </div>
         <div class="contents" id="list">
             <ol></ol>

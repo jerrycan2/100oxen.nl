@@ -23,9 +23,14 @@ $(document).ready(function () {
         let button, panel;
 
         event.stopImmediatePropagation();
-        button = event.target;
-        button.classList.toggle("active");
-        panel = $(button).next(".panel");
+        if(event.target.className.indexOf('accheader') >= 0){
+            button = $(event.target).find("button:first")[0];
+        }
+        else {
+            button = event.target;
+        }
+        button.parentNode.classList.toggle("active");
+        panel = $(button).parent().next(".panel");
         if (panel) {
             if (panel[0].style.maxHeight) {
                 panel[0].style.maxHeight = null;
@@ -61,6 +66,7 @@ $(document).ready(function () {
         bg = range.startOffset;
         nd = range.endOffset;
         txt = range.commonAncestorContainer.data; //element text excluding any child elements
+        if(!txt){return;}
         ok = false;
         count = 0;
         //linenr: xx nn.nnn
@@ -125,7 +131,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".accordion, .citation .cithead").on("click tap", accordionclick);
+    $(".accordion, .citation .cithead, .accheader").on("click tap", accordionclick);
 
     /* footnotes */
     const FOOTNOTE_REGEX = /^\([0-9]+\)$/;

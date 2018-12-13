@@ -186,36 +186,49 @@ figure img {
 .indent {
   margin: 1rem 1rem 1rem 3rem;
 }
-button.accordion {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: black;
-  cursor: default;
-  padding: 0.5rem 1rem 0.5rem 0.3rem;
-  margin-top: 4px;
-  width: 100%;
+.accordion {
+  background-color: rgba(0, 0, 0, 0.13);
   text-align: left;
   border: none;
   outline: none;
   transition: 0.4s;
   font-size: 1rem;
+  width: 90%;
+  border-radius: 0.4rem;
 }
 button.accordion.active,
 button.accordion:hover {
   background-color: rgba(0, 0, 0, 0.3);
 }
-.accordion:after {
+.accheader {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: black;
+  cursor: default;
+  padding: 0.5rem 1rem 0.5rem 0.3rem;
+  width: 100%;
+  display: flex;
+}
+.accheader:after {
   content: '\02795';
   /* Unicode character for "plus" sign (+) */
   color: #777;
-  margin-left: 2rem;
-}
-button.accordion:after {
+  margin: 0.4rem 1rem;
   font-size: 120%;
-  float: right;
 }
-.accordion.active:after {
+.accheader.active:after {
   content: "\2796";
   /* Unicode character for "minus" sign (-) */
+}
+div.panel {
+  padding: 0 1rem;
+  /*background-color: white;*/
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+  background-color: #8fdfff;
+}
+div.panel p {
+  margin-left: 1.1rem;
 }
 #thegods header {
   background: linear-gradient(to bottom, #77beff 90%, #008000);
@@ -280,6 +293,7 @@ ol#references > li:before {
 ol#footnotes {
   list-style: none;
   margin-left: 0;
+  font-size: 90%;
   padding-left: 1.8em;
   text-indent: -1.8em;
   counter-reset: footcounter;
@@ -287,16 +301,4 @@ ol#footnotes {
 ol#footnotes > li:before {
   content: "(" counter(footcounter) ") ";
   counter-increment: footcounter;
-}
-div.panel {
-  padding-left: 1rem;
-  /*background-color: white;*/
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-out;
-  font-size: 90%;
-  background-color: #3fafff;
-}
-div.panel p {
-  margin-left: 1.1rem;
 }

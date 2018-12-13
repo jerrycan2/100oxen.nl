@@ -1,7 +1,7 @@
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: public');
+header('Cache-Control: no-cache');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -35,7 +35,7 @@ function autoversion($file)
     <ol>
         <li><span class="red">Tree:</span> collapsible list page - <br>
             <span class="red">Pages:</span> switch between showing the tree view
-            and a overview of available (or not) pages.
+            and an overview of available (or not) pages.
         </li>
         <li><span class="red">Il - Od - Theo - W+D</span>&nbsp; lets you switch
             between resp. Iliad, Odyssey, Hesiod's Theogony and Works &amp;

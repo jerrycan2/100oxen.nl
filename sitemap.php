@@ -1,7 +1,7 @@
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: public');
+header('Cache-Control: no-cache');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))

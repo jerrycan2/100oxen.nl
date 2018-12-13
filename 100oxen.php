@@ -1,7 +1,6 @@
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: public');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -19,7 +18,7 @@ function autoversion($file)
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
       rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+    <link rel="stylesheet" href="<?php echo autoversion('/css/common.css');?>">
   </head>
   <body id="hundredoxen" class="latin">
     <figure><a class="piclink" href="images/Characters-in-the-Iliad.jpg" target="_blank"><img
@@ -114,7 +113,9 @@ function autoversion($file)
     </p>
     <p>In order to explain how I came to this interpretation, I have to discuss
       the following characteristics of the poetry:</p>
-    <button class="accordion">1. Rhetoric: persuasive rhetoric on two levels:</button>
+    <div class="accheader">
+      <button class="accordion">1. Rhetoric: persuasive rhetoric on two levels:</button>
+    </div>
     <div class="panel">
       <p>Homer is the first creator (that we know of<a class="ptr">(1)</a>) of
         an <em>icon</em> with all the persuasive power that implies. I would
@@ -171,8 +172,11 @@ function autoversion($file)
         probably meant aristocrats in Homer's day) could probably deal with it
         to some degree.</p>
     </div>
-    <button class="accordion">2. The Iliad is about about Homer's own time and
-      place: </button>
+    <div class="accheader">
+      <button class="accordion">2. The Iliad is about about Homer's own time and
+        place:
+      </button>
+    </div>
     <div class="panel">
       <p>The Iliad refers to a historical reality outside itself and outside the
         world of myth. The most important aspect of it: it is a society <em>at
@@ -197,8 +201,11 @@ function autoversion($file)
         migration to the west and the Black Sea instead of Ionia, which provided
         patronage for him.</p>
     </div>
-    <button class="accordion">3. Internal structure: they are very carefully
-      crafted, unified texts, the Iliad more so than the Odyssey. </button>
+    <div class="accheader">
+      <button class="accordion">3. Internal structure: they are very carefully
+        crafted, unified texts, the Iliad more so than the Odyssey.
+      </button>
+    </div>
     <div class="panel">
       <p>A thing which never fails to impress me about the Iliad is its clarity
         and well-formedness. Its language runs smoothly off the tongue, its
@@ -233,9 +240,12 @@ function autoversion($file)
       <p><br>
       </p>
     </div>
-    <button class="accordion">4. Their self-reflectiveness: in spite of their
-      anonimity, the poems are very self-aware (the Odyssey even more so than
-      the Iliad) </button>
+    <div class="accheader">
+      <button class="accordion">4. Their self-reflectiveness: in spite of their
+        anonimity, the poems are very self-aware (the Odyssey even more so than
+        the Iliad)
+      </button>
+    </div>
     <div class="panel">
       <p>Never forget that these are not books, they are songs and they came out
         of the composer's mouth while he lived. While singing a direct speech by
@@ -282,8 +292,11 @@ function autoversion($file)
       <p><br>
       </p>
     </div>
-    <button class="accordion">5. These remarkable <em>gods</em> are to be taken
-      seriously and they belong to Homer only </button>
+    <div class="accheader">
+      <button class="accordion">5. These remarkable <em>gods</em> are to be taken
+        seriously and they belong to Homer only
+      </button>
+    </div>
     <div class="panel">
       <p> Homer's view of the gods is not naive and not characteristic of the
         Greeks in general. Nor are they there for 'comic relief' only though
@@ -322,7 +335,7 @@ function autoversion($file)
     <br>
     <hr>
     <ol id="footnotes">
-      <li>There is Heracles who must be older than Achilles but we have no idea
+      <li>There is Heracles who must be older than Homer's Achilles but we have no idea
         how this icon came into being.The poet draws a parallel between Heracles
         and Achilles: when Achilles decides to fight and end his quarrel with
         Agamemnon (Il 19.95-), Agamemnon tells the tale of the birth of
@@ -332,7 +345,7 @@ function autoversion($file)
     <br>
     <br>
     <br>
-    <div class="mtime"><!--?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?--><br>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br>
     </div>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
     <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
