@@ -207,7 +207,7 @@ function autoversion($file)
 <!--end of splash-->
 <div id="hiddendiv">
     <h4>Doubleclick word to lookup in Alpheios</h4>
-    <div id="alphtext" class="alpheios-enabled"></div>
+    <div id="alphtext" class="alpheios-enabled" lang="grc"></div>
 </div>
 <div id="colwrap" class="bgbot" style="top: 6rem">
     <div id="treeframe" name="treeframe" class="viewport">
@@ -266,6 +266,10 @@ function autoversion($file)
     <p>Greek texts and their translations provided by Perseus Digital Library,
         with funding from The Annenberg CPB/Project. Original version available
         for viewing and download at <a href="http://www.perseus.tufts.edu/hopper/">Perseus</a>.
+    </p>
+    <p>
+        Greek word lookup provided by the <a href="https://alpheios.net/">Alpheios Project</a>
+        with help from their Embedded Library.
     </p>
     <p>All other texts, unless otherwise indicated:</p>
     <img src="images/sign.png" alt="my signature">

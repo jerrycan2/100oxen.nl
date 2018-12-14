@@ -95,11 +95,11 @@ window.site100oxen = {
         selectBtnMessages: [
             [""],
             ["???"],
-            ["Goto gr.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Greek", "English"],
-            ["Goto eng.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Greek", "English"],
+            ["Goto gr.", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Greek", "English"],
+            ["Goto eng.", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Greek", "English"],
             ["Goto"],
-            ["Find gr.", "<img id='perseus' alt='Perseus icon' src='../images/alpheios.png'> :", "Word Study"],
-            ["Find eng."]
+            ["Find Greek", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Word Study"],
+            ["Find Eng."]
         ],
         selectBtnActions: [
             [showAndGotoAnyLine, null, perseusLookup, perseusLookup],

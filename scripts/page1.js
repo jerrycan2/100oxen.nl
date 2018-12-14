@@ -140,9 +140,10 @@ function drawBlocks($node, colheight, recursion) {
             nextbg = prevbg = "";
             fg = $this.attr("f") || "000000";
             if (has_children) {
-                bg = $this.attr("c") || "a0a0a0";
+                bg = $this.attr("c");
+                if(!bg || bg === "000000") {bg = "c0b0a0";}
             } else {
-                bg = "none"; // filler
+                bg = "c0c0c0"; // filler
             }
             h = (parseInt($this.attr("sz")) * scale);
             txt1 = txt2 = getlinenr(this) + " " + $this.attr("d");
@@ -250,7 +251,8 @@ function drawBlocks($node, colheight, recursion) {
                 } //last box drawn
             }
             c1 = $node.attr("c");
-            c1 = c1 ? "#" + c1 : "rgba(0,0,0,0)"; //col1 start-color = transparent
+            if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
+            //c1 = c1 ? "#" + c1 : "rgba(200,200,200,0)"; //col1 start-color = transparent
             if (pg1Namespace.index >= 0) {
                 $col1.css({
                     "color": "#" + ($node.attr("f") || "003388")

@@ -112,12 +112,13 @@ function autoversion($file)
     <p><br>
     </p>
     <p>In order to explain how I came to this interpretation, I have to discuss
-      the following characteristics of the poetry:</p>
+      the following characteristics of the poetry<a class="ptr">(1)</a>. These I take as axioms, since they
+      cannot be proved. The only point is how well they work:</p>
     <div class="accheader">
-      <button class="accordion">1. Rhetoric: persuasive rhetoric on two levels:</button>
+      <button class="accordion">1. The Iliad is fiercely rhetorical (on two levels).</button>
     </div>
     <div class="panel">
-      <p>Homer is the first creator (that we know of<a class="ptr">(1)</a>) of
+      <p>Homer is the first creator (that we know of<a class="ptr">(2)</a>) of
         an <em>icon</em> with all the persuasive power that implies. I would
         even say 'religious power' and that&nbsp; would not be&nbsp; wrong, but
         we modern people have been brought up with a very different view of
@@ -174,7 +175,7 @@ function autoversion($file)
     </div>
     <div class="accheader">
       <button class="accordion">2. The Iliad is about about Homer's own time and
-        place:
+        place
       </button>
     </div>
     <div class="panel">
@@ -202,7 +203,7 @@ function autoversion($file)
         patronage for him.</p>
     </div>
     <div class="accheader">
-      <button class="accordion">3. Internal structure: they are very carefully
+      <button class="accordion">3. They are very carefully
         crafted, unified texts, the Iliad more so than the Odyssey.
       </button>
     </div>
@@ -242,8 +243,7 @@ function autoversion($file)
     </div>
     <div class="accheader">
       <button class="accordion">4. Their self-reflectiveness: in spite of their
-        anonimity, the poems are very self-aware (the Odyssey even more so than
-        the Iliad)
+        anonimity, the poems are very self-aware
       </button>
     </div>
     <div class="panel">
@@ -319,12 +319,12 @@ function autoversion($file)
         semantic field which is very important and central in the ancient world
         and likewise in the Iliad.We may simply 'obey Night' and go to sleep, or
         we may be persuaded by beauty, like Paris or like Zeus in Il 14.153-.
-        More about the gods <a class="textlink" title="what we obey" href="thegods.php">here</a>.
+        More about the gods <a class="textlink" title="about the gods" href="thegods.php">here</a>.
       </p>
     </div>
     <br>
     <p>It must be clear that the Iliad is <em>not a novel</em>. It is not about
-      character, it is about <em>action</em> (Aristotle said this). Action here
+      character, it is about <em>action</em> (ref. Aristotle's Poetics). Action here
       is not determined by individual character but by <em>position</em>. With
       'position' I mean the sum of the forces acting upon a person when he/she
       is making a decision, such as social status and expectations of others but
@@ -335,6 +335,10 @@ function autoversion($file)
     <br>
     <hr>
     <ol id="footnotes">
+      <li>
+        I am talking mostly about the Iliad here, taking the more easygoing tales from
+        the Odyssey as 'ἀναθήματα δαιτός'.
+      </li>
       <li>There is Heracles who must be older than Homer's Achilles but we have no idea
         how this icon came into being.The poet draws a parallel between Heracles
         and Achilles: when Achilles decides to fight and end his quarrel with
