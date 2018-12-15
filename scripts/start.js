@@ -1,5 +1,5 @@
 import * as utils from '../scripts/myUtils.js';
-import {beta2uni, uni2beta, LatinGreek} from '../scripts/beta.js';
+import {beta2uni, uni2beta} from '../scripts/beta.js';
 
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
@@ -303,9 +303,9 @@ window.site100oxen = {
                     lnr = n + checklastletter(lineID);
                 }
             } else { // Il or Od greek or latin
-                n = LatinGreek.greek2index(lineID.substr(0, 1));
+                n = utils.LatinGreek.greek2index(lineID.substr(0, 1));
                 if (n < 0) {
-                    n = LatinGreek.latin2index(lineID.substr(0, 1));
+                    n = utils.LatinGreek.latin2index(lineID.substr(0, 1));
                 }
                 if (n >= 0) { // n < 0: error
                     if (n > 23) {
@@ -430,7 +430,7 @@ window.site100oxen = {
                 it2 -= 1;
             } else {
                 it1 -= 1;
-                it2 = LatinGreek.getchaplen(it1); // last line of prev book
+                it2 = utils.LatinGreek.getchaplen(jbNS.columns_config[1]-1, it1); // last line of prev book
             }
         }
         it = (it1 * 1000) + it2;
@@ -2346,16 +2346,11 @@ window.site100oxen = {
     {	// NB: index has 1 added so [0] can be 'none'
         let language_choice = 0, $allbuttons;
 
-        jbNS.dontSetColumns = false;
-
-        $allbuttons = $(".switch").eq(colnr).find("li");
-        //notoggle = (typeof notoggle !== "undefined");
-
         if (typeof ix === "undefined") {
-            ix = jbNS.columns_config[colnr];
-            notoggle = true;
-            jbNS.dontSetColumns = true;
+            return jbNS.columns_config[colnr];
         }
+        $allbuttons = $(".switch").eq(colnr).find("li");
+
         if (colnr === 2) { //language choice
             language_choice = 1; // raise index by one, because of "⇔" button
             if (notoggle) {
@@ -2390,8 +2385,10 @@ window.site100oxen = {
             }
         }
         if (jbNS.dontSetColumns) {
-            return;
+            jbNS.dontSetColumns = false;
+            return jbNS.columns_config[colnr];
         }
+        jbNS.dontSetColumns = false;
         setColumns(); //width, display
         if (window.site100oxen.untouchable) {
             createSplitter();
@@ -2399,6 +2396,7 @@ window.site100oxen = {
         if (colnr === 0 && ix === 0) {
             scrolltree(jbNS.treetop_el_index);
         }
+        return jbNS.columns_config[colnr];
     }
 
     //endregion
@@ -2624,8 +2622,8 @@ window.site100oxen = {
             jbNS.textframe[0].src = jbNS.filenames[3][tf - 1];
         }
         for (i = 0; i < 4; ++i) {
-            //configColumns( i, undefined, undefined ); //, jbNS.columns_config[i], true); <-- this is wrong!
-            configColumns(i); //, jbNS.columns_config[i], true); <-- this is wrong!
+            jbNS.dontSetColumns = true; //this works only for 1 call
+            configColumns(i, jbNS.columns_config[i], true);
         }
 
         s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";

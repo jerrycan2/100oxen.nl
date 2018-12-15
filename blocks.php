@@ -19,7 +19,7 @@ function autoversion($file)
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
           type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
-    <link rel="stylesheet" href="<?= autoversion('/css/page1.css');?>">
+    <link rel="stylesheet" href="<?= autoversion('/css/blocks.css');?>">
 
 </head>
 <body class="contents latin">
@@ -45,7 +45,9 @@ function autoversion($file)
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.color-2.1.2.min.js"></script>
-<script src="<?= autoversion('/scripts/page1.js');?>"></script>
+<script src="/scripts/beta.js" type="module"></script>
+<script src="<?= autoversion('/scripts/myUtils.js');?>" type="module"></script>
+<script src="<?= autoversion('/scripts/blocks.js');?>" type="module"></script>
 
 </body>
 </html>

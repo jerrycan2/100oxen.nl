@@ -1,5 +1,5 @@
 import * as utils from '../scripts/myUtils.js';
-import Linenumber from '../scripts/myUtils.js';
+//import Linenumber from '../scripts/myUtils.js';
 //import { MD5 } from '../scripts/md5.js';
 
 /**
@@ -26,6 +26,7 @@ import Linenumber from '../scripts/myUtils.js';
         chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
         showing_greek: true
     };
+
     //endregion Global State Var
 
     /**
@@ -450,7 +451,8 @@ import Linenumber from '../scripts/myUtils.js';
                     line_err = true;
                 }
             } else {
-                if (currnr[1] === 1 && prevnr[1] !== glob.chaplength[prevnr[0] - 1]) {
+                if (currnr[1] === 1 && prevnr[1] !== utils.LatinGreek.getchaplen(
+                    parent.site100oxen.configColumns(1)-1, prevnr[0])) {
                     line_err = true;
                 }
             }
@@ -469,8 +471,8 @@ import Linenumber from '../scripts/myUtils.js';
         utils.maptree(glob.XML, function (node) {
             if (node.nodeName === "line") {
                 const lnr = node.getAttribute("lnr");
-                if (lineNrDiff(lnr, maptree.lastline)) {
-                    result += `err: ${maptree.lastline}, ${lnr}<br>\n`;
+                if (lineNrDiff(lnr, utils.maptree.lastline)) {
+                    result += `err: ${utils.maptree.lastline}, ${lnr}<br>\n`;
                     count += 1;
                 }
                 utils.maptree.lastline = lnr;
@@ -583,7 +585,7 @@ import Linenumber from '../scripts/myUtils.js';
         let Lcount = 0;
         let Hcount = 0;
         utils.maptree(glob.XML, function (node) {
-            node = getelementnode(node);
+            node = utils.getelementnode(node);
             if (node) {
                 if (node.nodeName === "line") {
                     Lcount += 1;

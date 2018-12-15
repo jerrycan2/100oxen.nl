@@ -1,3 +1,60 @@
+/**
+ * object LatinGreek
+ * Iliad chapter lengths and latin-greek letterindexes
+ */
+export let LatinGreek = {
+    chaplength: [ //il,od,th,wd
+        [611,877,461,544,909,529,482,561,713,579,848,471,837,522,746,867,761,616,424,503,611,515,897,804],
+        [444,434,497,847,493,331,347,586,566,574,640,453,440,533,557,481,606,428,604,394,434,501,372,548],
+        [1022],
+        [828]
+    ],
+    greek: 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
+    latin: 'ABGDEZHQIKLMNCOPRSTUFXYWabgdezhqiklmncoprstufxyw',
+    greek2index: function (letter) {
+        return this.greek.indexOf(letter);
+    },
+    latin2index: function (letter) {
+        return this.latin.indexOf(letter);
+    },
+    index2greek: function (letter) {
+        return this.greek.charAt(letter);
+    },
+    index2latin: function (letter) {
+        return this.latin.charAt(letter);
+    },
+    convertG_L: function (letter) {
+        let a = this.greek.indexOf(letter);
+        return a < 0 ? letter : this.latin.charAt(a);
+    },
+    convertL_G: function (letter) {
+        let a = this.latin.indexOf(letter);
+        return a < 0 ? letter : this.greek.charAt(a);
+    },
+    greek_charcode: function (letter) {
+        return this.greek.charCodeAt(letter);
+    },
+    getchaplen: function (n, x) {
+        return typeof x === "number" ? this.chaplength[n][x - 1] : this.chaplength[n][this.greek2index(x)];
+    },
+    repl_03: [0x03AC, 0x03AD, 0x03AE, 0x03AF, 0x03B0, 0x03CC, 0x03CD, 0x03CE, 0x0386, 0x0388, 0x0389, 0x0390, 0x038A, 0x03B0, 0x038E, 0x038C, 0x038F, 0x00B4],
+    repl_1F: [0x1F71, 0x1F73, 0x1F75, 0x1F77, 0x1FE3, 0x1F79, 0x1F7B, 0x1F7D, 0x1FBB, 0x1FC9, 0x1FCB, 0x1FD3, 0x1FDB, 0x1FE3, 0x1FEB, 0x1FF9, 0x1FFB, 0x1FFD],
+    norm_1F_to_03: function (c) { // c is charcode
+        let i = LatinGreek.repl_1F.indexOf(c);
+        if (i >= 0) {
+            c = LatinGreek.repl_03[i]; //normalize
+        }
+        return c;
+    },
+    conv_03_to_1F: function (c) { // c is charcode
+        let i = LatinGreek.repl_03.indexOf(c);
+        if (i >= 0) {
+            c = LatinGreek.repl_1F[i]; //de-normalize
+        }
+        return c;
+    }
+};
+
 export default class Linenumber {
     constructor(chap, line) { // either new line(10, 234) or new line('10.234')
         if (arguments.length === 2) {

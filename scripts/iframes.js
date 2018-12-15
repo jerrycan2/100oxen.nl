@@ -198,5 +198,7 @@ $(document).ready(function () {
         event.preventDefault();
     }
 
-    window.scrollTo(0, document.getElementById(window.location.hash.substring(1)).offsetTop);
+    if (window.location.hash !== "") {
+        window.scrollTo(0, document.getElementById(window.location.hash.substring(1)).offsetTop);
+    }
 });

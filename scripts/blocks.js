@@ -1,3 +1,4 @@
+import {LatinGreek} from '../scripts/beta.js';
 "use strict";
 /**
  * Created by WinJeroen on 29-10-2014.
@@ -10,6 +11,7 @@ var pg1Namespace = {
     COLHEIGHT: 45, //see also css
     ColNames: ["#col2", "#col3"],
     clicked: null,
+    textLoaded: 0,
     index: -1
 };
 
@@ -194,7 +196,8 @@ function drawBlocks($node, colheight, recursion) {
             $("#lines").text($node.attr("sz") + " lines");
             txt1 = "";
             for (i = 1; i <= 24; ++i) { //draw col1 book divisions
-                chap = pg1Namespace.chaplength[i - 1];
+                //chap = pg1Namespace.chaplength[i - 1];
+                chap = LatinGreek.getchaplen(parent.site100oxen.configColumns(1)-1, i);
                 som += chap;
                 if (som <= before) {
                     continue;
