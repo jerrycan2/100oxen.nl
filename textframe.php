@@ -1,3 +1,16 @@
+<?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+header('Cache-Control: no-cache');
+function autoversion($file)
+{
+  if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
+    return $file;
+
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +22,7 @@
 </head>
 <body>
 <div id="expltext" class="latin">
-    <a target="1:1.1"></a>
+    <a id="1:1.1"></a>
     <h2>Interpretation</h2>
     <h4>The structure</h4>
     <p> The structure presented in the left-hand frame is an organization of
@@ -20,7 +33,7 @@
         by likeness and contrast) are emphasized by color and to show that they
         form <em>ring-structures</em> and <em>catalogues</em> all through the poem
         and on many levels (see <a class="textlink" target="pageframe" href="ring.php"
-                                   onclick="parent.configColumns(0, 2, true)">ring.html</a>
+                                   onclick="parent.site100oxen.configColumns(0, 2, true)">ring.html</a>
         for more details).<br>
         What exactly constitutes a 'theme' and how best to formulate it, is of
         course not a self-evident matter. It cannot be separated from
@@ -32,10 +45,10 @@
         form the basis of our structure. This basis can help with the
         interpretation which in turn allows us a better view of themes. Thus we
         can bootstrap our way up the tree to the smallest structures.</p>
-    <p>A useful analogy for the top level is the <a class="textlink"
-                                                    target="_self" href="#chimaera">Chimaera</a> (she-goat), a
+    <h4>The Chimaera Model</h4>
+    <p>A useful analogy for the top level is the Chimaera<a class="ptr">(0)</a> (she-goat), a
         fire-breathing monster killed by Bellerophon (Il 6.179-) that has three
-        parts: a lion in front, a snake at the rear and a goat in the middle.
+        parts: a lion in front, a snake at the rear and a goat in the middle<a class="ptr">(2)</a>.
         <figure><a class="piclink" target="_blank" title="Chimaera" href="images/chimaera3.jpg"><img
 
                 class="fitpage" alt="Chimaera" src="images/chimaera3.jpg"></a>
@@ -45,24 +58,27 @@
                     wikipedia</a> <br>
             </figcaption>
         </figure>
-
+    </p><p>
         I take the lion's head to stand for the 'immortal hero' (Diomedes), the
         goat as a (scapegoat-)sacrifice, i.e. Patrocles, and the snake as a
         symbol of death and the 'mortal hero' (Achilles). The four legs can be
         seen as the four 'embassy and assembly' parts that connect the three
-        battle-parts. This description needs some clarification but I will
+        battle-parts. This description may need some clarification but I will
         provide this ad loc.
+    </p>
+    <p>
+        Oliver Taplin talks about a 'three-arched structure on four pillars'
     </p>
     <p>The point is that the three parts create a balanced structure or <em>ring-structure</em> and the whole
         composition of the Iliad is based on that kind of structures. The
         principle is that a central part is surrounded by two parts that are
         related by sameness or contrast. Often they are a comment on the central
-        part, though this is not always so. See the page about ring-structures
+        part, though this is not always so. See the page about
+        <a class="textlink" title="ring structures" href="ring.php">ring-structures</a>
         for more on the subject.</p>
     <p>The intention of all this is to make clear that the Iliad is a careful
-        oral composition by one man, using this structure as a mnemonic for
-        organizing and remembering his poem. Every entry in the list stands for
-        an idea. This is not something that is intended to be noticed by a
+        oral composition most likely by one man, using this structure as a mnemonic for
+        organizing and remembering his poem. This is not something that is intended to be noticed by a
         listening public but a way to keep a handle on a large amount of
         material that would otherwise be amorphous and, even for someone from a
         scriptless culture, hard to remember. It should be noted that the
@@ -71,9 +87,9 @@
         oral composition. See here for a theory on that subject.</p>
     <br>
     <hr>
-    <a target="2:3.15">&nbsp;</a> <a target="dio1">&nbsp;</a>
-    <h2>I:The Immortal Hero</h2>
-    <p>Diomedes' <a class="textlink" target="_self" href="#aristeia">aristeia</a> forms the
+    <a id="2:3.15">&nbsp;</a> <a id="dio1">&nbsp;</a>
+    <h4>I: The Immortal Hero</h4>
+    <p>Diomedes' aristeia<a class="ptr">(7)</a> forms the
         centerpiece of the first part. I call him 'the Immortal
         Hero' because that is what he becomes through the help of Athena.
         He is basically an ironical Achilles. Ref. Il 5.118-20 where D. is angry,
@@ -92,12 +108,11 @@
         heroic view), 'encouraging from behind' as Homer calls it. Diomedes'
         story is summed up nicely by Homer saying that Diomedes' deal acquiring
         his golden armour is like making a deal worth 'a hundred oxen for nine'
-        (with double meaning: a <a class="textlink" target="_self" title="Hecatomb" href="textframe.html#Hecatomb">hecatomb</a>
-        for nine oxen).</p>
+        (with double meaning: a hecatomb<a class="ptr">(1)</a> for nine oxen).</p>
     <br>
     <hr>
-    <a target="2:11.1">&nbsp;</a>
-    <h2>II: The Plan of Zeus </h2>
+    <a id="2:11.1">&nbsp;</a>
+    <h4>II: The Plan of Zeus </h4>
     <p>The middle part tells us the reality of heroic war. It starts with the
         confident marching-out of the Achaeans, and it ends with Menelaos
         desperately defending the body of his comrade and Antilochos running for
@@ -106,14 +121,11 @@
         scales of Zeus are the symbol of this justice: are you willing to pay
         for what you want? The Achaeans, when Poseidon is helping them, are not.
         Patrocles is, and Apollo makes him pay the price. This is why this part
-        has the wonderful "deception of Zeus" episode at its center. The term
-        'equal war' is a translation of a phrase that Homer uses (<em>ὁμοιΐου
-            πολέμοιο</em>). The equality can not only refer to the fate of death
-        that is equal to all men, but also to the scales of Zeus. </p>
+        has the wonderful "deception of Zeus" episode at its center.  </p>
     <br>
     <hr>
-    <a target="2:19.357">&nbsp;</a>
-    <h2>The Mortal Hero</h2>
+    <a id="2:19.357">&nbsp;</a>
+    <h4>III: The Mortal Hero</h4>
     <p>Patrocles, of course, is <em>an Achilles</em>.
         He is "the mortal hero" and the addressee of the poem. The shock and horror of the Achaean
         near-defeat and Patrocles' death are healed by what seems very much like
@@ -127,8 +139,10 @@
         </em>and who in so doing gives up his life as per Thetis' prophecy.</p>
     <br>
     <hr>
-    <a target="2:1.1">&nbsp;</a>
-    <h2>Embassy &amp; Assembly 1</h2>
+    <a id="2:1.1">&nbsp;</a>
+    <h3>The Chimaera's legs</h3>
+
+    <h4>Embassy &amp; Assembly 1</h4>
     <p>A most carefully structured part of the poem. Two assemblies surround
         an intermezzo which is set up as a repeated sequence of themes. The
         assembly parts start off with a short introduction, first explaining the
@@ -136,26 +150,29 @@
         Also Agamemnon's position is set out: he "obeys the wrong old man"
         (sending away Chryses and obeying the Dream in the form of Nestor).
         Agamemnon does not get a good press in Homer.</p>
-    <hr>
-    <p><em>Explanation of terms</em>:</p>
-    <p><br>
-    </p>
-    <p><a id="chimaera"></a><em>Chimaera</em>:
-        it is doubtful whether Homer uses this analogy, but the the likeness is
-        too good to pass up.</p>
-    <p><br>
-    </p>
-    <p><a id="aristeia"></a><em>Aristeia</em>:
-        a part of the poem with a typical formal structure (arming - marching
-        out - doing battle), describing the excellence in battle of one hero.
-        There are 4 complete aristeia's in the Iliad: those of Diomedes,
-        Agamemnon, Patrocles and Achilles.</p>
     <br>
-    <a id="Hecatomb"><em>Hecatomb</em></a>
-    sacrifice to the gods of a hundred oxen, the ultimate sacrifice. Also
-    simply meaning a great slaughter, like a battle.<br>
+    <hr>
+    <ol id="footnotes">
+        <li>it is doubtful whether Homer uses this analogy, but the the likeness is
+            too good to pass up.
+        </li>
+        <li>Oliver Taplin also sees a 'three-arched structure on four pillars' but
+            his is not quite like mine.
+        </li>
+        <li>a part of the poem with a typical formal structure (arming - marching
+            out - doing battle), describing the excellence in battle of one hero.
+            There are 4 complete aristeia's in the Iliad: those of Diomedes,
+            Agamemnon, Patrocles and Achilles.
+        </li>
+        <li>sacrifice to the gods of a hundred oxen, the ultimate sacrifice. Also
+            simply meaning a great slaughter, like a battle.
+        </li>
+    </ol>
+    <br>
+    <br>
+
 </div>
-<!--end of textframe-->
+<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script src="scripts/iframes.js" type="module"></script>

@@ -30,10 +30,10 @@ function autoversion($file)
     rhetoric at us, the listeners. The model is explained in the second
     assembly where Odysseus uses short speeches to calm the people after
     Agamemnon's false call to 'go home'.</p>
-<div class="citation"> <span class="accordion gr"> Odysseus convinces the
+<br>
+<div class="citation"> <span class="cittext gr"> Odysseus convinces the
         people </span>
-    <div class="panel">
-        <p><br>
+        <p>
             Β188 ὅν τινα μὲν βασιλῆα καὶ ἔξοχον ἄνδρα κιχείη<br>
             Β189 τὸν δ᾽ ἀγανοῖς ἐπέεσσιν ἐρητύσασκε παραστάς:<br>
             Β190 δαιμόνι᾽ οὔ σε ἔοικε κακὸν ὣς δειδίσσεσθαι,<br>
@@ -55,13 +55,10 @@ function autoversion($file)
             Β206 σκῆπτρόν τ᾽ ἠδὲ θέμιστας, ἵνά σφισι βουλεύῃσι.<br>
             Β207 ὣς ὅ γε κοιρανέων δίεπε στρατόν...<br>
         </p>
-        <br>
-    </div>
 </div>
-<div class="citation"><span class="accordion en">Odysseus' two speeches </span>
-    <div class="panel">
+<br>
+<div class="citation"><span class="cittext en">Odysseus' two speeches </span>
         <p>
-            <br>
             2.188 When he came upon a king or a prominent man, he would stand next to him and say:<br>
             'My Lord! It does not suit you to be scared like a common coward! But sit down yourself and
             settle down the others. You do not know what Atreus has in mind: now he is testing,
@@ -76,13 +73,20 @@ function autoversion($file)
             gave sceptre and law to rule.<br>
             Thus he showed leadership among the host...<br>
         </p>
-        <br>
-    </div>
 </div>
+<br>
 <p>
-    Note how he reasons with the leaders and scares the commoners.
+    Note how he reasons with the leaders and scares the commoners. First, let me describe what I mean
+    by kings and commoners.
 </p>
+<p>
+    The 'commoner' is typically the head of an οἶκος (household), a landowner with extended family and
+    a number of people of which he is a 'patron': people who work for him, slaves, people who are dependant
+    on his household for a livelyhood or who otherwise 'owe' him. When there is a war, he himself is to lead
 
+</p>
+<br>
+<br>
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>

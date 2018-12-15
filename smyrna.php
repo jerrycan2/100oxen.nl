@@ -101,6 +101,7 @@ function autoversion($file)
 </section>
 <hr>
 <section>
+    <a id="house">&nbsp;</a>
     <figure><a class="piclink" target="_blank" href="images/bighouse1.jpg"><img class="fitpage"
                                                                                 alt="cluster of huts in Smyrna"
                                                                                 src="images/bighouse1.jpg" height="80%"

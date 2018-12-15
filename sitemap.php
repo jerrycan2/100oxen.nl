@@ -27,7 +27,8 @@ function autoversion($file)
     <h4>Sitemap</h4>
     <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.php">
         One hundred oxen</a><br>
-      2. Chapters:
+      2. <a class="textlink" target="_self" title="explanation" href="textframe.php">Explanation page</a><br>
+      3. Chapters:
       <ul>
         <li> <span class="emph2">Where &amp; when (historical)</span>
           <ul>

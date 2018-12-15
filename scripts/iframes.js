@@ -117,17 +117,17 @@ $(document).ready(function () {
                 //console.log("here");
                 return true;
             }
-            else { //this is not right yet: it will only go to anchors on the same page
-                const target = href.substr(pos+1);
-                const refs = $("ul").find("a");
-                refs.each(function(i, el){
-                    if( $(el).attr("id") === target) {
-                        el.scrollIntoView();
-                        return false;
-                    }
-                });
-                return false;
-            }
+            // else { //this is not right yet: it will only go to anchors on the same page
+            //     const target = href.substr(pos+1);
+            //     const refs = $("ul").find("a");
+            //     refs.each(function(i, el){
+            //         if( $(el).attr("id") === target) {
+            //             el.scrollIntoView();
+            //             return false;
+            //         }
+            //     });
+            //     return false;
+            // }
         }
     });
 
@@ -145,6 +145,8 @@ $(document).ready(function () {
                 const elem = elems[i];
                 let ptrText = elem.innerHTML;
                 if (FOOTNOTE_REGEX.test(ptrText)) {
+                    ptrText = "(" + (i+1) + ")";
+                    elem.innerHTML = ptrText;
                     elem.className = "ptr footptr";
                     elem.onclick = toggle;
                 } else if (REFERENCE_REGEX.test(ptrText)) {
@@ -196,4 +198,5 @@ $(document).ready(function () {
         event.preventDefault();
     }
 
+    window.scrollTo(0, document.getElementById(window.location.hash.substring(1)).offsetTop);
 });

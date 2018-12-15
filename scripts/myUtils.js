@@ -165,7 +165,7 @@ export function getelementnode(n) {
 
 /**
  * function maptree
- * map function func() to an xml-tree
+ * map function func() to the nodes of an xml-tree
  * where func returns false, recursion for the child-subtree is cut off,
  * @param {Object} node - rootnode
  * @param {Function} func - function to map

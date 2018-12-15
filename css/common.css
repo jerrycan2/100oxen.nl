@@ -72,6 +72,9 @@ h4 {
   font-size: 120%;
   margin: 0.5em 10%;
 }
+h5 {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 .emph2 {
   background-image: linear-gradient(to right, rgba(16, 16, 16, 0) 10%, #ffffff 50%, rgba(16, 16, 16, 0) 90%);
   outline: 2px solid darkblue;
@@ -154,7 +157,8 @@ figure img {
 .contents p a:first-line {
   background-color: rgba(5, 5, 5, 0.2);
 }
-.latin p {
+.latin p,
+h5 {
   margin-left: 2rem;
 }
 .greek p a {
@@ -163,7 +167,7 @@ figure img {
 .citation {
   margin-left: 4rem;
 }
-.citation .accordion {
+.citation .cittext {
   background-color: rgba(0, 0, 0, 0.1);
   outline: 1px dashed darkblue;
   text-align: left;
@@ -171,10 +175,10 @@ figure img {
   margin: 0 0 1rem 0;
   width: auto;
 }
-.citation .accordion.en:before {
+.citation .cittext.en:before {
   content: 'transl.:';
 }
-.citation .accordion.gr:before {
+.citation .cittext.gr:before {
   content: 'greek:';
 }
 .bmcolor {

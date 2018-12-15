@@ -70,10 +70,40 @@ function autoversion($file)
       Greece and they found poets who could hammer all these different
       traditions into some sort of unity and could relate them to the people as
       meaningful tales. Their motto must have been 'adapt, do not invent'.</p>
-    <p><br>
+    <p>...
     </p>
-    <p><br>
+    <h5>
+      kings and commoners
+    </h5>
+    <p>
+      The 'commoner' is typically the head of an οἶκος (household), a landowner with extended family and
+      a number of people of which he is a 'patron': people who work for him, therapontes,
+      slaves, people who are dependant
+      on his household for a livelihood or who otherwise 'owe' him. When there is a war,
+      he himself (or possibly his son) is to lead a contingent of these dependants into
+      battle. This is a virtual private army and there are no laws to force the householder
+      to do this. It is in this light, I would maintain, that we have to see the Homeric picture
+      of Achilles and his 'Myrmidons'. In his own household Achilles is king, but in the
+      <em>polis</em> where he lives, he has to count with others. There can be no private armies,
+      he has to submit some of his sovereignty to the polis and especially to the archon (whatever
+      his name and powers were in any city-state) that the city chooses to have: to Agamemnon.
+      Not because Agamemnon is 'the better man', no aristocrat would ever concede that, but
+      because he is the first among equals. That, at least, is the theory.<br>
+      In practise of course the equals are rarely equal. The one who lives in the
+      <a class="textlink" title="Big House in Smyrna" href="smyrna.php#house">'big house'</a>
+      ca be very much a local 'king' because of his actual power, based on economic clout,
+      tradition or religion. It would be possible for a rich farmer to force others to sell their
+      produce to or through him, for instance if he owns a ship for trade, or has the overseas
+      contacts, or has the storage facility. He may be harbour-master and catch a tax on incoming ships,
+      he may have judicial authority and catch bribes. Or simply the 'patronage' power for it was a harsh
+      and lawless society and protection must have been important. Achilles is reminded by Nestor
+      that Agamemnon 'is the better man, because he rules more people (Il 1.281)'.
+
+
     </p>
+    <h5>
+      The Neleïds
+    </h5>
     <p>The Greeks had not forgotten their Mycenean past. Especially, there were
       'Great Houses', families of high aristocracy who claimed descendance from
       Mycenean Kings, or from gods even. One such clan were called the Neleids,

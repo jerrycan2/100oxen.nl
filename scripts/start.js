@@ -11,7 +11,8 @@ window.site100oxen = {
     global_flag_updating: false,
     XML: null, //here comes the XML parsetree
     xml_loaded: false,
-    xmlstring: "",
+    ilXML: null,
+    odXML: null,
     showAndGotoAnyLine: null,
     init_tree: null,
     createlist: null,
@@ -19,6 +20,7 @@ window.site100oxen = {
     find_xml_node: null,
     untouchable: true,
     getNewIframeFile: null,
+    configColumns: null,
     currentPage: "",
 };
 //endregion Site global vars
@@ -44,7 +46,7 @@ window.site100oxen = {
             ["list.html", ""],
             ["greek_il.html", "greek_od.html", "hesiod_theo_greek.html", "hesiod_wd_greek.html"],
             ["butler_il.html", "butler_od.html", "hesiod_theo_transl.html", "hesiod_wd_transl.html"],
-            ["textframe.html", "help.php"]
+            ["textframe.php", "help.php"]
         ],
         xml_names: ["iliad.xml", "odyssey.xml", "", ""],
         perseus_names: [
@@ -235,7 +237,7 @@ window.site100oxen = {
     function gotoAnchor(aname, hovering) { /* in textframe */
         let anchor;//, hdr;
 
-        anchor = jbNS.textframe.contents().find('a[target="' + aname + '"]');
+        anchor = jbNS.textframe.contents().find('a[id="' + aname + '"]');
         if (anchor.length) {
             if (!hovering) {
                 anchor[0].scrollIntoView();
@@ -2558,7 +2560,7 @@ window.site100oxen = {
             return;
         }
         //1: save column config
-        if(jbNS.columns_config[1] === 0){
+        if (jbNS.columns_config[1] === 0) {
             jbNS.columns_config[1] = 1;
         }
         s = jbNS.columns_config.toString();
@@ -2756,6 +2758,7 @@ window.site100oxen = {
     window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
     window.site100oxen.init_tree = init_tree;
     window.site100oxen.getNewIframeFile = getNewIframeFile;
+    window.site100oxen.configColumns = configColumns;
     //endregion
 
     //region bound event handlers
@@ -3125,6 +3128,11 @@ window.site100oxen = {
                 success: function (xmlstring) {
                     try {
                         window.site100oxen.XML = $.parseXML(xmlstring);
+                        if (filename === "iliad.xml") { // save a ref
+                            window.site100oxen.ilXML = window.site100oxen.XML;
+                        } else if (filename === "odyssey.xml") {
+                            window.site100oxen.odXML = window.site100oxen.XML;
+                        }
                     } catch (e) {
                         dfr.reject(e);
                     }
