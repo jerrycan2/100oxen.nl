@@ -45,7 +45,7 @@ function autoversion($file)
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.color-2.1.2.min.js"></script>
-<script src="/scripts/beta.js" type="module"></script>
+<script src="<?= autoversion('/scripts/iframes.js');?>"></script>
 <script src="<?= autoversion('/scripts/myUtils.js');?>" type="module"></script>
 <script src="<?= autoversion('/scripts/blocks.js');?>" type="module"></script>
 

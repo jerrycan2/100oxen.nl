@@ -1,4 +1,4 @@
-import {LatinGreek} from '../scripts/beta.js';
+import {LatinGreek} from '../scripts/myUtils.js';
 "use strict";
 /**
  * Created by WinJeroen on 29-10-2014.
@@ -254,8 +254,8 @@ function drawBlocks($node, colheight, recursion) {
                 } //last box drawn
             }
             c1 = $node.attr("c");
-            if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
-            //c1 = c1 ? "#" + c1 : "rgba(200,200,200,0)"; //col1 start-color = transparent
+            //if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
+            c1 = c1 ? "#" + c1 : "rgba(200,200,200,0)"; //col1 start-color = transparent
             if (pg1Namespace.index >= 0) {
                 $col1.css({
                     "color": "#" + ($node.attr("f") || "003388")
