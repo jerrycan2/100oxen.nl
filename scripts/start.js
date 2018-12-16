@@ -3068,6 +3068,8 @@ window.site100oxen = {
         window.site100oxen.forcereload = false;
         window.site100oxen.xml_loaded = true;
         init_tree();
+        localStorage.setItem("colconf", jbNS.columns_config.toString());
+        //storeExpansionstate();
         window.site100oxen.untouchable = // are we on a touch device?
             !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
         if (window.site100oxen.untouchable) {
@@ -3093,6 +3095,7 @@ window.site100oxen = {
                 filename = 'iliad.xml';
             }
         }
+        if(!localStorage.getItem(`${filename}.txt`)){localStorage.setItem(filename, "");}
         let fileindex = jbNS.xml_names.indexOf(filename);
         if (fileindex < 0) {
             utils.myAlert(`unknown filename ${filename}`, true);
@@ -3103,6 +3106,7 @@ window.site100oxen = {
         localStorage.setItem('textToLoad', filename);
         jbNS.newXML = true;
         let dfr = $.Deferred();
+        console.log("loading " + filename);
         $.ajax({
             type: "HEAD",
             async: true,
@@ -3117,31 +3121,48 @@ window.site100oxen = {
             }
             if (jbNS.newXML) {
                 localStorage.setItem(filename, etag[1]);
-            }
-            $.ajax({
-                type: "GET",
-                url: filename,
-                cache: !window.site100oxen.forcereload || !jbNS.newXML,
-                dataType: "text",
-                success: function (xmlstring) {
-                    try {
-                        window.site100oxen.XML = $.parseXML(xmlstring);
-                        if (filename === "iliad.xml") { // save a ref
-                            window.site100oxen.ilXML = window.site100oxen.XML;
-                        } else if (filename === "odyssey.xml") {
-                            window.site100oxen.odXML = window.site100oxen.XML;
+                $.ajax({
+                    type: "GET",
+                    url: filename,
+                    cache: false,
+                    dataType: "text",
+                    success: function (xmlstring) {
+                        localStorage.setItem(`${filename}.txt`, xmlstring);
+                        console.log(`${filename} downloaded`);
+                        try {
+                            window.site100oxen.XML = $.parseXML(xmlstring);
+                            if (filename === "iliad.xml") { // save a ref
+                                window.site100oxen.ilXML = window.site100oxen.XML;
+                                configColumns(1,1, true);
+                            } else if (filename === "odyssey.xml") {
+                                window.site100oxen.odXML = window.site100oxen.XML;
+                                configColumns(1,2, true);
+                            }
+                        } catch (e) {
+                            dfr.reject(e);
                         }
-                    } catch (e) {
-                        dfr.reject(e);
+                        console.log(`${filename} from cache: ${!jbNS.newXML}`);
+                        dfr.resolve(xmlstring);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        window.site100oxen.xml_loaded = false;
+                        dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
                     }
-                    console.log(`${filename} from cache: ${!jbNS.newXML}`);
-                    dfr.resolve(xmlstring);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    window.site100oxen.xml_loaded = false;
-                    dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
+                });
+            } else {
+                const xml = localStorage.getItem(`${filename}.txt`);
+                if(!xml){utils.myAlert("please do full reset", true); return;}
+                console.log(`${filename} from localStorage`);
+                window.site100oxen.XML = $.parseXML(xml);
+                if (filename === "iliad.xml") { // save a ref
+                    window.site100oxen.ilXML = window.site100oxen.XML;
+                    configColumns(1,1, true);
+                } else if (filename === "odyssey.xml") {
+                    window.site100oxen.odXML = window.site100oxen.XML;
+                    configColumns(1,2, true);
                 }
-            });
+                init_all();
+            }
         }).fail((xhr) => {
             utils.myAlert(`${xhr.status} ${xhr.statusText}`, true);
         });

@@ -225,7 +225,7 @@ function autoversion($file)
       the goddess, wounds her and chases her from the battlefield. More on this,
       and the relation Ares-Aphrodite <a class="textlink" target="_self" title="Helen, Ares and Aphrodite"
 
-        href="helen.html">here</a>.</p>
+        href="helen.php">here</a>.</p>
     <p>So Paris judged that beauty was the thing to have/be. What about
       Achilles?</p>
     <h4>Achilles' judgement</h4>

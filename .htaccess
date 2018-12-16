@@ -19,3 +19,5 @@ RewriteRule ^(.*)\.[\d]{10}\.(css|js|html)$ $1.$2 [L]
 FileETag MTime
 
 Options -Indexes
+
+ErrorDocument 404 /new404.html
