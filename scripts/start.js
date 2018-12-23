@@ -1998,17 +1998,16 @@ window.site100oxen = {
             }).done(function (message, textStatus, jqXHR) {
                 const resp = jqXHR.getAllResponseHeaders();
                 const etag = resp.match(/etag: \"(.*)\"/i);
-                const here = localStorage.getItem(src);
+                let here = localStorage.getItem(src);
                 let getnew = true;
                 if (here && here === etag[1]) {
                     getnew = false;
                 }
                 if (getnew && etag) {
                     localStorage.setItem(src, etag[1]);
+                    here = etag[1];
                 }
-                if (getnew) {
-                    src += `?_=${(new Date()).getTime()}`
-                }
+                src += `?_=${here}`;
                 iFrameLoad1(id, src);
             });
         }

@@ -597,6 +597,19 @@ import * as utils from '../scripts/myUtils.js';
         });
         return [Lcount, Hcount];
     }
+    function count_fillins() {
+        let Lcount = 0;
+        utils.maptree(glob.XML, function (node) {
+            node = utils.getelementnode(node);
+            if (node) {
+                if (node.getAttribute('d') === "fill in...") {
+                    Lcount += 1;
+                }
+            }
+            return true;
+        });
+        return Lcount;
+    }
 
     //endregion Checks and Tests
 
@@ -616,6 +629,7 @@ import * as utils from '../scripts/myUtils.js';
                 let [count4, result4] = checkSiblings();
                 let [n_of_lines, n_of_headers] = count_nodes();
                 let [paragr, pcount, larger, lcount] = checkParagraphs();
+                let fillincount = count_fillins();
 
                 let result =
                     `counted ${n_of_lines} textlines, ${n_of_headers} title nodes<br>\n
@@ -625,6 +639,7 @@ paragraphs: ${paragr}, totalling ${pcount} lines<br>\n
 larger than 10 lines: ${larger}, totalling ${lcount} lines<br>\n
 paragraphs in Greek, not in Butler: ${count3}<br>\n
 paragraphs in Butler, not in Greek: ${count2}<br>\n
+paragraphs with 'fill in...': ${fillincount}<br>\n
 <br>\n
 linenumber integrity:<br>\n ${result1} <br>\n
 node uniformity: <br>\n ${result4} <br>\n
@@ -1297,6 +1312,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     $.ajax({
         type: "GET",
         url: "Butlertext.xml",
+        cache: false,
         dataType: "xml",
         success: function (xml) {
             glob.ButlerText = xml;
@@ -1312,6 +1328,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     $.ajax({
         type: "GET",
         url: "greek_il.xml",
+        cache: false,
         dataType: "xml",
         success: function (xml) {
             glob.GreekText = xml;
