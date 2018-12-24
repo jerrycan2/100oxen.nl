@@ -34,7 +34,7 @@ function autoversion($file)
       redundant, while the night episode of book 10 is universally condemned as
       an insertion. Its central episode however, the Embassy to Achilles, is
       very much a necessary part of the story.</p>
-    <p>First it should be noted that at the end of book 7, what I call the 'the
+    <p>First it should be noted that the end of book 7, what I call the 'the
       people choose war' episode, is in itself an Embassy &amp; Assembly part.
       There is an Achaean and a Trojan assembly and a Trojan envoy goes to the
       ships with the Trojans' peace proposal. So structurally the whole of books
@@ -63,7 +63,7 @@ function autoversion($file)
       is for a large part 'between the ears'). At the end of book 7 and the
       beginning of book 11 the Achaeans are full of self-confidence. The events
       of book 7 and earlier have been no reason for desperation. The embassy
-      however obviously requires that the Achaeans be in desparate mood. So we
+      however obviously requires that the Achaeans be in despairing mood. So we
       need the 'failure by day' episode (book 8) to switch from confidence to
       desperation and the 'success by night' (book 10) to switch back to
       confidence.</p>

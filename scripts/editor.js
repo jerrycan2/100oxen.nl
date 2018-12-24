@@ -423,7 +423,7 @@ import * as utils from '../scripts/myUtils.js';
             if (target === "struct") {
                 glob.XML = xml;
             }
-            utils.createTreeFromXML(xml, target);
+            utils.createTreeFromXML(xml.firstChild, target);
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }

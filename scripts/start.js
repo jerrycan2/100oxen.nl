@@ -892,7 +892,7 @@ window.site100oxen = {
 
     /**
      * function getSelectedText
-     * get textcontent of user selection
+     * get textcontent of user selection (event listener created in iframe)
      * @param event
      */
     function getSelectedText(event) {
@@ -1914,7 +1914,7 @@ window.site100oxen = {
             });
         })
             .fail(function (jqXHR, textStatus, errorThrown) {
-                myAlert(errorThrown);
+                utils.myAlert(errorThrown);
             });
     }
 

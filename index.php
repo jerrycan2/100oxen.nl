@@ -218,7 +218,7 @@ function autoversion($file)
             <span>New &amp; updated 23 dec 2018</span>
             <p>1: new Iliad Greek text with extra lines & different linenumbers (no more letters).
                 It should load automatically. If not, please click 'Reset All'</p>
-            <p>2: update 'four woundings'</p>
+            <p>2: updating Agamemnon's Aristeia</p>
         </div>
         <div class="contents" id="list">
             <ol></ol>
