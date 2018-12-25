@@ -98,7 +98,8 @@ function autoversion($file)
             </li>
             <li> the Good, the True, the Beautiful
               <ul>
-                <li><a class="textlink" href="thegods.php">'What we obey'</a></li>
+                <li><a class="textlink" title="What we obey" href="thegods.php">'What we obey'</a></li>
+                <li><a class="textlink" title="Zeus and Justice" href="justice.php">Zeus and Justice</a></li>
                 <li>Paris', Achilles' judgement, the Deception of Zeus</li>
                 <li>shame, the Plan of Zeus, the new Polis</li>
                 <li><a class="textlink" href="gtb.php">Plato</a>, the Good</li>

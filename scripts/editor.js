@@ -634,7 +634,7 @@ import * as utils from '../scripts/myUtils.js';
                 let result =
                     `counted ${n_of_lines} textlines, ${n_of_headers} title nodes<br>\n
 linenumber integrity: ${count1} errors<br>\n
-node uniformity: ${count4} errors<br>\n
+node uniformity: ${count4} errors (textlines and inner nodes must not be siblings)<br>\n
 paragraphs: ${paragr}, totalling ${pcount} lines<br>\n
 larger than 10 lines: ${larger}, totalling ${lcount} lines<br>\n
 paragraphs in Greek, not in Butler: ${count3}<br>\n
