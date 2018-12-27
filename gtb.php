@@ -24,9 +24,9 @@ function autoversion($file)
   </head>
   <body class="contents latin">
     <section>
-      <figure> <a class="piclink" target="_blank" href="http://search.openlibrary.artstor.org/object/AYALEARTIG_10312577701"><img
+      <figure> <a class="piclink" href="/images/5gods.png"><img
 
-            alt="Hera, Athena, Aphrodite and Zeus, acc. by Apollo" src="images/5gods_tn.jpg"
+            alt="Hera, Athena, Aphrodite and Zeus, acc. by Apollo" src="/images/5gods_tn.jpg"
 
             width="40%"></a> <figcaption>Archaistic relief showing five
           divinities: Zeus, Hera, Athena, Aphrodite, and Apollo.</figcaption> </figure>

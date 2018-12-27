@@ -215,10 +215,8 @@ function autoversion($file)
             <label>
                 <button>↑</button>
             </label>
-            <span>New &amp; updated 23 dec 2018</span>
-            <p>1: new Iliad Greek text with extra lines & different linenumbers (no more letters).
-                It should load automatically. If not, please click 'Reset All'</p>
-            <p>2: updating Agamemnon's Aristeia</p>
+            <span>New &amp; updated 26 dec 2018</span>
+            <p>updated 'embassy to Achilles'</p>
         </div>
         <div class="contents" id="list">
             <ol></ol>

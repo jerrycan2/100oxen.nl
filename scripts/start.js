@@ -882,7 +882,7 @@ window.site100oxen = {
                 fetchTexts(textindex - 1);// callback also goes to goto_BM_on_load()
                 configColumns(1, textindex, true); // right text.
             } else {
-                jbNS.bm_to_goto = "";
+                //jbNS.bm_to_goto = "";
                 return;
             }
         } else {
@@ -2070,6 +2070,9 @@ window.site100oxen = {
                     "width": "-=" + delta_W
                 });
             });
+            if(site100oxen.untouchable){
+                $("#treeframe").getNiceScroll().resize();
+            }
             scrollgreek();
         });
         $coverdiv.on("mousemove", function (e) {
@@ -2266,7 +2269,9 @@ window.site100oxen = {
             colnr = $par.index(); // column index: 0=list/page, 1=Il,Od,Theo,WD 2=gr/transl 3=expl/? NOTE:colnr - 1 if left & right btns
             // button clicked: show/hide/switch pages or texts
             if (colnr > 0) {// button clicked: show/hide/switch pages or texts
+                storeExpansionstate();
                 configColumns(colnr, ix + 1, false); //-1
+
                 if (colnr === 1) {
                     jbNS.gr_beginLine = 0;
                     if (ix < 2) {
@@ -2515,19 +2520,30 @@ window.site100oxen = {
                 jbNS.exp_state += "1";
             }
         }
-        localStorage.setItem("exp_state", jbNS.exp_state);
-        localStorage.setItem("exp_level", jbNS.currentLevel);
+        let nm = get_exp_state_name();
+        localStorage.setItem(nm, jbNS.exp_state);
+        localStorage.setItem(nm+"_lvl", jbNS.currentLevel);
     }
 
+    function get_exp_state_name(){
+        let exptxt = "il_exp";
+        switch(jbNS.columns_config[1]){
+            case 1: exptxt = "il_exp"; break;
+            case 2: exptxt = "od_exp"; break;
+            case 3: exptxt = "il_exp"; break;
+            case 4: exptxt = "il_exp"; break;
+        }
+        return exptxt;
+    }
     /**
      * function setExpansionstate
      * read expansion state of treeframe by loading string from localstorage
      * 0 : collapse OL element, 1 : expand it.
      */
     function setExpansionstate() { // jbNS.OL_level[] must be created already
-        let t;
+        let t, exptxt;
 
-        jbNS.exp_state = localStorage.getItem("exp_state") || "11";
+        jbNS.exp_state = localStorage.getItem(get_exp_state_name()) || "11";
         for (t = 0; t < jbNS.OL_level.length; t += 1) {
             if (t < jbNS.exp_state.length && jbNS.exp_state[t] === "1") {
                 jbNS.OL_level[t].style.display = "";
@@ -2629,7 +2645,7 @@ window.site100oxen = {
         read_in_Bookmarx(s);
 
         jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
-        jbNS.currentLevel = parseInt(localStorage.getItem("exp_level")) || 1;
+        jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name()+"_lvl")) || 1;
 
         jbNS.keepFontsize = localStorage.getItem("keepfontsize") === "1";
         jbNS.basic_fontsize = fs; //can be set different
@@ -2780,7 +2796,7 @@ window.site100oxen = {
         "click": tree_handleMouseEvents
     });
     $(window).on({
-        resize: function () {
+        "resize": function () {
             let li;
 
             li = $("#col4").find("li");
@@ -2797,7 +2813,10 @@ window.site100oxen = {
             adjustColWidth();
             scrollgreek();
         },
-        unload: savePageState
+        //"unload": savePageState,
+        "beforeunload": function(){
+            savePageState();
+        }
     });
 
     $("iframe").on({
