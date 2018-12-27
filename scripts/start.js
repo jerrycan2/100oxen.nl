@@ -882,7 +882,7 @@ window.site100oxen = {
                 fetchTexts(textindex - 1);// callback also goes to goto_BM_on_load()
                 configColumns(1, textindex, true); // right text.
             } else {
-                //jbNS.bm_to_goto = "";
+                jbNS.bm_to_goto = "";
                 return;
             }
         } else {

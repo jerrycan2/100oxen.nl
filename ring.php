@@ -20,7 +20,7 @@ function autoversion($file)
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
-  <body class="latin">
+  <body class="latin contents">
     <p align="center"> </p>
     <h1>Ring Composition</h1>
     <b>General:</b> <br>

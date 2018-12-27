@@ -20,7 +20,7 @@ function autoversion($file)
           type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
-<body class="latin">
+<body class="latin contents">
 <h1>Old Smyrna</h1>
 <section>
     <figure><a class="piclink" target="_blank" href="images/smyrnebirdseye.jpg"><img class="fitpage"

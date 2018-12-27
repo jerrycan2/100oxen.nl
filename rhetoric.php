@@ -22,7 +22,7 @@ function autoversion($file)
           rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
-<body class="latin">
+<body class="latin contents">
 <h1> Homer's Rhetoric </h1>
 <p>From the way Homer uses rhetoric in the Iliad, one must conclude that he
     had a lot of experience in it. The characters use it all the time, this is

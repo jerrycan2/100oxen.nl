@@ -218,7 +218,7 @@ function autoversion($file)
             <span>New &amp; updated 26 dec 2018</span>
             <p>updated 'embassy to Achilles'</p>
         </div>
-        <div class="contents" id="list">
+        <div id="list">
             <ol></ol>
         </div>
     </div>

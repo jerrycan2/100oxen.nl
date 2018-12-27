@@ -22,7 +22,7 @@ function autoversion($file)
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
   </head>
-  <body class="latin">
+  <body class="latin contents">
     <h1>What was, what is and what will be</h1>
     <h4>Sitemap</h4>
     <div class="map"> 1. Introduction, axioms ⇨ <a class="textlink" href="100oxen.php">

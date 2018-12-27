@@ -20,7 +20,7 @@ function autoversion($file)
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
-<body class="latin">
+<body class="latin contents">
 <h1>Poseidon</h1>
 <p>An interesting citation from the 'battle of the gods' is Il 20.67</p>
 <div class="indent">

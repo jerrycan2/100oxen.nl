@@ -19,7 +19,7 @@ function autoversion($file)
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/common.css">
 </head>
-<body class="latin">
+<body class="latin contents">
 <h1>Sorry, not available yet</h1>
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

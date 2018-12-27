@@ -22,7 +22,7 @@ function autoversion($file)
       rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
-  <body class="latin">
+  <body class="latin contents">
     <h1>Structural changes?</h1>
     <div class="treefragment" id="frag" data-lnr="8.1" data-lvl="1"
          data-title="Embassy & Assembly 2: the embassy to Achilles"></div>

@@ -21,7 +21,7 @@ function autoversion($file)
       rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
-  <body class="latin">
+  <body class="latin contents">
     <h1>Homer's Politeia</h1>
     <p>A pyramid is a very clear statement: it is a picture of a society,
       stressing its hierarchy. Every higher layer of the building rests on, is

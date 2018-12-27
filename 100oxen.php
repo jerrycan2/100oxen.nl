@@ -20,7 +20,7 @@ function autoversion($file)
       rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?php echo autoversion('/css/common.css');?>">
   </head>
-  <body id="hundredoxen" class="latin">
+  <body id="hundredoxen" class="latin contents">
     <figure><a class="piclink" href="images/Characters-in-the-Iliad.jpg" target="_blank"><img
 
           class="fitpage" src="images/Characters-in-the-Iliad.jpg" alt="some of the oxen"></a>

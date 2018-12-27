@@ -21,7 +21,7 @@ function autoversion($file)
       rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
-  <body class="latin" id="thegods">
+  <body class="latin contents" id="thegods">
     <header>
       <div id="up"><img id="zeus" src="images/zeus1.gif" alt="Zeus with thunderbolt facing Achilles"
 
