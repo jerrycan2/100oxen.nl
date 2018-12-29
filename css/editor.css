@@ -89,14 +89,14 @@ h5{
 }
 #struct {
     width: 98%;
-    height: calc((100% - 3rem - 350px) / 2);
+    height: calc((100% - 3rem - 365px) / 2);
     background-color: #f0dd9d;
     overflow: auto;
     border-bottom: 2px solid gray;
 }
 #edit {
     width: 98%;
-    height: calc((100% - 3rem - 350px) / 2);
+    height: calc((100% - 3rem - 365px) / 2);
     padding-left: 1.2rem;
     background-color: #a1c8db;
     overflow: auto;

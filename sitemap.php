@@ -70,6 +70,7 @@ function autoversion($file)
                   balanced expansion, catalogues</li>
                 <li><a class="textlink" target="_self" title="Stitched verse"
                        href="stitches.php">Stitched verse - alterations? </a></li>
+                <li><a class="textlink" title="" href="council.php">Agamemnon's council</a></li>
               </ul>
             </li>
             <li> Apollo and the Art of Archery
@@ -85,8 +86,9 @@ function autoversion($file)
           <ul>
             <li> the Wrath of Apollo
               <ul>
-                <li>'let the girl go': Chryseis, Briseis, Helen</li>
-                <li>Ares and Aphrodite</li>
+                <li><a class="textlink" title="" href="girls.php">'let the girl go':
+                  Chryseis, Briseis, Helen</a></li>
+                <li><a class="textlink" title="Women" href="women.php"> Women</a></li>
               </ul>
             </li>
             <li> The Iliad

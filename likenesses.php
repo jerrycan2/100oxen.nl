@@ -418,7 +418,7 @@ function autoversion($file)
             <li>Helen's clever medicine which banishes all negative feelings. This
                 must be a comment on the cleverness of the 'Helen' myth. see <a class="textlink"
                                                                                 target="_self" title="Helen"
-                                                                                href="helen.php">Helen</a>
+                                                                                href="women.php">Helen</a>
             </li>
             <li>
                 pharmakos: the scapegoat-sacrifice. This sacrifice is performed to heal a
