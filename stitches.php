@@ -24,8 +24,11 @@ function autoversion($file)
   </head>
   <body class="latin contents">
     <h1>Structural changes?</h1>
-    <div class="treefragment" id="frag" data-lnr="8.1" data-lvl="1"
-         data-title="Embassy & Assembly 2: the embassy to Achilles"></div>
+    <figure> <img class="fitpage"
+
+          src="images/frag01.JPG" alt="tree fragment" height="50%"
+
+          width="60%"></a>  </figure>
     <p>The structural summary brings out some oddities in the structure. The
       most important and interesting one concerns the 'Embassy and Assembly II'
       intermezzo which at first sight is quite unlike the other E &amp; A's. It
@@ -49,7 +52,7 @@ function autoversion($file)
     <p>Originally, the Embassy to Achilles was in the place of the Deception of
       Zeus. This fits: the Achaeans are desperate and send for Achilles. Phoenix
       was added to the ambassadors and the scene was partially re-composed.
-      Later, the poet (presumably) decided that the embassy had to be moved
+      The poet (presumably) decided that the embassy had to be moved
       forward. On a reason for this we can, as usual, only speculate. Perhaps he thought
       the poem went on for too long without Achilles appearing, perhaps
       he found the original sequence with Patrocles' death hard upon Achilles'

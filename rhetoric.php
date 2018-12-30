@@ -31,48 +31,46 @@ function autoversion($file)
     assembly where Odysseus uses short speeches to calm the people after
     Agamemnon's false call to 'go home'.</p>
 <br>
-<div class="citation"> <span class="cittext gr"> Odysseus convinces the
-        people </span>
-        <p>
-            Β188 ὅν τινα μὲν βασιλῆα καὶ ἔξοχον ἄνδρα κιχείη<br>
-            Β189 τὸν δ᾽ ἀγανοῖς ἐπέεσσιν ἐρητύσασκε παραστάς:<br>
-            Β190 δαιμόνι᾽ οὔ σε ἔοικε κακὸν ὣς δειδίσσεσθαι,<br>
-            Β191 ἀλλ᾽ αὐτός τε κάθησο καὶ ἄλλους ἵδρυε λαούς:<br>
-            Β192 οὐ γάρ πω σάφα οἶσθ᾽ οἷος νόος Ἀτρεΐωνος:<br>
-            Β193 νῦν μὲν πειρᾶται, τάχα δ᾽ ἴψεται υἷας Ἀχαιῶν.<br>
-            Β194 ἐν βουλῇ δ᾽ οὐ πάντες ἀκούσαμεν οἷον ἔειπε.<br>
-            Β195 μή τι χολωσάμενος ῥέξῃ κακὸν υἷας Ἀχαιῶν:<br>
-            Β196 θυμὸς δὲ μέγας ἐστὶ διοτρεφέων βασιλήων,<br>
-            Β197 τιμὴ δ᾽ ἐκ Διός ἐστι, φιλεῖ δέ ἑ μητίετα Ζεύς.<br>
-            Β198 ὃν δ᾽ αὖ δήμου τ᾽ ἄνδρα ἴδοι βοόωντά τ᾽ ἐφεύροι,<br>
-            Β199 τὸν σκήπτρῳ ἐλάσασκεν ὁμοκλήσασκέ τε μύθῳ:<br>
-            Β200 δαιμόνι᾽ ἀτρέμας ἧσο καὶ ἄλλων μῦθον ἄκουε,<br>
-            Β201 οἳ σέο φέρτεροί εἰσι, σὺ δ᾽ ἀπτόλεμος καὶ ἄναλκις<br>
-            Β202 οὔτέ ποτ᾽ ἐν πολέμῳ ἐναρίθμιος οὔτ᾽ ἐνὶ βουλῇ:<br>
-            Β203 οὐ μέν πως πάντες βασιλεύσομεν ἐνθάδ᾽ Ἀχαιοί:<br>
-            Β204 οὐκ ἀγαθὸν πολυκοιρανίη: εἷς κοίρανος ἔστω,<br>
-            Β205 εἷς βασιλεύς, ᾧ δῶκε Κρόνου πάϊς ἀγκυλομήτεω<br>
-            Β206 σκῆπτρόν τ᾽ ἠδὲ θέμιστας, ἵνά σφισι βουλεύῃσι.<br>
-            Β207 ὣς ὅ γε κοιρανέων δίεπε στρατόν...<br>
-        </p>
+<div class="indent"><h5>Odysseus' two speeches </h5>
+    <p>
+        Β188 ὅν τινα μὲν βασιλῆα καὶ ἔξοχον ἄνδρα κιχείη<br>
+        Β189 τὸν δ᾽ ἀγανοῖς ἐπέεσσιν ἐρητύσασκε παραστάς:<br>
+        Β190 δαιμόνι᾽ οὔ σε ἔοικε κακὸν ὣς δειδίσσεσθαι,<br>
+        Β191 ἀλλ᾽ αὐτός τε κάθησο καὶ ἄλλους ἵδρυε λαούς:<br>
+        Β192 οὐ γάρ πω σάφα οἶσθ᾽ οἷος νόος Ἀτρεΐωνος:<br>
+        Β193 νῦν μὲν πειρᾶται, τάχα δ᾽ ἴψεται υἷας Ἀχαιῶν.<br>
+        Β194 ἐν βουλῇ δ᾽ οὐ πάντες ἀκούσαμεν οἷον ἔειπε.<br>
+        Β195 μή τι χολωσάμενος ῥέξῃ κακὸν υἷας Ἀχαιῶν:<br>
+        Β196 θυμὸς δὲ μέγας ἐστὶ διοτρεφέων βασιλήων,<br>
+        Β197 τιμὴ δ᾽ ἐκ Διός ἐστι, φιλεῖ δέ ἑ μητίετα Ζεύς.<br>
+        Β198 ὃν δ᾽ αὖ δήμου τ᾽ ἄνδρα ἴδοι βοόωντά τ᾽ ἐφεύροι,<br>
+        Β199 τὸν σκήπτρῳ ἐλάσασκεν ὁμοκλήσασκέ τε μύθῳ:<br>
+        Β200 δαιμόνι᾽ ἀτρέμας ἧσο καὶ ἄλλων μῦθον ἄκουε,<br>
+        Β201 οἳ σέο φέρτεροί εἰσι, σὺ δ᾽ ἀπτόλεμος καὶ ἄναλκις<br>
+        Β202 οὔτέ ποτ᾽ ἐν πολέμῳ ἐναρίθμιος οὔτ᾽ ἐνὶ βουλῇ:<br>
+        Β203 οὐ μέν πως πάντες βασιλεύσομεν ἐνθάδ᾽ Ἀχαιοί:<br>
+        Β204 οὐκ ἀγαθὸν πολυκοιρανίη: εἷς κοίρανος ἔστω,<br>
+        Β205 εἷς βασιλεύς, ᾧ δῶκε Κρόνου πάϊς ἀγκυλομήτεω<br>
+        Β206 σκῆπτρόν τ᾽ ἠδὲ θέμιστας, ἵνά σφισι βουλεύῃσι.<br>
+        Β207 ὣς ὅ γε κοιρανέων δίεπε στρατόν...<br>
+    </p>
 </div>
-<br>
-<div class="citation"><span class="cittext en">Odysseus' two speeches </span>
-        <p>
-            2.188 When he came upon a king or a prominent man, he would stand next to him and say:<br>
-            'My Lord! It does not suit you to be scared like a common coward! But sit down yourself and
-            settle down the others. You do not know what Atreus has in mind: now he is testing,
-            soon he will punish the Achaeans. Not all of us heard what he said in the council.
-            Do not let him get angry and do us harm!
-            A great pride he has, a heaven-fed king, his honor is from Zeus and Zeus the all-wise loves him.'
-            <br><br>
-            2.198 But when he met with a commoner who was shouting, he struck him with the sceptre and commanded:<br>
-            'Good sir! Sit still and listen to others, who are better men than you!
-            You know nothing of war and courage and count for nothing in battle or council. We cannot
-            all be kings of the Achaeans here - one king to whom Zeus son of Kronos of the Wicked Tricks
-            gave sceptre and law to rule.<br>
-            Thus he showed leadership among the host...<br>
-        </p>
+<div class="indent">
+    <p>
+        2.188 When he came upon a king or a prominent man, he would stand next to him and say:<br>
+        'My Lord! It does not suit you to be scared like a common coward! But sit down yourself and
+        settle down the others. You do not know what Atreus has in mind: now he is testing,
+        soon he will punish the Achaeans. Not all of us heard what he said in the council.
+        Do not let him get angry and do us harm!
+        A great pride he has, a heaven-fed king, his honor is from Zeus and Zeus the all-wise loves him.'
+        <br><br>
+        2.198 But when he met with a commoner who was shouting, he struck him with the sceptre and commanded:<br>
+        'Good sir! Sit still and listen to others, who are better men than you!
+        You know nothing of war and courage and count for nothing in battle or council. We cannot
+        all be kings of the Achaeans here - one king to whom Zeus son of Kronos of the Wicked Tricks
+        gave sceptre and law to rule.<br>
+        Thus he showed leadership among the host...<br>
+    </p>
 </div>
 <br>
 <p>

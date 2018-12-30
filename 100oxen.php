@@ -64,7 +64,7 @@ function autoversion($file)
       to show that the Iliad really is a poem with a message and Homer a kind of
       prophet. His mission statement is here (Il 24.173, Iris to Priam):</p>
     <br>
-    <div style="margin-left: 80px;">
+    <div class="indent">
       <p>... Διὸς δέ τοι ἄγγελός εἰμι,</p>
       <p>ὅς σευ ἄνευθεν ἐὼν μέγα κήδεται ἠδ' ἐλεαίρει.</p>
       <p>λύσασθαί σ' ἐκέλευσεν Ὀλύμπιος Ἕκτορα δῖον,</p>
@@ -72,7 +72,7 @@ function autoversion($file)
       <p><br>
       </p>
     </div>
-    <div style="margin-left: 80px;">
+    <div class="indent">
       <p>'...I am a messenger from Zeus,</p>
       <p>who, although far away, is concerned and pities you</p>
       <p>He orders you to ransom the great Hector,</p>
@@ -86,7 +86,7 @@ function autoversion($file)
       addressee and Homer is thus on a mission to visit all Achilleses in Hellas
       and 'melt their heart', teach them (Il 9.496, Phoenix to Achilles):</p>
     <br>
-    <div style="margin-left: 80px;">
+    <div class="indent">
       <p>ἀλλ᾽ Ἀχιλεῦ δάμασον θυμὸν μέγαν: οὐδέ τί σε χρὴ</p>
       <p> νηλεὲς ἦτορ ἔχειν...</p>
       <br>
@@ -145,7 +145,7 @@ function autoversion($file)
         poem about shame (Il 24.44, Apollo to the gods):</p>
       <p><br>
       </p>
-      <div style="margin-left: 80px;">
+      <div class="indent">
         <p>ὣς Ἀχιλεὺς ἔλεον μὲν ἀπώλεσεν, οὐδέ οἱ αἰδὼς</p>
         <p>γίγνεται, ἥ τ᾽ ἄνδρας μέγα σίνεται ἠδ᾽ ὀνίνησι. </p>
         <p><br>
