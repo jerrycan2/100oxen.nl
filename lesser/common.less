@@ -111,7 +111,10 @@ em {
   font-style: italic;
   //font-weight: bold;
 }
-
+.accented{
+  font-style: italic;
+  color: darkblue;
+}
 p {
   padding: 0;
   margin: 0;
@@ -197,7 +200,7 @@ figure {
   }
 }
 .latin p, h5 {
-  margin-left: 4%;
+  margin: 0 3%;
 }
 .greek p a {
   border-width: 0 0.2rem;
@@ -211,7 +214,7 @@ figure {
   height: 1.7rem;
 }
 .indent {
-  margin: 1rem 1rem 1rem 8%;
+  margin: 1rem 1rem 1rem 4%;
 }
 
 .accordion {
@@ -223,6 +226,7 @@ figure {
   font-size: 1rem;
   width: 90%;
   .rounded;
+  margin: 2px;
 }
 
 button.accordion.active, button.accordion:hover {
@@ -230,15 +234,15 @@ button.accordion.active, button.accordion:hover {
 }
 .accheader {
   background-color: rgba(0, 0, 0, 0.1);
-  color: black;
-  cursor: default;
-  padding: 0.5rem 1rem 0.5rem 0.3rem;
+  color: @textcolor;
+  cursor: pointer;
+  padding: 0 1rem 0 0.3rem;
   width: 100%;
   display: flex;
 }
 .accheader:after {
   content: '\02795'; /* Unicode character for "plus" sign (+) */
-  color: #777;
+  color: #779;
   margin: 0.4rem 1rem;
   font-size: 120%;
 }
@@ -254,9 +258,9 @@ div.panel {
   overflow: hidden;
   transition: max-height 0.4s ease-out;
   p {
-    margin-left: 5%;
+    margin-left: 4%;
   }
-  background-color: #8fdfff;
+  background-color: cadetblue;
 }
 
 #thegods {
@@ -295,8 +299,9 @@ div.panel {
 // footnotes:
 a.footptr {
   vertical-align: super;
-  font-size: .83em;
+  font-size: .8em;
   text-decoration: none;
+  margin-top: 0;
 }
 a.refptr {
   text-decoration: none;

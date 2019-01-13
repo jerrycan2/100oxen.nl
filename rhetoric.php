@@ -16,6 +16,7 @@ function autoversion($file)
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="Homer employs rhetoric on two levels at once: by pathos and by allusion">
     <title>Homer's Rhetoric</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 

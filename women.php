@@ -1,22 +1,23 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
-    <title>Women</title>
+    <meta name="Description" CONTENT="A description of the important women in Iliad and Odyssey">
+    <title>Achaean Women</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">  </head>
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+  </head>
   <body class="latin contents">
     <h1>Achaean Women</h1>
     <p>
@@ -45,7 +46,7 @@ function autoversion($file)
       very dangerous god.
     </p>
     <p>
-      Helen, furthermore, is shown as full of remorse and self-loathing and already regretting
+      Helen, furthermore, is shown as full of remorse and self-loathing and regretting
       the move that she made. But on the other hand, she is also true to type as never being
       quite satisfied with the husband she has.
       See e.g. her nagging when she finds Paris in the bedroom instead
@@ -139,7 +140,7 @@ function autoversion($file)
     </p>
     <p>
       The Odyssey tells us: "go home, sailor, to your wife". He
-      appears to play on the sailor's fear: when I come home, will my wife still be my wife?
+      appears to discuss the sailor's fear: when I come home, will my wife still be my wife?
       The Agamemnon-Clytemnestra story shows that this is not a given. But Odysseus does exactly the
       opposite of Agamemnon's advice (Od 11.441-) and things turn out a lot better for him.
     </p>
@@ -147,24 +148,71 @@ function autoversion($file)
     <p>
       What should we do with the servant-girls?<br>
       Take them behind the shed and...<br>
+    </p>
       <div class="indent">22.443 θεινέμεναι ξίφεσιν τανυήκεσιν, εἰς ὅ κε πασέων<br>
         22.444 ψυχὰς ἐξαφέλησθε καὶ ἐκλελάθωντ᾽ Ἀφροδίτης,<br></div>
     <div class="indent">"strike them with your long swords, until from them all<br>
       you take their life and they forget about Love"<br></div>
     <p>
       But "take their life" can also be "make them swoon". Together with the sexual symbolism of 'sword', this means that there could be some wordplay here and that
-      Odysseus is punishing them with the same thing that was their crime. Not altogether pc but
+      Odysseus is proposing to punish them with the same thing that was their crime. Not altogether pc but
       better at any rate than the fate that Telemachus has in store for them.
     </p>
     <p>
       The latter's treatment of the girls I think is meant to raise eyebrows. As explained
-      <a class="textlink" title="" href="">elsewhere</a>, the climax of both Iliad and Odyssey
+      <a class="textlink" title="" href="sorry.php">elsewhere</a>, the climax of both Iliad and Odyssey
       are gigantic overstatements: Homer is in Aristotelian terms, 'imitating impossibilities', technically as well as morally. The whole of both poems is geared to explaining to us that such things cannot and should not happen (fighting an army on your own, killing your host as guests or your guests as host etc.) but he uses it to reach a huge but ironical crescendo. These things are meant to shock us.
     </p>
     <p><br></p>
-      <h4>5: Nausikaa</h4>
+      <h4>5: Arete</h4>
     <p>
+      "Pass by my father, go to my mother and clasp her knees if you want to see your homecoming..."
+      (Od 6.310-, Nausikaa to Odysseus).
+      If one finds a piece of literature where the woman is the dominant force in the household, no matter how common this may be in reality, literary comedy is always suspected. I do think the Phaeacia-episode is comedy of manners. It is not a description of an earthly paradise or a bridge between the dead and the living, it is a humorous comment on contemporary habits and, as always in comedy, between what we <em>say</em> we are and what we actually are. The episode may also contain, as described <a class="textlink" target="_self" title="instructions to rhapsode" href="rhapsode.php">here</a>, basic instructions for a singer on how to visit a town where a public feast is held.
     </p>
+    <p>
+      It is highly unlikely that bursting in to an ancient Greek household, going up to the lady of the house and embracing her knees will get you anything except thrown out. This must be comedy. As a metaphor it works better: to acquire the good opinion of the mistress is probably a great advantage if you want their help. One of the clever things Odysseus does is weaving in the list of heroines (and his mother) to the first part of his visit to the underworld, causing Arete to be the first to speak in praise (Od 11.336-) (Note the subsequent speech by Alkinoos, reminding us that
+      <em>he</em> is the chief here(Od 11.353)).
+    </p>
+    <p><br></p>
+      <h4>6: Nausikaa</h4>
+      <div class="indent">
+      6.115 σφαῖραν ἔπειτ᾽ ἔρριψε μετ᾽ ἀμφίπολον βασίλεια:<br>
+      6.116 ἀμφιπόλου μὲν ἅμαρτε, βαθείῃ δ᾽ ἔμβαλε δίνῃ:<br>
+      6.117 αἱ δ᾽ ἐπὶ μακρὸν ἄυσαν: ὁ δ᾽ ἔγρετο δῖος Ὀδυσσεύς,<br>
+      <br>
+      The princess threw a ball to one of the maids,<br>
+      who missed it and it fell in deep water.<br>
+      They shouted loudly, waking up Odysseus...<br>
+    </div>
+    <p>
+    This game is called 'hunting by making noise' and it is an activity of the goddess Artemis (Keladeine) (Od 6.151). Odysseus here is like one of the wild beasts that she gathers around her (6.130-), also he is coming out of a hiding place like that of the wild boar that wounded him (Od 5.475-, 19.439-). Circe can do the same trick though she is probably no virgin. The latter's picture is somewhat more complicated (see below). The picture of Nausikaa is so lovingly drawn, she must be based on someone special. Either I am not the first to feel this, or there was some remaining knowledge about the poet, but in the traditional tales about Homer there is a daughter. Her husband will be the successor of her father as leader of the Homeridae.
+    </p>
+    <p>
+      Nausikaa's excursion (book 6) to wash their clothes is very much like an aristeia. She has much to win (a husband), much to lose (a reputation) and successful action depends on her finding the fine line between not going far enough and going too far:
+    </p>
+      <ul>
+      <li>The dream beforehand, the inspiration by Athena</li>
+      <li>Her wagon, like a chariot; her maids like her Myrmidons</li>
+      <li>When Odysseus "attacks", she alone stays (6.139)</li>
+      <li>She treats Odysseus like a captive (6.316-)</li>
+    </ul>
+  <p>But we must not be misled: Nausikaa is a handful, for her parents:</p>
+      <ul>
+      <li>She talks to strangers, wearing no veil (6.100)</li>
+      <li>She does not tell her father</li>
+      <li>She does not show the stranger into town, she shows him a hiding place (where the women come!)</li>
+      <li>Odysseus appears before her parents dressed in her father's or her brother's clothes</li>
+    </ul>
+  <p>
+      Her father is apparently not one to get angry easily. But he does offer her hand in marriage even before he knows the stranger's name... (Od 7.313)
+    </p>
+    <p>
+      No doubt piracy, robbery and kidknapping were real dangers for anyone living near where a ship could land and children were carefully instructed what to do when seeing strangers. A reaction like that of the Laestrygonians (Od 10.82-) seems rather more realistic.
+    </p>
+    <p><br></p>
+    <h4>7: Circe</h4>
+    <p>...</p>
     <br><br>
     <hr>
     <ol id="footnotes">

@@ -1,14 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -16,6 +14,7 @@ function autoversion($file)
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="Characterization of the 8 major Greek heroes in the Iliad">
     <title>Agamemnon's council</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
           type='text/css'>
@@ -27,13 +26,13 @@ function autoversion($file)
     Agamemnon's council (Il 2.402-3):<br>
 </p>
 <ol>
-    <li><h4>Agamemnon and Menelaos: the old king - the young one</h4>
+    <li><h4>Agamemnon and Menelaos: the old and the young king</h4>
         They are the only ones who go out to get Helen directly. The others go
         because of a promise.
-        Agamemnon is not presented very favourably. He has to be obeyed of course because he is
+        <b>Agamemnon</b> is not presented very favourably. He has to be obeyed of course because he is
         the leader and that is how armies work. But the poet shows him:
         <ul>
-            <li>refusing Chryses, keeping Chryseis "because he likes her better than his own wife"</li>
+            <li>refusing Chryses, keeping Chryseis "because I prefer her to my wedded wife" (Il 1.113). This may be honesty but then as now, you cannot say such things without condemning yourself.</li>
             <li>mishandling the Achilles situation</li>
             <li>accepting the wrong advice (Nestor) and the Evil Dream</li>
             <li>being harsh (Adrastos episode, Il 6.37)</li>
@@ -44,7 +43,7 @@ function autoversion($file)
             </li>
         </ul>
         Rhetorically of course his greatest sin is the insulting of our greatest hero.<br>
-        Menelaos is one of the addressee figures of the poem. He is "you" because "you" are
+        <b>Menelaos</b> is one of the addressee figures of the poem. He is "you" because "you" are
         going out to fight and capture girls, and dream of honor and great victories. The basic
         ironical contrast between your naive expectations and the actual situation you will find
         yourself in, is the main point of Menelaos' Aristeia (book 17): instead of winning honor
@@ -57,15 +56,15 @@ function autoversion($file)
         <br>
     </li>
     <li>
-        <h4>Idomeneus and Diomedes: the old hero, the young one</h4>
-        Idomeneus seems to be the type of the older, highly aristocratic 'professional soldier'.
+        <h4>Idomeneus and Diomedes: the old and the young hero</h4>
+        <b>Idomeneus</b> seems to be the type of the older, highly aristocratic 'professional soldier'.
         He is honored most by Agamemnon (Il 4.255-), traces his lineage back to Minos himself.
         Idomeneus is not a shining example of eagerness to fight (like Antilochos for instance),
         see the humorous exchange he has with his therapon Meriones in his aristeia (Il 13.206-).
         He does know how to fight well, he also knows to get out before things get too rough,
         leaving his therapon to do the fighting (as Achilles does).<br>
 
-        Diomedes has no therapon to take his place but he is learning the survival-knowledge of an Idomeneus.
+        <b>Diomedes</b> has no therapon to take his place but he is learning the survival-knowledge of an Idomeneus.
         In Homeric terms, this is "recognizing the gods" and drawing one step back before they kill you.
         Diomedes is an ironical fantasy, in that the basic conundrum of Homeric warfare: how to find the
         very narrow middle between "not far enough" and "too far" is not a problem for him: with the
@@ -76,7 +75,7 @@ function autoversion($file)
     </li>
     <li>
         <h4>The Aiantes</h4>
-        Telamonian Aias gets a very positive picture: he is the 'bulwark of the Achaeans', he is
+        <b>Telamonian Aias</b> gets a very positive picture: he is the 'bulwark of the Achaeans', he is
         always there where the situation is dire and he is near-unbeatable.
         In short, he is the warrior every king or war-leader
         would like to be and be seen to be. It is Aias with his laconic remarks who
@@ -84,7 +83,7 @@ function autoversion($file)
         wiped out. Yet he is not a winner. He gets unmanned by Hector in defense of the ships, he
         loses to Odysseus in the contest for Achilles' armor. Athena, the goddess of Victory,
         never helps him. He is a kind of Cinderella-hero: doing all the work, getting no reward.<br>
-        The Greater Aias is not a runner, but his companion, the son of Oileus, is. He is known
+        The Greater Aias is not a runner, but his companion, the <b>son of Oileus</b>, is. He is known
         most of all for his skill in pursuing enemies on the run (Il 14.520-). Apart from that
         he is shown to be a brave warrior. Both of them are aspects of Achilles: Ach. is 'greater'
         in the sense that he is a hero of the counter-attack: he frees a beleaguered city from
@@ -95,7 +94,7 @@ function autoversion($file)
     </li>
     <li>
         <h4>Nestor and Odysseus, the two councillors</h4>
-        Nestor represents the 'sweet voice' of heroism. Naturally he appears as an old man telling
+        <b>Nestor</b> represents the 'sweet voice' of heroism. Naturally he appears as an old man telling
         tall tales.
         Even in the modern world, we still love
         to hear this voice ("when the going gets tough, the tough get going"). We may need it to

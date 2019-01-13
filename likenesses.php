@@ -1,13 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -15,6 +14,7 @@ function autoversion($file)
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="Description" CONTENT="A dictionary of Homeric likenesses and Homer's use of them">
     <title>Homeric likenesses</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
 

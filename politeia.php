@@ -1,21 +1,20 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Plato</title>
+    <meta name="Description" CONTENT="The politics of power in the ancient world">
+    <title>Homer's Politeia</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
       rel="stylesheet" type="text/css">

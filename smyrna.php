@@ -1,20 +1,19 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="Description" CONTENT="A view of the old town of Smyrna, hypothetically Homer's birthplace.">
     <title>The town of Old Smyrna</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
           type='text/css'>

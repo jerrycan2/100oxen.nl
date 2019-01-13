@@ -1,20 +1,19 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="Description" CONTENT="A discussion of the individual gods in the poems">
     <title>The Gods</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
@@ -62,8 +61,7 @@ function autoversion($file)
       cannot say "now I am going to be clever" and be sure that it will be so.
       Implicitly or explicitly we have to pray (or 'boast' which is the same
       thing), then act and hope for the best. Whether Homer is talking about
-      actual metaphysical presences or exactly how he viewed these 'forces'
-      seems an unanswerable question.</p>
+      actual metaphysical presences or 'immanent' gods or exactly how he viewed these 'forces' seems an unanswerable question.</p>
     <p>There are two things that we may obey: rules and desires. I would suggest
       that female gods are 'desire' gods, while male gods 'rule'. Neither Homer
       nor Hesiod ever hints at something like this but the picture fits. Gods

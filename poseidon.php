@@ -1,14 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -16,6 +14,7 @@ function autoversion($file)
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="The Neleid clan, their descendance from Poseidon and their role in the Ionian migration">
     <title>Poseidon</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
@@ -62,7 +61,7 @@ function autoversion($file)
     'Pylos-on-the-beach' and that if they refer to the will of Poseidon, they refer to a
     long-standing family policy aimed at acquiring a strong power-base on the Asian mainland. In
     terms of the Homeric picture: Poseidon, like the Ionians, 'has the sea' but 'wants the land'.
-    Zeus however says that he cannot have it.
+    Zeus however says that he cannot have it. See Il 15.187-. The whole picture suggests strongly that Poseidon has <a class="textlink" title="Kronos" href="kronos.php">Kronos</a>-like ambitions: he wants to rule (again<a class="ptr">(2)</a>) on earth.
 </p>
 <p>
     The rivalry between Zeus and Poseidon
@@ -72,6 +71,9 @@ function autoversion($file)
     <li>The youngest son taking power is a well-known trope in storytelling. For a possible
         connection with Zeus and Kronos, see <a class="textlink" target="_self" title="kronos"
                                                 href="kronos.php">Kronos</a>
+    </li>
+    <li>
+        There is an unconfirmed theory that 'Poseidon' originally meant 'husband of the earth'.
     </li>
 </ol>
 <br>

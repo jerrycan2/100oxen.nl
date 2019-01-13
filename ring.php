@@ -16,6 +16,7 @@ function autoversion($file)
   <head>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
     <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="Ring composition, a basic building block of the Iliad's structure.">
         <title>Ring composition</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">

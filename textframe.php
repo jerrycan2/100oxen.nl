@@ -1,14 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -120,8 +118,8 @@ function autoversion($file)
         Achaean terms) of war, as the 'Plan of Zeus' comes to fulfillment. The
         scales of Zeus are the symbol of this justice: are you willing to pay
         for what you want? The Achaeans, when Poseidon is helping them, are not.
-        Patrocles is, and Apollo makes him pay the price. This is why this part
-        has the wonderful "deception of Zeus" episode at its center.  </p>
+        Patrocles is the price.
+    </p>
     <br>
     <hr>
     <a id="2:19.357">&nbsp;</a>

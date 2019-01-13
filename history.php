@@ -1,14 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -16,6 +14,7 @@ function autoversion($file)
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
     <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="deprecated">
     <title>summary</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
@@ -121,9 +120,17 @@ function autoversion($file)
 <p>The attempt to freeze the political situation for instance, is nicely
     reflected in the story of Helen: Menelaos (Sparta) had been acknowledged
     victor (the most powerful one), possibly after the first Messenian war.
-    Symbol of this is Helen, the Prize. Everyone agreed to come to Menelaos'
+    Symbol of this is Helen, the Prize<a class="ptr">(1)</a>. Everyone agreed to come to Menelaos'
     aid if anyone attempted to steal Helen (victory) from him. </p>
-
+<br>
+<br>
+<hr>
+<ol id="footnotes">
+    <li>Every woman in these tales is 'the Prize' for the heroes, but especially Helen, Chryseis, Briseis and Penelope in the Odyssey. For an ethologist this should be no surprise. Homer does go beyond this and depicts the women as actual human beings.
+    </li>
+</ol>
+<br>
+<br>
 
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

@@ -26,11 +26,15 @@
     width: 0;
     top: 0;
 }
+#firstli::after {
+    top: -1rem;
+    padding-top: 1rem;
+}
+
 /*the last item on every level has just a very short line leading to it, and nothing further. This makes it look very nice.*/
 .map ul > li:last-child::after {
     height: 0.7rem;
 }
-
 li {
     background-color: #77BEFF;
     padding-left: 4px;

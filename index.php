@@ -1,14 +1,12 @@
 <?php
 $lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
+  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -16,8 +14,9 @@ function autoversion($file)
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" CONTENT="The topical structure of Homer's Iliad and Odyssey in a collapsible list with color coding to bring out the likeness and contrast between the topics. Also a Homero-ex-Homerum interpretation of the poems.">
     <title>the Iliad: Structure and interpretation</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
 
           rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
@@ -26,6 +25,9 @@ function autoversion($file)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
 </head>
 <body id="mainbody" class="latin">
+<!--<script>-->
+    <!--let php_lastModified = "<?php echo $lastModified; ?>";-->
+<!--</script>-->
 <nav id="switchColumns">
     <ul>
         <li class="switch">
@@ -155,7 +157,7 @@ function autoversion($file)
 
                                                           title="Apollo"></a></div>
 </header>
-<div id="splash">
+<!--div id="splash">
     <div class="floatleft">(click and this goes away). Stays away if you check
         this: <input id="nosplash" type="checkbox"></div>
     <section>
@@ -203,26 +205,29 @@ function autoversion($file)
             browsers. Windows XP or older ipads/iphones, for instance, cannot do it.<br>
         </i></aside>
     <div class="floatright"></div>
-</div>
+</div-->
 <!--end of splash-->
+
 <div id="hiddendiv">
     <h4>Doubleclick word to lookup in Alpheios</h4>
     <div id="alphtext" class="alpheios-enabled" lang="grc"></div>
 </div>
 <div id="colwrap" class="bgbot" style="top: 6rem">
     <div id="treeframe" name="treeframe" class="viewport">
+
         <div id="messages">
             <label>
                 <button>↑</button>
             </label>
-            <span>New &amp; updated 29 dec 2018</span>
-            <p>new pages: 'women' and 'Agamemnon's council'</p>
+            <span>New &amp; updated 12 jan 2019</span>
+            <p>update: first attempt at topical structure of the Odyssey</p>
         </div>
+        <h3>Topical structure of the poem</h3>
         <div id="list">
             <ol></ol>
         </div>
     </div>
-    <iframe id="pageframe" name="pageframe" class="viewport"></iframe>
+    <iframe id="pageframe" name="pageframe" class="viewport" src="100oxen.php"></iframe>
     <iframe id="greekframe" name="greekframe" class="viewport"></iframe>
     <iframe id="butlerframe" name="butlerframe" class="viewport"></iframe>
     <iframe id="textframe" name="textframe" class="viewport"></iframe>
@@ -273,8 +278,7 @@ function autoversion($file)
     </p>
     <p>All other texts, unless otherwise indicated:</p>
     <img src="images/sign.png" alt="my signature">
-    <p>For comments or questions, <a href="mailto:jeroen@100oxen.nl">e-mail
-        me</a>.</p>
+    <p>For comments or questions, <a href="mailto:jeroen@100oxen.nl">e-mail</a> Jeroen.</p>
 </div>
 <div id="filesmenu" title="pick a file for the left column" style="left: -542.567px; opacity: 0;">
     <ul>

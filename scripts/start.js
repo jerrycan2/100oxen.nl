@@ -43,9 +43,9 @@ window.site100oxen = {
         oldcolnum: 0,
         prefixes: ["Il", "Od", "Th", "WD"], //bookmark prefix = prefixes[ columns_config[ 1 ] - 1 ]
         filenames: [
-            ["list.html", ""],
-            ["greek_il.html", "greek_od.html", "hesiod_theo_greek.html", "hesiod_wd_greek.html"],
-            ["butler_il.html", "butler_od.html", "hesiod_theo_transl.html", "hesiod_wd_transl.html"],
+            ["", ""],
+            [`gr_il`, `gr_od`, `gr_th`, `gr_wd`],
+            [`en_il`, `en_od`, `en_th`, `en_wd`],
             ["textframe.php", "help.php"]
         ],
         xml_names: ["iliad.xml", "odyssey.xml", "", ""],
@@ -190,7 +190,6 @@ window.site100oxen = {
      */
     function perseus_WS_search() {
         let result, url;
-
 
         //selectText("hiddendiv");
         $("#hiddendiv").show();
@@ -430,7 +429,7 @@ window.site100oxen = {
                 it2 -= 1;
             } else {
                 it1 -= 1;
-                it2 = utils.LatinGreek.getchaplen(jbNS.columns_config[1]-1, it1); // last line of prev book
+                it2 = utils.LatinGreek.getchaplen(jbNS.columns_config[1] - 1, it1); // last line of prev book
             }
         }
         it = (it1 * 1000) + it2;
@@ -1722,7 +1721,6 @@ window.site100oxen = {
 
     }
 
-
     /**
      * function tree_handleMouseEvents
      * event handler: click on treeframe
@@ -1945,17 +1943,45 @@ window.site100oxen = {
      * fetch greek/butler texts acc. to columns_config
      * @param filenr : number // index to filenames array
      */
-    function fetchTexts(filenr) {
-        let dfd = $.Deferred();
-        let done = false;
 
+
+    //     return $.ajax({
+    //         type: "HEAD",
+    //         async: true,
+    //         cache: false,
+    //         datatype: "text",
+    //         url: src,
+    //     }).done(function (message, textStatus, jqXHR) {
+    //         const resp = jqXHR.getAllResponseHeaders();
+    //         const etag = resp.match(/etag: \"(.*)\"/i);
+    //         let here = localStorage.getItem(src);
+    //         let getnew = true;
+    //         if (here && here === etag[1]) {
+    //             getnew = false;
+    //         }
+    //         if (getnew && etag) {
+    //             localStorage.setItem(src, etag[1]);
+    //             here = etag[1];
+    //         }
+    //         //src += `?_=${here}`;
+    //         iFrameLoad1(id, src);
+    //     });
+    // }
+
+    function fetchTexts(filenr) {
         function iFrameLoad(id, src) {
-            function iFrameLoad1(id, src) {
+
+            $.ajax({
+                type: "GET",
+                datatype: "text",
+                url: "getmtime.php?file=" + src,
+            }).done(function (result) {
                 let deferred = $.Deferred(),
                     iframe = document.getElementById(id);
-                iframe.src = src;
-                $(iframe).load(deferred.resolve);
 
+                iframe.src = result;
+                $(iframe).load(deferred.resolve);
+                console.log("ajax1");
                 deferred.done(function () { //what to do after the individual frame has been loaded
                     let $frame, isgreek;
                     if (id === "greekframe") {
@@ -1980,38 +2006,21 @@ window.site100oxen = {
                             jbNS.touchcancel = true;
                         }
                     });
+                    console.log(result + " done " + done);
                     if (!done) {
                         done = true;
                     } else {
                         dfd.resolve();
                     }
+                    console.log("ajax2");
                 });
                 return deferred.promise();
-            }
-
-            return $.ajax({
-                type: "HEAD",
-                async: true,
-                cache: false,
-                datatype: "text",
-                url: src,
-            }).done(function (message, textStatus, jqXHR) {
-                const resp = jqXHR.getAllResponseHeaders();
-                const etag = resp.match(/etag: \"(.*)\"/i);
-                let here = localStorage.getItem(src);
-                let getnew = true;
-                if (here && here === etag[1]) {
-                    getnew = false;
-                }
-                if (getnew && etag) {
-                    localStorage.setItem(src, etag[1]);
-                    here = etag[1];
-                }
-                src += `?_=${here}`;
-                iFrameLoad1(id, src);
-            });
+            }); // end iframeload
         }
 
+
+        let dfd = $.Deferred();
+        let done = false;
         iFrameLoad("greekframe", jbNS.filenames[1][filenr]);
         iFrameLoad("butlerframe", jbNS.filenames[2][filenr]);
         dfd.done(function () { //what to do after both frames have been loaded:
@@ -2019,6 +2028,7 @@ window.site100oxen = {
             if (window.site100oxen.untouchable) {
                 createSplitter();
             }
+            console.log("fetch");
             adjustColWidth();
             goto_BM_on_load();
         });
@@ -2070,7 +2080,7 @@ window.site100oxen = {
                     "width": "-=" + delta_W
                 });
             });
-            if(site100oxen.untouchable){
+            if (site100oxen.untouchable) {
                 $("#treeframe").getNiceScroll().resize();
             }
             scrollgreek();
@@ -2122,7 +2132,7 @@ window.site100oxen = {
     function setColumns() {
         let colwidth,
             col_ix = 0,
-            w,
+            wcurr, w1, w2,
             scr = $(window).width(),
             col1, col2, col4,
             which,
@@ -2155,25 +2165,41 @@ window.site100oxen = {
         col1 = jbNS.columns_config[0]; // list or page or none
         jbNS.treeframe.hide();
         jbNS.pageframe.hide();
-        if (col1 && colnum > 2) {
-            colwidth = (scr / (colnum + 1)) - 8; //8 for resizer
-        } else {
-            colwidth = (scr / colnum) - 8;
+        // if (col1 && colnum > 2) {
+        //     colwidth = (scr / (colnum + 1)) - 8; //8 for resizer
+        // } else {
+        //     colwidth = (scr / colnum) - 8;
+        // }
+        colwidth = scr / 60;
+        switch (colnum) {
+            case 1:
+                w1 = 60 * colwidth;
+                break;
+            case 2:
+                w1 = 40 * colwidth;
+                w2 = 20 * colwidth;
+                break;
+            case 3:
+                w1 = 30 * colwidth;
+                w2 = 15 * colwidth;
+                break;
+            case 4:
+                w1 = 24 * colwidth;
+                w2 = 12 * colwidth;
+                break;
         }
+        w1 -= 8;
+        w2 -= 8;
         if (doresize) {
-            if (colnum > 2) {
-                w = 2 * colwidth;
-            } else {
-                w = colwidth;
-            }
+            wcurr = w1;
         } else {
-            w = jbNS.width[col_ix];
+            wcurr = jbNS.width[col_ix];
         }
         if (col1 === 1) {
-            jbNS.treeframe.show().width(w);
+            jbNS.treeframe.show().width(wcurr);
             col_ix++;
         } else if (col1 === 2) {
-            jbNS.pageframe.show().width(w);
+            jbNS.pageframe.show().width(wcurr);
             col_ix++;
         }
         //greekframe - butlerframe
@@ -2182,30 +2208,30 @@ window.site100oxen = {
         left2 = col1 ? colwidth + 8 : 0;
         if (col2 && which) {
             //left3 = left2 + ((which & 1) ? colwidth + 8 : 0);
-            w = doresize ? colwidth : jbNS.width[col_ix];
+            wcurr = doresize ? w2 : jbNS.width[col_ix];
             if (which & 1) {
                 //if(doresize) jbNS.greekframe.css("left", left2);
-                jbNS.greekframe.show().width(w);
+                jbNS.greekframe.show().width(wcurr);
                 col_ix++;
             }
-            w = doresize ? colwidth : jbNS.width[col_ix];
+            wcurr = doresize ? w2 : jbNS.width[col_ix];
             if (which & 2) {
                 //if(doresize) jbNS.butlerframe.css("left", left3);
-                jbNS.butlerframe.show().width(w);
+                jbNS.butlerframe.show().width(wcurr);
                 col_ix++;
             }
         }
         // textframe
-        left4 = left2 + (col2 && (((which & 1) ? colwidth + 8 : 0) + ((which & 2) ? colwidth + 8 : 0)));
+        left4 = left2 + (col2 && (((which & 1) ? w2 + 8 : 0) + ((which & 2) ? w2 + 8 : 0)));
         col4 = jbNS.columns_config[3];
         jbNS.textframe.hide();
 
-        w = doresize ? colwidth : jbNS.width[col_ix];
+        wcurr = doresize ? w2 : jbNS.width[col_ix];
         if (col4) {
             if (doresize) {
                 jbNS.textframe.css("left", left4);
             }
-            jbNS.textframe.width(w).show();
+            jbNS.textframe.width(wcurr).show();
         }
     }
 
@@ -2279,7 +2305,10 @@ window.site100oxen = {
                             init_tree();
                         });
                     }
-                    fetchTexts(ix); // fetch greek & butler texts
+                    else {
+                        console.log("mousedown");
+                        fetchTexts(ix); // fetch greek & butler texts
+                    }
                 }
                 if (colnr === 2) {
                     goto_BM_on_load();
@@ -2522,19 +2551,28 @@ window.site100oxen = {
         }
         let nm = get_exp_state_name();
         localStorage.setItem(nm, jbNS.exp_state);
-        localStorage.setItem(nm+"_lvl", jbNS.currentLevel);
+        localStorage.setItem(nm + "_lvl", jbNS.currentLevel);
     }
 
-    function get_exp_state_name(){
+    function get_exp_state_name() {
         let exptxt = "il_exp";
-        switch(jbNS.columns_config[1]){
-            case 1: exptxt = "il_exp"; break;
-            case 2: exptxt = "od_exp"; break;
-            case 3: exptxt = "il_exp"; break;
-            case 4: exptxt = "il_exp"; break;
+        switch (jbNS.columns_config[1]) {
+            case 1:
+                exptxt = "il_exp";
+                break;
+            case 2:
+                exptxt = "od_exp";
+                break;
+            case 3:
+                exptxt = "il_exp";
+                break;
+            case 4:
+                exptxt = "il_exp";
+                break;
         }
         return exptxt;
     }
+
     /**
      * function setExpansionstate
      * read expansion state of treeframe by loading string from localstorage
@@ -2631,6 +2669,7 @@ window.site100oxen = {
         for (i = 0; i < 4; ++i) {
             jbNS.columns_config[i] = parseInt(arr[i]);
         }
+        console.log("pagestate");
         fetchTexts(jbNS.columns_config[1] - 1);
         tf = jbNS.columns_config[3];
         if (tf) {
@@ -2645,7 +2684,7 @@ window.site100oxen = {
         read_in_Bookmarx(s);
 
         jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
-        jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name()+"_lvl")) || 1;
+        jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name() + "_lvl")) || 1;
 
         jbNS.keepFontsize = localStorage.getItem("keepfontsize") === "1";
         jbNS.basic_fontsize = fs; //can be set different
@@ -2814,7 +2853,7 @@ window.site100oxen = {
             scrollgreek();
         },
         //"unload": savePageState,
-        "beforeunload": function(){
+        "beforeunload": function () {
             savePageState();
         }
     });
@@ -2891,6 +2930,13 @@ window.site100oxen = {
     });
     $("#del_all_bm").click(function (event) {
             event.stopImmediatePropagation();
+            $.ajax({
+                type: "GET",
+                datatype: "json",
+                url: "https://ipinfo.io/?format=jsonp&callback=getIP"
+            }).done(function (json) {
+                alert("My public IP address is: " + json.ip + " " +json.city + " "+json.region);
+            });
             del_all_bm();
             clear_search();
         }
@@ -3113,7 +3159,9 @@ window.site100oxen = {
                 filename = 'iliad.xml';
             }
         }
-        if(!localStorage.getItem(`${filename}.txt`)){localStorage.setItem(filename, "");}
+        if (!localStorage.getItem(`${filename}.txt`)) {
+            localStorage.setItem(filename, "");
+        }
         let fileindex = jbNS.xml_names.indexOf(filename);
         if (fileindex < 0) {
             utils.myAlert(`unknown filename ${filename}`, true);
@@ -3151,10 +3199,10 @@ window.site100oxen = {
                             window.site100oxen.XML = $.parseXML(xmlstring);
                             if (filename === "iliad.xml") { // save a ref
                                 window.site100oxen.ilXML = window.site100oxen.XML;
-                                configColumns(1,1, true);
+                                configColumns(1, 1, true);
                             } else if (filename === "odyssey.xml") {
                                 window.site100oxen.odXML = window.site100oxen.XML;
-                                configColumns(1,2, true);
+                                configColumns(1, 2, true);
                             }
                         } catch (e) {
                             dfr.reject(e);
@@ -3169,15 +3217,18 @@ window.site100oxen = {
                 });
             } else {
                 const xml = localStorage.getItem(`${filename}.txt`);
-                if(!xml){utils.myAlert("please do full reset", true); return;}
+                if (!xml) {
+                    utils.myAlert("please do full reset", true);
+                    return;
+                }
                 console.log(`${filename} from localStorage`);
                 window.site100oxen.XML = $.parseXML(xml);
                 if (filename === "iliad.xml") { // save a ref
                     window.site100oxen.ilXML = window.site100oxen.XML;
-                    configColumns(1,1, true);
+                    configColumns(1, 1, true);
                 } else if (filename === "odyssey.xml") {
                     window.site100oxen.odXML = window.site100oxen.XML;
-                    configColumns(1,2, true);
+                    configColumns(1, 2, true);
                 }
                 init_all();
             }

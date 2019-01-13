@@ -3,6 +3,7 @@
  * this goes into files, loaded into pageframe
  */
 'use strict';
+
 $(document).ready(function () {
 
     const untouchable = !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
@@ -18,7 +19,6 @@ $(document).ready(function () {
             horizrailenabled: true
         });
     }
-
     function accordionclick(event) {
         let button, panel;
 
