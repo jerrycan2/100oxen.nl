@@ -1,52 +1,52 @@
-.map, .map ul, .map li {
-    position: relative;
-}
-
-.map ul {
-    list-style: none;
-    padding-left: 2.2rem;
-}
-/*Then we take our pseudo-elements, make sure they are empty and move them to the left of the list elements.*/
-.map li::before, .map li::after {
-    content: "";
-    position: absolute;
-    left: -1.5rem;
-}
-/*The ::before pseudo-element is used to draw the horizontal lines.*/
-.map li::before {
-    border-top: 2px solid darkblue;
-    top: 0.7rem;
-    width: 1.5rem;
-    height: 0;
-}
-/*...and the vertical lines use the ::after pseudo-element.*/
-.map li::after {
-    border-left: 2px solid darkblue;
-    height: 100%;
-    width: 0;
-    top: 0;
-}
-#firstli::after {
-    top: -1rem;
-    padding-top: 1rem;
-}
-
-/*the last item on every level has just a very short line leading to it, and nothing further. This makes it look very nice.*/
-.map ul > li:last-child::after {
-    height: 0.7rem;
-}
-li {
-    background-color: #77BEFF;
-    padding-left: 4px;
-    line-height: 1.8rem;
-    font-size: 100%;
-}
-li li{
-    background-color: cornflowerblue;
-}
-li li li{
-    background-color: #22aadd;
-}
-li li li li {
-    background-color: #3fafff;
-}
+.map, .map ul, .map li {
+    position: relative;
+}
+
+.map ul {
+    list-style: none;
+    padding-left: 2.2rem;
+}
+/*Then we take our pseudo-elements, make sure they are empty and move them to the left of the list elements.*/
+.map li::before, .map li::after {
+    content: "";
+    position: absolute;
+    left: -1.5rem;
+}
+/*The ::before pseudo-element is used to draw the horizontal lines.*/
+.map li::before {
+    border-top: 2px solid darkblue;
+    top: 0.7rem;
+    width: 1.5rem;
+    height: 0;
+}
+/*...and the vertical lines use the ::after pseudo-element.*/
+.map li::after {
+    border-left: 2px solid darkblue;
+    height: 100%;
+    width: 0;
+    top: 0;
+}
+#firstli::after {
+    top: -1rem;
+    padding-top: 1rem;
+}
+
+/*the last item on every level has just a very short line leading to it, and nothing further. This makes it look very nice.*/
+.map ul > li:last-child::after {
+    height: 0.7rem;
+}
+li {
+    background-color: #77BEFF;
+    padding-left: 4px;
+    line-height: 1.8rem;
+    font-size: 100%;
+}
+li li{
+    background-color: cornflowerblue;
+}
+li li li{
+    background-color: #22aadd;
+}
+li li li li {
+    background-color: #3fafff;
+}

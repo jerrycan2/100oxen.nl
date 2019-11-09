@@ -60,7 +60,7 @@ function autoversion($file)
       individuals or as groups. They come and go seemingly at their own whim: we
       cannot say "now I am going to be clever" and be sure that it will be so.
       Implicitly or explicitly we have to pray (or 'boast' which is the same
-      thing), then act and hope for the best. Whether Homer is talking about
+      thing) i.e. put our trust in them, then act and hope for the best. Whether Homer is talking about
       actual metaphysical presences or 'immanent' gods or exactly how he viewed these 'forces' seems an unanswerable question.</p>
     <p>There are two things that we may obey: rules and desires. I would suggest
       that female gods are 'desire' gods, while male gods 'rule'. Neither Homer
@@ -84,7 +84,7 @@ function autoversion($file)
       picture with what it depicts. The gods are 'what we obey', they represent
       only one rule or desire. Morality is something we may or may not obey and
       as such, it is a god: Zeus (I am talking about Ancient Greek morality, not
-      modern Western). The other gods are not Zeus, they rule only their own
+      modern Western). The other gods are not Zeus, they must <em>obey</em> Zeus. They do not rule fate, they rule only their own
       domain so they are a-moral; our behaviour is a result of the conflicts
       between these gods.</p>
     <h2>Paris' judgement</h2>
@@ -145,7 +145,7 @@ function autoversion($file)
       So the bribe that Hera offers is kingship, in other words power. Now note
       the following:<br>
       In Iliad 1.53/4 Achilles, in response to the bad situation the Achaeans
-      are in, calls an assembly. It is <em>Hera</em> that put him up to it. But
+      are in, calls an assembly. It is <em>Hera</em><a class="ptr">(1)</a> that put him up to it. But
       he does not call the council first, as is absolutely necessary in the
       Greek politics of the day. He makes proposals (let's go home or ask a
       seer) without even talking to the king first. These acts alone would brand
@@ -195,7 +195,7 @@ function autoversion($file)
       Instead of cleverness, wisdom or intelligence is often mentioned as her
       domain but this is too detached. She is an <em>acquiring</em> goddess, a
       desire, amoral and single-minded. She is the goddess of victory, and the
-      goddess of plunder (Il 10.460). She both a rule and a desire.<br>
+      goddess of plunder (Il 10.460). She is both a rule and a desire.<br>
       Athena can teach you how to be a hero, as she does with <a class="textlink txtfrmlink"
 
         title="goto diomedes" onclick="parent.loadAndGotoTextframeAnchor('2:1.1')">Diomedes</a>.
@@ -205,6 +205,20 @@ function autoversion($file)
       life in defense of their people. The former can of course never be as
       great or beautiful as the latter, which brings us to our next goddess:</p>
     <h4>Aphrodite</h4>
+    <br>
+    <h5>Sappho, frag. 16:</h5>
+    <figure class="floatpic"> <a class="piclink" target="_blank" title="Sappho, Greek vase painting"
+
+                href="images/Sappho.jpg"><img alt="Sappho with lyre" src="images/Sappho.jpg" height="120px" width="215px"></a> <figcaption>One of the earliest surviving images of Sappho,<br> from c. 470 BC. from <a href="http://classicalpoets.org">classicalpoets.org</a></figcaption></figure>
+    <div class="indent">
+      οἰ μὲν ἰππήων στρότον οἰ δὲ πέσδων<br>
+      οἰ δὲ νάων φαῖσ’ἐπὶ γᾶν μέλαιναν<br>
+      ἔμμεναι κάλλιστον, ἔγω δὲ κῆν’ ὄτ-<br>
+      τω τις ἔραται·<br><br>
+      Some say an army of horsemen - some say it's footmen,<br>
+      for others it's ships - is the most beautiful thing<br>
+      on this black earth. I say it's the one you love.<br>
+    </div>
     <p>Aphrodite is the goddess of sexual desire. As such, an explanation of
       Paris' choice is simply that he desired her, the most beautiful woman in
       the world. Homer, however, has a slightly more sophisticated view of the
@@ -259,13 +273,13 @@ function autoversion($file)
       going for Athena's offer which implies that he should survive to enjoy his
       loot (9.364-). This could never be said out loud in a warrior society, nor
       could Homer write it about their hero but he makes it clear: Achilles
-      would like to be a <a class="textlink txtfrmlink" title="goto Diomedes" onclick="parent.loadAndGotoTextframeAnchor('2:1.1')">Diomedes</a>.</p>
+      would like to be a <em>Diomedes</em>.</p>
     <h4>Other gods</h4>
     <ul>
       <li>Zeus, Apollo</li>
       <li>Poseidon  </li>
       <li>Ares</li>
-      <li>Artemis</li>
+      <li><a id="artemis">Artemis</a></li>
       <li>Hephaistos</li>
       <li>Hermes</li>
     </ul>
@@ -273,6 +287,14 @@ function autoversion($file)
     </p>
     <br>
     <br>
+    <hr>
+    <ol id="footnotes">
+        <li>Hera is also the one who makes Achilles' horses talk until the Erinyes shut them up again (Il 19.407). For Achilles and the other horses it is not their place to talk, just obey silently.
+        </li>
+    </ol>
+    <br>
+    <br>
+    
     <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>

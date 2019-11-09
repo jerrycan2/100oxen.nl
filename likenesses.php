@@ -31,7 +31,7 @@ function autoversion($file)
     severe criticism of him. So Luke is addressing his audience in a
     'semi-hidden' way, telling them he has something to offer for managing
     their flocks. Just so Homer is addressing 'kings' among his audience. Here
-    is an incomplete overview of the language used by him.</p>
+    is an incomplete overview of the likenesses<a class="ptr">(1)</a> used by him.</p>
 <ul>
     <li>acrobat
         <ul>
@@ -227,7 +227,8 @@ function autoversion($file)
     </li>
     <li>deer
         <ul>
-            <li>victim, prey for the hunter</li>
+            <li>in simile's: victim, prey for the hunter</li>
+            <li>Odysseus and the monster-deer he caught (Od 10.168-), 'συνέδησα πόδας δεινοῖο πελώρου' (binding the fearful monster's feet, presumably to keep it from <a class="textlink" href="#running">running</a>), then he gathers the men, with sweet words approaching each man: "Men, we may be suffering, but we shall not go down to Hades before our Day of Fate comes", and invites them to a meal.</li>
         </ul>
     </li>
     <li>dogs
@@ -273,6 +274,13 @@ function autoversion($file)
             </li>
         </ul>
     </li>
+    <li> Ethiopians
+        <ul>
+            <li>'burnt faces'? probably, because they live where the sun comes close</li>
+            <li>but also: bright eyes</li>
+            <li>or possibly: the ones looking upon the αἰθήρ (αἴθε = 'I wish') i.e. they do not have their feet on the ground. Zeus, unfortunately, is the one who occupies the Aither (Il 2.412)</li>
+        </ul>
+    </li>
     <li>helmet
         <ul>
             <li>The helmet with horsehair plume: the 'heroic' helmet - this hero
@@ -301,16 +309,10 @@ function autoversion($file)
             </li>
         </ul>
     </li>
-    <li>house</li>
     <li>hundred-arm (Briareus)
         <ul>
             <li>
-                It is always frustratingly difficult to relate Homer to concrete historical
-                events and developments. The picture of Briareus, the hundred-arm, behind
-                Zeus' throne could be significant if we accept that in the Iliad there is a
-                beginning visible of the development of 'hoplite' fighting and that a consequent
-                shift in power relations is the driving force behind the pan-hellenic
-                revival and the Olympian religion.
+                The picture of a hundred arms, fifty heads is easily linked to advanced phalanx-like fighting where a squadron of men has to act like a single being. If this is the metaphor, it is not easily relatable to what Hesiod says about Briareus (Th 149-, 617-, 714-, 734-, 817). It may be significant, however, that the Hundredarm is the actual fighting force behind Zeus' power (Il 1.402-) in Homer as well as in Hesiod.
             </li>
         </ul>
     </li>
@@ -377,8 +379,6 @@ function autoversion($file)
             </li>
         </ul>
     </li>
-    <li>lyre</li>
-    <li>mast</li>
     <li>meal
         <ul>
             <li>Life is a meal: for common people, the portions are given out by
@@ -407,7 +407,8 @@ function autoversion($file)
         <ul>
             <li>Homeric heroes are never seen eating anything but meat. In this
                 society, meat is only eaten after a sacrifice to the gods. see
-                <a class="textlink" href="#bread">bread.</a></li>
+                <a class="textlink" href="#bread">bread.</a>
+            </li>
         </ul>
     </li>
     <li>medicine (pharmakon)
@@ -416,14 +417,12 @@ function autoversion($file)
                 1.261): is this a reference to 'ink' he used for writing?
             </li>
             <li>Helen's clever medicine which banishes all negative feelings. This
-                must be a comment on the cleverness of the 'Helen' myth. see <a class="textlink"
-                                                                                target="_self" title="Helen"
-                                                                                href="women.php">Helen</a>
+                must be a comment on the cleverness of the 'Helen' myth. see <a class="textlink" title="Helen" href="women.php">Helen</a>
             </li>
             <li>
                 pharmakos: the scapegoat-sacrifice. This sacrifice is performed to heal a
-                community. Homer is quite aware of it, see Patrocles, Thersites, Achilles himself,
-                possibly: Il 1.313, where they purify themselves and the 'dirt' goes into the sea,
+                community. Homer is quite aware of it, see Patrocles, Thersites, Achilles himself. <br>
+                small pictures, possibly: Il 1.313, where they purify themselves and the 'dirt' goes into the sea,
                 and Od 4.244- where Odysseus may be posing as a scapegoat.
             </li>
         </ul>
@@ -433,16 +432,14 @@ function autoversion($file)
             <li>in Greek: (often) to have sex with. Remember the complaint of
                 Patrocles' ghost to Achilles: (literally translated) 'they will not
                 let me mix across the river'. (Il 23.73 οὐδέ μέ πω μίσγεσθαι ὑπὲρ
-                ποταμοῖο ἐῶσιν)<span
-                        style="font-family: 'Noto Sans','Lucida Sans Unicode','Lucida Grande',sans-serif;">
-          </span><span style="color: rgb(0, 0, 0); font-family: 'Noto Sans', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; font-size: 13.5719px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;"></span>
+                ποταμοῖο ἐῶσιν)
             </li>
         </ul>
     </li>
     <li>moly
         <ul>
             <li>It is a simple, humorous riddle. The context of male-female
-                relations gives it away. 'What grows that has black roots and a white
+                relations (Circe) gives it away. 'What grows that has black roots and a white
                 flower, and is hard to uproot?'
             </li>
         </ul>
@@ -454,17 +451,9 @@ function autoversion($file)
             </li>
         </ul>
     </li>
-    <li>moon
-        <ul>
-            <li>Could it be that 'menis'(wrath) is related to 'μήνη', moon? That the full moon
-                is angry because it knows that 'wane'(φθίσθαι) is all that is left for it now?
-                I can't be sure but it would be a nice metaphor.
-            </li>
-        </ul>
-    </li>
     <li>mule
         <ul>
-            <li>a half-horse. E.g. a <i>notos</i> (bastard son) is like a mule
+            <li>a half-horse. E.g. a <i>nothos</i> (bastard son) is like a mule
                 among horses. They are better at ploughing than oxen (Il 10.351-).
             </li>
         </ul>
@@ -627,7 +616,7 @@ function autoversion($file)
     </li>
     <li>shepherd and sheep
         <ul>
-            <li>A metaphor used everywhere to symbolize the relation
+            <li>A likeness used everywhere to symbolize the relation
                 between a king and his people. He protects them and makes the herd
                 thrive, but make no mistake: they are there for <em>his</em> sake,
                 they are his property, not the other way around. The good shepherd for
@@ -641,16 +630,15 @@ function autoversion($file)
     <li>sing</li>
     <li>sit, stand</li>
     <li>sleep</li>
-    <li>smoke, mist, cloud</li>
+    <li>smoke, mist, cloud
+        <ul>
+            <li>that, which prevents us from seeing clearly. The gods may cause it, or lift it as they will.</li>
+        </ul>
+    </li>
     <li>snake
         <ul>
-            <li>? lowest of animals, crawls on its belly all the time</li>
-            <li>? poisonous --&gt; unclean</li>
-            <li>? snakes are prey for eagles -&gt; ref. Homer's eagle-simile's.</li>
-            <li>treacherous attack --&gt; the enemy</li>
-            <li>refs: Hdt. horses eating snakes; Il 2.308 at Aulis; Il 11.26 Aga.
-                breastplates 39 shield; Il 3.33 simile;
-            </li>
+            <li>unclear symbol, in any case related to fear and death</li>
+            <li>Achilles is the snake! Il 12.200-</li>
         </ul>
     </li>
     <li>son, daughter, child</li>
@@ -659,7 +647,7 @@ function autoversion($file)
             <li>main phallus symbol because of its shape and flesh-penetrating
                 action (they can be 'craving for flesh' Il 21.70). Size is
                 proportional to status in the manliness-hierarchy (Hector 11,
-                Achilles 22 feet). e.g: Athena raising her spear against Zeus Il
+                Achilles 22 feet, the spear 'that no one can wield but he'). e.g: Athena raising her spear against Zeus Il
                 8.424; Paris and Menelaos fighting 'with large spears' about Helen
                 Il 3.254; sexual connotations in Il 18.207 where Achilles doesn't
                 want to be the second; duels described as courtship in
@@ -670,10 +658,17 @@ function autoversion($file)
                 misses, Hector throws and misses, Achilles thrusts and wins, spear
                 conquers sword.
             </li>
+            <li>δοῦρε δύω (two spears). Likeness? One for throwing away, one for keeping with you? Note that Hector dies for lack of a second spear.</li>
         </ul>
     </li>
-    <li>spring</li>
-    <li>star</li>
+    <li>star
+        <ul>
+            <li>Il 22.30 λαμπρότατος μὲν ὅ γ' ἐστί, κακὸν δέ τε σῆμα τέτυκται,<br>
+                Achilles is like Orion's hound, the dog-star, 'though brightest of all, he is a sign of evil'.
+                I wonder sometimes if the 'new star' of Bethlehem, the one that the 3 wise men follow, is a Hellenistic metaphor based on this one (except the evil part of course).
+            </li>
+        </ul>
+    </li>
     <li>sun</li>
     <li>sunset</li>
     <li>sword</li>
@@ -720,10 +715,18 @@ function autoversion($file)
             <li>but a wound can also be a perfect excuse for no longer taking part
                 in the fighting, as many Achaean heroes on day 3
             </li>
-            <li>Apollo healing wounds e.g.Il 16.523</li>
+            <li>Apollo healing wounds e.g. Il 16.523</li>
         </ul>
     </li>
 </ul>
+<hr>
+<ol id="footnotes">
+    <li>I propose not to go into the technicalities of likenesses, simile's, symbols, metaphors, allegories, parable, analogy etc. All language based on an observation that A 'is-like' B when telling a story about B, I refer to as likeness. The special thing about Homer's poetry is that he can make his rhetoric work on both levels A and B.
+    </li>
+</ol>
+<br>
+<br>
+
 <div class="mtime"><!--?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?--><br>
 </div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

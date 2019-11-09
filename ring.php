@@ -1,139 +1,139 @@
-<?php
-$lastModified=filemtime(__FILE__);
-header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
-function autoversion($file)
-{
-  if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
-    return $file;
-
-  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
-  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <meta http-equiv="Content-Language" content="en-us">
-    <meta name="Description" CONTENT="Ring composition, a basic building block of the Iliad's structure.">
-        <title>Ring composition</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
-  </head>
-  <body class="latin contents">
-    <p align="center"> </p>
-    <h1>Ring Composition</h1>
-    <b>General:</b> <br>
-    The summary page shows my view of an outline of the Iliad. I have divided
-    the poem hierarchically into seven levels. This structure was made
-    'bottom-up' by identifying the smallest topics I think the poet was talking
-    about, gathering these into larger units and so forth.&nbsp; <br>
-    The compositional technique (related to the well-known 'ring-composition')
-    which I think the Poet applies on the higher levels, is a recursive
-    principle one might call 'balanced expansion': a scene is added, but never
-    on its own: one scene is inserted before, and one after the central scene.
-    These two form a commentary on the central scene, and they are related to
-    each other by 'likeness' or 'contrast' (which is a kind of negative
-    likeness). This triplet can in its turn become the central part of a new
-    triplet, also expanded in a balanced way. <br>
-    This could reflect in some way a method of composition (of poems or other
-    public speeches) that must have been common practice in those days. It helps
-    the listener understand but it can also, importantly, serve as an
-    aide-mémoire to a singer who has to know it all by heart. <br>
-    The same principles of symmetry and balance. turn up in the decoration of
-    geometric vases (this one found in Smyrna, possibly Homer's birthplace,
-    about the same date as his life):
-    <figure> <a class="piclink" target="_blank" href="images/geometric1.jpg"><img class="fitpage"
-
-          src="images/geometric1.jpg" alt="geometric crater fragment" height="50%"
-
-          width="60%"></a> <figcaption>from: Alt-Smyrna, I: Wohnschichten und
-        Athenatempel, by Ekrem Akurgal.</figcaption> </figure>
-    <p> Below the huge dipylon amphora, used as a grave-marker in Athens. Note
-      the symmetry both vertical and horizontal. Also the 'summing up' quality
-      of the story that is being told: a funeral with bier and a funeral
-      procession. Each chariot, for instance, has two wheels and three horses so
-      two wheels must be shown and twelve legs. A funeral bier or a chair has
-      four legs, all of which must be shown. There is no attempt at realism,
-      just a summing up of all the important parts of persons and things.</p>
-    <figure> <a class="piclink" target="_blank" href="images/dipylon-vase.jpg"><img class="fitpage"
-
-          src="images/dipylon-vase.jpg" alt="geometric funeral vase" height="50%"
-
-          width="60%"></a> <figcaption>Athenian Dipylon vase (mid 8th century)
-        from National Archaeological Museum, Athens.</figcaption> </figure>
-    <p align="left"> A low-level example: Odysseus' speech in book IX, trying to
-      persuade Achilles to help the Achaeans: </p>
-    <p> 9.223 comments on the 'equal meal' <br>
-      9.228 (a) we will perish if you don't fight <br>
-      9.232 (b) Hector is here, raging <br>
-      9.247 (c) save the Achaeans, you'll regret it if you don't <br>
-      9.252 (d) Peleus' words: put away quarrels, friendliness is best, it gives
-      honour... <br>
-      9.259 (e) put away your anger <br>
-      <b>9.264 (f) catalogue of gifts / these will be yours... </b> <br>
-      9.299 (e) ...if you put away your anger <br>
-      9.300 (d) but if you hate Agamemnon and his gifts... <br>
-      9.303 (c) pity the Achaeans, for they honour you like a god <br>
-      9.304 (b) now you can get Hector who is raging <br>
-      9.305 (a) no one else is up to him </p>
-    <p> Odysseus goes neatly from point to point till he reaches the central
-      statement, the catalogue of gifts. Then he works back through a series of
-      shorter points in reverse order to the starting statement: 'only you can
-      do it'. <br>
-      Not all is ring-structure though. Achilles, in his answer to Odysseus,
-      goes through the same series of points twice: </p>
-    <p> 9.307 (A) I will speak clearly - don't trick me <br>
-      &nbsp;&nbsp;&nbsp; 9.315 (a) gifts: I gave <i>him</i> much - others can
-      keep it but not me <br>
-      &nbsp;&nbsp;&nbsp; 9.336 (b) wife: let him enjoy his own wife - he took
-      Briseis, my prize <br>
-      &nbsp;&nbsp;&nbsp; 9.346 (c) I will not fight for defence <br>
-      &nbsp;&nbsp;&nbsp; 9.357 (d) I will go home to Phthia <br>
-      9.367 (A) Aga. took my prize - tell him all this clearly - I will not obey
-      <br>
-      &nbsp;&nbsp;&nbsp; 9.378 (a) gifts: I hate his gifts - not for 20 times as
-      much... <br>
-      &nbsp;&nbsp;&nbsp; 9.388 (b) wife: I will not marry his daughter - find a
-      wife in Phthia <br>
-      &nbsp;&nbsp;&nbsp; 9.401 (c) I will not fight for loot <br>
-      &nbsp;&nbsp;&nbsp; 9.410 (d) I will go home - tell the others to go, too <br>
-      9.421 (A) Tell him all this clearly - think of another trick <br>
-      <br>
-      Another neat example of a repeated sequence on a somewhat larger level is
-      in the embassies sequence at the end of book I: </p>
-    <p> 1.306 Achilles in his hut <br>
-      &nbsp;&nbsp;&nbsp; 1.308 (a) A request: Agamemnon sends for Briseis
-      (Achilles gives in, reluctantly) <br>
-      &nbsp;&nbsp;&nbsp; 1.348 (b) A complaint: Achilles complains to Thetis <br>
-      &nbsp;&nbsp;&nbsp; 1.430 (c) A meal and a reconciliation: Odysseus brings
-      back Chryseis to her father <br>
-      1.488 Achilles in his hut <br>
-      1.493 After 12 days, the gods gather on Olympos <br>
-      &nbsp;&nbsp;&nbsp; 1.495 (a) A request: from Thetis to Zeus (Zeus gives
-      in, reluctantly) <br>
-      &nbsp;&nbsp;&nbsp; 1.536 (b) A complaint: Hera complains to Zeus <br>
-      &nbsp;&nbsp;&nbsp; 1.571 (c) A meal and a reconciliation: Hephaistos makes
-      peace - meal on Olympos <br>
-      1.605 At sunset, the gods retire to their homes <br>
-      <br>
-      In these last two examples we find the alternative priciple of
-      composition: the <b>list </b>(catalogue)<b>. </b>A list is a simple
-      sequence of similar topics: e.g. the catalogue of ships and men, the
-      individual games in Patrocles' funeral games, the Epipolesis in book IV,
-      etc. <br>
-    </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <p> &nbsp; </p>
-    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
-    <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
-  </body>
-</html>
+<?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+header('Cache-Control: no-cache');
+function autoversion($file)
+{
+  if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
+    return $file;
+
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta name="Description" CONTENT="Ring composition, a basic building block of the Iliad's structure.">
+        <title>Ring composition</title>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+  </head>
+  <body class="latin contents">
+    <p align="center"> </p>
+    <h1>Ring Composition</h1>
+    <b>General:</b> <br>
+    The summary page shows my view of an outline of the Iliad. I have divided
+    the poem hierarchically into seven levels. This structure was made
+    'bottom-up' by identifying the smallest topics I think the poet was talking
+    about, gathering these into larger units and so forth.&nbsp; <br>
+    The compositional technique (related to the well-known 'ring-composition')
+    which I think the Poet applies on the higher levels, is a recursive
+    principle one might call 'balanced expansion': a scene is added, but never
+    on its own: one scene is inserted before, and one after the central scene.
+    These two form a commentary on the central scene, and they are related to
+    each other by 'likeness' or 'contrast' (which is a kind of negative
+    likeness). This triplet can in its turn become the central part of a new
+    triplet, also expanded in a balanced way. <br>
+    This could reflect in some way a method of composition (of poems or other
+    public speeches) that must have been common practice in those days. It helps
+    the listener understand but it can also, importantly, serve as an
+    aide-mémoire to a singer who has to know it all by heart. <br>
+    The same principles of symmetry and balance. turn up in the decoration of
+    geometric vases (this one found in Smyrna, possibly Homer's birthplace,
+    about the same date as his life):
+    <figure> <a class="piclink" target="_blank" href="images/geometric1.jpg"><img class="fitpage"
+
+          src="images/geometric1.jpg" alt="geometric crater fragment" height="50%"
+
+          width="60%"></a> <figcaption>from: Alt-Smyrna, I: Wohnschichten und
+        Athenatempel, by Ekrem Akurgal.</figcaption> </figure>
+    <p> Below the huge dipylon amphora, used as a grave-marker in Athens. Note
+      the symmetry both vertical and horizontal. Also the 'summing up' quality
+      of the story that is being told: a funeral with bier and a funeral
+      procession. Each chariot, for instance, has two wheels and three horses so
+      two wheels must be shown and twelve legs. A funeral bier or a chair has
+      four legs, all of which must be shown. There is no attempt at realism,
+      just a summing up of all the important parts of persons and things.</p>
+    <figure> <a class="piclink" target="_blank" href="images/dipylon-vase.jpg"><img class="fitpage"
+
+          src="images/dipylon-vase.jpg" alt="geometric funeral vase" height="50%"
+
+          width="60%"></a> <figcaption>Athenian Dipylon vase (mid 8th century)
+        from National Archaeological Museum, Athens.</figcaption> </figure>
+    <p align="left"> A low-level example: Odysseus' speech in book IX, trying to
+      persuade Achilles to help the Achaeans: </p>
+    <p> 9.223 comments on the 'equal meal' <br>
+      9.228 (a) we will perish if you don't fight <br>
+      9.232 (b) Hector is here, raging <br>
+      9.247 (c) save the Achaeans, you'll regret it if you don't <br>
+      9.252 (d) Peleus' words: put away quarrels, friendliness is best, it gives
+      honour... <br>
+      9.259 (e) put away your anger <br>
+      <b>9.264 (f) catalogue of gifts / these will be yours... </b> <br>
+      9.299 (e) ...if you put away your anger <br>
+      9.300 (d) but if you hate Agamemnon and his gifts... <br>
+      9.303 (c) pity the Achaeans, for they honour you like a god <br>
+      9.304 (b) now you can get Hector who is raging <br>
+      9.305 (a) no one else is up to him </p>
+    <p> Odysseus goes neatly from point to point till he reaches the central
+      statement, the catalogue of gifts. Then he works back through a series of
+      shorter points in reverse order to the starting statement: 'only you can
+      do it'. <br>
+      Not all is ring-structure though. Achilles, in his answer to Odysseus,
+      goes through the same series of points twice: </p>
+    <p> 9.307 (A) I will speak clearly - don't trick me <br>
+      &nbsp;&nbsp;&nbsp; 9.315 (a) gifts: I gave <i>him</i> much - others can
+      keep it but not me <br>
+      &nbsp;&nbsp;&nbsp; 9.336 (b) wife: let him enjoy his own wife - he took
+      Briseis, my prize <br>
+      &nbsp;&nbsp;&nbsp; 9.346 (c) I will not fight for defence <br>
+      &nbsp;&nbsp;&nbsp; 9.357 (d) I will go home to Phthia <br>
+      9.367 (A) Aga. took my prize - tell him all this clearly - I will not obey
+      <br>
+      &nbsp;&nbsp;&nbsp; 9.378 (a) gifts: I hate his gifts - not for 20 times as
+      much... <br>
+      &nbsp;&nbsp;&nbsp; 9.388 (b) wife: I will not marry his daughter - find a
+      wife in Phthia <br>
+      &nbsp;&nbsp;&nbsp; 9.401 (c) I will not fight for loot <br>
+      &nbsp;&nbsp;&nbsp; 9.410 (d) I will go home - tell the others to go, too <br>
+      9.421 (A) Tell him all this clearly - think of another trick <br>
+      <br>
+      Another neat example of a repeated sequence on a somewhat larger level is
+      in the embassies sequence at the end of book I: </p>
+    <p> 1.306 Achilles in his hut <br>
+      &nbsp;&nbsp;&nbsp; 1.308 (a) A request: Agamemnon sends for Briseis
+      (Achilles gives in, reluctantly) <br>
+      &nbsp;&nbsp;&nbsp; 1.348 (b) A complaint: Achilles complains to Thetis <br>
+      &nbsp;&nbsp;&nbsp; 1.430 (c) A meal and a reconciliation: Odysseus brings
+      back Chryseis to her father <br>
+      1.488 Achilles in his hut <br>
+      1.493 After 12 days, the gods gather on Olympos <br>
+      &nbsp;&nbsp;&nbsp; 1.495 (a) A request: from Thetis to Zeus (Zeus gives
+      in, reluctantly) <br>
+      &nbsp;&nbsp;&nbsp; 1.536 (b) A complaint: Hera complains to Zeus <br>
+      &nbsp;&nbsp;&nbsp; 1.571 (c) A meal and a reconciliation: Hephaistos makes
+      peace - meal on Olympos <br>
+      1.605 At sunset, the gods retire to their homes <br>
+      <br>
+      In these last two examples we find the alternative priciple of
+      composition: the <b>list </b>(catalogue)<b>. </b>A list is a simple
+      sequence of similar topics: e.g. the catalogue of ships and men, the
+      individual games in Patrocles' funeral games, the Epipolesis in book IV,
+      etc. <br>
+    </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <p> &nbsp; </p>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
+    <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
+  </body>
+</html>

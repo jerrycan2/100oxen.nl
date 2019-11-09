@@ -45,6 +45,7 @@ iframe {
 }
 #alphtext {
   text-align: center;
+  background-color: white;
 }
 a {
   cursor: pointer;
@@ -105,6 +106,9 @@ header img {
   display: flex;
   flex-wrap: wrap;
   height: auto;
+}
+#pageitems {
+  /*text-decoration: line-through;*/
 }
 /**********/
 /*main menu*/

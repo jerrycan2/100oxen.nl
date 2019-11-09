@@ -137,11 +137,10 @@ figure {
   margin: 2rem 0;
 }
 figure img {
-  width: 60%;
   border-radius: 0.4rem;
 }
 .textlink {
-  color: black;
+  color: inherit;
   text-decoration: underline;
   font-weight: bolder;
   cursor: pointer;
@@ -175,7 +174,7 @@ h5 {
   height: 1.7rem;
 }
 .indent {
-  margin: 1rem 1rem 1rem 4%;
+  margin: 1rem 1rem 1rem 6%;
 }
 .accordion {
   background-color: rgba(0, 0, 0, 0.13);
