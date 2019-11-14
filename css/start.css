@@ -33,20 +33,6 @@ iframe {
   border: 0;
   display: none;
 }
-#hiddendiv {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  height: 100px;
-  width: 200px;
-  background-color: #8C796D;
-  color: black;
-  display: none;
-}
-#alphtext {
-  text-align: center;
-  background-color: white;
-}
 a {
   cursor: pointer;
 }
@@ -54,6 +40,7 @@ a {
 ul {
   list-style: none;
   margin: 0;
+  padding: 0;
 }
 /********************/
 /* header styles   */
@@ -106,9 +93,6 @@ header img {
   display: flex;
   flex-wrap: wrap;
   height: auto;
-}
-#pageitems {
-  /*text-decoration: line-through;*/
 }
 /**********/
 /*main menu*/
@@ -197,7 +181,7 @@ header img {
   width: 1.8rem;
 }
 #perseus {
-  height: 1.2rem !important;
+  height: 1.6rem !important;
 }
 /*******************/
 /* content columns */
@@ -216,6 +200,7 @@ div#colwrap {
   height: 100%;
   padding-left: 6px;
   padding-right: 2px;
+  overflow: hidden;
 }
 #box {
   height: 100%;

@@ -14,11 +14,11 @@ function autoversion($file)
 <html dir="ltr" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="Description" CONTENT="Introduction to the site and its purpose and the 5 major axioms of my interpretation">
+    <meta name="Description"
+          CONTENT="Introduction to the site and its purpose and the 5 major axioms of my interpretation">
     <title>100 oxen, a hecatomb and a price to pay</title>
     <meta name="Description" CONTENT="">
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-
           rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?php echo autoversion('/css/common.css');?>">
 </head>
@@ -29,23 +29,56 @@ function autoversion($file)
     <figcaption>Some of the oxen.</figcaption>
 </figure>
 <h1>Introduction</h1>
-<p>You really should go and see the oldest movie we know of - the Iliad. For us this may be just an old book, a hard-to-read one, but for Homer's audience it must have been much more like a movie. Sound-only, all the roles played by one actor, but the medium is definitely like a movie, a genuine blockbuster if ever there was one. Let me compare it to a modern epic tale of war and heroism, the "Lord of the Rings" (movie) and explain why I deem the Iliad to be several levels higher as a work of art and human interest even if we have to work harder to learn to appreciate it.</p>
-<p>Both are myth-like tales about the fateful human habit that shapes our history and our very being: war. How shall we act given the life-or-death situations that we face? The simple answer we already know, for it is always the same: we shall be brave. No surprises here. But there is a lot more to be said about it, let us take a brief look at the differences.</p>
-<p>The LOTR takes place in a world of simple good and evil. Both of these are pure: the good has no evil mixed in, although it may have some internal cleaning up to do in some cases, for the sake of a story. The evil is just that: unredeemable, to be utterly despised and destroyed. The soldiers of evil are extremely ugly, they do not know love, only hate; they do not have wives and children, they never brush their teeth. This has a strong advantage for filmmaker and audience: we can recognize them at once and kill zillions of them without feeling the least bit uneasy about it. The whole is one huge feelgood operation.</p>
-<p>In the Iliad on the other hand there is <em>no evil</em>. It shows anger, revenge, love, cruelty from both sides. It shows the whole range of human passions and the reasons why these passions are awakened, but it does not know evil. Take a moment to realize how rare this is especially because, as I will argue, the Trojan War that Homer describes stands for a war going on or threatening in Homer's time. He lived in a society that was <em>always</em> at war (Il 14.85-). It is by no means the case that the poet (let alone the public) is 'objective' or above the parties, he is very much a Greek and he knows that his audience is, too. Yet he paints the real hero, the one he sets up for admiration, as the Trojan Hector, with his lovable wife and child. We are left in no doubt about the fate that awaits them. Not only that, but every death, Greek or Trojan, in the poem (and there are many) is accompanied by a short anecdote or biographical detail of the victim bringing out the common humanity of the warriors and a sense of waste and loss for each one of them. This may not make us feel better. Yet the poem knows and shows with emphasis that the fighting has to be done, there is no escape from it.</p>
-<p>Both movies are basically revenge fantasies. The LOTR is a simplified one, sanitized for our protection so we shall not catch crippling diseases like pity or doubt. Homer, I say, aims at raising us up to a higher human level, to become warriors who know clearly what they are doing and why. </p>
-<p>Some would object to this. What Homer does is not so far from the 'love your enemy like yourself' that another prophet tried to teach us. Our war-time leaders as well as the voice of heroism, e.g. Nestor in the Iliad, would see this as potential weakness on our side. Love your enemy? Kill your enemy and love his wife, or his daughter, all in revenge for Helen (Il 2.354): that is what is supposed to keep us going. No pity. But somewhere we know better: we worship our saints and prophets who tell us to love and to forgive, we declare them most beautiful, promote them to heaven but then ignore all they were saying. Nestor's honeyed voice is what we want to hear, and go kill some more orcs. Homer knows this very well and he plays us. He grabs us by some body part and leads us to a place where we can see the human being as it is. Homer is not the one who thinks Achilles the most beautiful. The poet is not a believer: he is a make-believer, with a purpose.</p>
+<p>You really should go and see the oldest movie we know of - the Iliad. For us this may be just an old book, a
+    hard-to-read one, but for Homer's audience it must have been much more like a movie. Sound-only, all the roles
+    played by one actor, but the medium is definitely like a movie, a genuine blockbuster if ever there was one. Let me
+    compare it to a modern epic tale of war and heroism, the "Lord of the Rings" (movie) and explain why I deem the
+    Iliad to be several levels higher as a work of art and human interest even if we have to work harder to learn to
+    appreciate it.</p>
+<p>Both are myth-like tales about the fateful human habit that shapes our history and our very being: war. How shall we
+    act given the life-or-death situations that we face? The simple answer we already know, for it is always the same:
+    we shall be brave. No surprises here. But there is a lot more to be said about it, let us take a brief look at the
+    differences.</p>
+<p>The LOTR takes place in a world of simple good and evil. Both of these are pure: the good has no evil mixed in,
+    although it may have some internal cleaning up to do in some cases, for the sake of a story. The evil is just that:
+    unredeemable, to be utterly despised and destroyed. The soldiers of evil are extremely ugly, they do not know love,
+    only hate; they do not have wives and children, they never brush their teeth. This has a strong advantage for
+    filmmaker and audience: we can recognize them at once and kill zillions of them without feeling the least bit uneasy
+    about it. The whole is one huge feelgood operation.</p>
+<p>In the Iliad on the other hand there is <em>no evil</em>. It shows anger, courage, revenge, love, cruelty from both
+    sides. It shows the whole range of human passions and the reasons why these passions are awakened, but it does not
+    know evil. Take a moment to realize how rare this is especially because, as I will argue, the Trojan War that Homer
+    describes stands for a war going on or threatening in Homer's time. He lived in a society that was <em>always</em>
+    at war (Il 14.85-). It is by no means the case that the poet (let alone the public) is 'objective' or above the
+    parties, he is very much a Greek and he knows that his audience is, too. Yet he paints the real hero, the one he
+    sets up for admiration, as the Trojan Hector, with his lovable wife and child. We are left in no doubt about the
+    fate that awaits them. Not only that, but every death, Greek or Trojan, in the poem (and there are many) is
+    accompanied by a short anecdote or biographical detail of the victim bringing out the common humanity of the
+    warriors and a sense of waste and loss for each one of them. This may not make us feel better. Yet the poem knows
+    and shows with emphasis that the fighting has to be done, there is no escape from it.</p>
+<p>Both movies are basically revenge fantasies. The LOTR is a simplified one, sanitized for our protection so we shall
+    not catch crippling diseases like pity or doubt. Homer, I say, aims at raising us up to a higher human level, to
+    become warriors who know clearly what they are doing and why. </p>
+<p>Some would object to this. What Homer does is not so far from the 'love your enemy like yourself' that another
+    prophet tried to teach us. Our war-time leaders as well as the voice of heroism, e.g. Nestor in the Iliad, would see
+    this as potential weakness on our side. Love your enemy? Kill your enemy and love his wife, or his daughter, all in
+    revenge for Helen (Il 2.354): that is what is supposed to keep us going. No pity. But somewhere we know better: we
+    worship our saints and prophets who tell us to love and to forgive, we declare them most beautiful, promote them to
+    heaven but then ignore all they were saying. Nestor's honeyed voice is what we want to hear, and go kill some more
+    orcs. Homer knows this very well and he plays us. He grabs us by some body part and leads us to a place where we can
+    see the human being as it is. Homer is not the one who thinks Achilles the most beautiful. The poet is not a
+    believer: he is a make-believer, with a purpose.</p>
 <p><br>
 </p>
 <h3>A hundred oxen</h3>
 <p>A hundred oxen for slaughter, a hecatomb, that is the Iliad. A feast for
     the dogs and birds, a giant cup full of strong intoxicating wine, a vision
     of our world that only an Achilles can bear to look at. A healing
-    song. An immeasurable ransom. A fierce, angry poem which does not 
+    song. An immeasurable ransom. A fierce, angry poem which does not
     have its equal. The
     ancient Greeks were completely bowled over when it first hit them though
     whether they 'got the message' is another question. In these pages I hope
-    to show that the Iliad really is all those things. It is a poem with 
+    to show that the Iliad really is all those things. It is a poem with
     a message and Homer is a kind of
     prophet or seer. His epiphany and <b>mission statement</b> are here
     (Il 24.173, Iris to Priam):</p>
@@ -66,7 +99,8 @@ function autoversion($file)
     <p><br>
     </p>
 </div>
-<p>Achilles is acting like a hunting dog who refuses to give up his prey, Priam is to get him to release the body. The gifts are the same gifts, the <i>ἀπερείσι᾽ ἄποινα</i> (immeasurable
+<p>Achilles is acting like a hunting dog who refuses to give up his prey, Priam is to get him to release the body.
+    The gifts are the same gifts, the <i>ἀπερείσι᾽ ἄποινα</i> (immeasurable
     ransom) that the priest of Apollo Chryses brings to ransom his daughter in
     book 1. The ransom, of course, is the poem itself. Achilles is its main
     addressee and Homer is thus on a mission to visit all Achilleses in Hellas
@@ -87,6 +121,19 @@ function autoversion($file)
     out all the emotional stops to gain that result. All the while he has to
     maintain the greatness and glory of Achilles, his public would never let
     him give 'equal honor' to both heroes (Il 24.55-).</p>
+<p>
+    Achilles' great rampage (books 20, 21) may establish his greatness in the eyes
+    of the public, but Homer uses it for a special purpose. Just like in the Odyssey, he uses
+    <em>gigantic overstatement</em> to try to get a point across: this is a revenge fantasy. He seems to hope that we
+    will react like Hera when she sees Hephaistos' fiery rampage (Il 21.379-) even
+    though she called Hephaistos out herself.<br>
+    Homer gives hints throughout the poems that such enormous slaughter or such
+    implacable revenge is both impossible and inhuman (e.g. Il 20.356-, Il 24,39-).
+    He is by no means a pacifist, but he expects us to realise that here the heroes
+    'go too far': Achilles with his implacable revenge, Odysseus in the Odyssey with his
+    'killing guests at a dinner' and Telemachus' revenge on the servant-girls. These
+    things were not allright in Homer's time and they are meant to shock the public.
+</p>
 <br>
 <p>So the poet is on a mission. First he travels on his own, later he finds
     that he is gathering a following: young men from all over Greece come to
@@ -118,7 +165,6 @@ function autoversion($file)
         paratactic style, its use of epithets and type-scenes all make it easy
         on the listener. All-pervasive ring-composition also has a lot to do
         with this clarity and this website aims to bring this out. </p>
-
     <p>If you think of 'oral composition' not as well-rehearsed improvisation
         but as an author creating a poem inside his head, knowing every line by
         heart and carrying it around with him from performance to performance,
@@ -166,7 +212,9 @@ function autoversion($file)
     <br>
     <p>a) to commoners:<b> learning by pathos</b> (hit them with the sceptre).
         We must imagine his public as mainly young, male, aristocratic (all
-        little Achillesses), eager for honour and glory and very much philhellene. Also, importantly, <em>angry</em> at least at some level. Like young men of all times, potentially angry because they do not get the recognition they think they deserve.<br>
+        little Achillesses), eager for honour and glory and very much philhellene. Also, importantly, <em>angry</em> at
+        least at some level. Like young men of all times, potentially angry because they do not get the recognition they
+        think they deserve.<br>
         This is the public that the literal level of meaning is aimed at: wildly
         enthusiastic, the heart swelling with pride with every Greek heroic act.
         He could control their pity and fear
@@ -200,8 +248,10 @@ function autoversion($file)
         becomes the ethical constitution of the city-state, with ethics
         meaning 'this is how we are'. </p>
     <p> This manner of speaking, the use of language with both public and
-        insider meanings combined with a dose of irony, word-play and competitive digs at each other, has been named <em>sympotic language</em>. Plato was
-        a master of this (e.g. the Symposium). It must have been an aristocratic skill mostly. This is one of the things which indicate that this poet was no lowly bard, he was an aristocrat, one familiar with power and leadership.
+        insider meanings combined with a dose of irony, word-play and competitive digs at each other, has been named
+        <em>sympotic language</em>. Plato was
+        a master of this (e.g. the Symposium). It must have been an aristocratic skill mostly. This is one of the things
+        which indicate that this poet was no lowly bard, he was an aristocrat, one familiar with power and leadership.
     </p>
 </div>
 <div class="accheader">
@@ -210,7 +260,10 @@ function autoversion($file)
     </button>
 </div>
 <div class="panel">
-    <p>The Iliad refers to a historical reality in two ways: as a possible dim memory of events in the distant past, something that does not concern me here, and as a mirror of events in Homer's own time (εἴ ποτ' ἔην γε). The most important aspect of it: it is about a community <em>at war</em>. We presume that a Ionian poet in the 8-7th c. composed one
+    <p>The Iliad refers to a historical reality in two ways: as a possible dim memory of events in the distant past,
+        something that does not concern me here, and as a mirror of events in Homer's own time (εἴ ποτ' ἔην γε).
+        The most important aspect of it: it is about a community <em>at war</em>.
+        We presume that a Ionian poet in the 8-7th c. composed one
         or two poems to comment on events and developments in his own world and
         that he used and adapted well-known stories from the world of myth to
         express his ideas, <em>and also to hide them</em>. This was a common
@@ -245,7 +298,6 @@ function autoversion($file)
         himself very aware of this curious position.</p>
     <p>The poetic centre of self-reflection is the lyre-playing god of
         prophecy, healing and poetry <a class="textlink" target="_self" title="apollo"
-
                                         href="apollo.php">Apollo</a> : 'the Destroyer', 'Silverbow',
         'Far-shooter'. If the Iliad is a tour-de-force of poetry then, in some
         sense, the god of poetry must be acting through it. And it is a healing
@@ -262,7 +314,9 @@ function autoversion($file)
         'exile' aspect. Also the phrase 'φοίνικος νέον&nbsp;ἔρνος' (a young
         shoot of the 'phoenix' or date-palm, Od 6.163) is one of the things
         which make me believe that the tradition that Homer had a daughter (ref. <a class="textlink"
-         target="_self" title="women" href="women.php">women</a>) is based on something.
+                                                                                    target="_self" title="women"
+                                                                                    href="women.php">women</a>) is based
+        on something.
         If indeed the poet was concerned with writing and/or
         dictating the poems, it seems well possible that a nickname for him was
         Phoenix (letters were called Phoenician).</p>
@@ -272,7 +326,8 @@ function autoversion($file)
         begins with a rather shocking reference to it being a 'feast for the
         dogs and birds' (Il 1.4-5)<a class="ptr">(3)</a>. This is how Homer sees it, I think. The poem
         <strong>is</strong> the 'wrath of Achilles' and also the wrath of
-        Apollo. Scores of people die in it and the listeners enjoy all this while listening to a bard at a public feast. And because it is about them, you could say they are
+        Apollo. Scores of people die in it and the listeners enjoy all this while listening to a bard at a public feast.
+        And because it is about them, you could say they are
         'killed by Apollo' and his arrows. In the Odyssey's climactic and ironic slaughter,
         the poet does it all over again: he slaughters everyone at a feast. </p>
     <p>The poet rules the events in the poem just like Zeus rules the world.
@@ -307,16 +362,24 @@ function autoversion($file)
     <p>The key concept in approaching Homer's gods, is seeing that they are
         'what we obey'. Obey, persuade, trust, follow, all part of the same
         semantic field which is very important and central in the ancient world
-        and likewise in the Iliad. We may simply 'obey Night' and go to sleep. This makes Night a god. We may be persuaded by Beauty, like Paris or like Zeus in Il 14.153-.
+        and likewise in the Iliad. We may simply 'obey Night' and go to sleep.
+        This makes Night a god. See Hesiod, WD 760-, for another example of this principle.
+      We may be persuaded by Beauty, like Paris or like Zeus in Il 14.153-.
         More about the gods <a class="textlink" title="about the gods" href="thegods.php">here</a>.
     </p>
 </div>
 <br>
 <p>It must be clear that the Iliad is <em>not a novel</em>.
     It is not about an individual or his/her
-    character, it is generic: about us and our actions. What do we do and why do we do it. Individual character is not the driving force of the hero's actions. The gods are:
-    without the gods we are mere bellies. Homer splits us up in eight 'types' (see <a class="textlink" title="Agamemnon's council" href="council.php">Agamemnon's council</a>). Then he shows us how we are like Achilles in different ways in our actions. He is also trying to teach us to 'recognize the gods', i.e. to know ourselves. This is why Athena is the most important one, why Zeus has high hopes for her (Il 8.406-), and why she should be thoroughly understood with all her (sometimes contradictory) characteristics. Recognizing Athena is a trope in both the Iliad and the Odyssey.
-
+    character, it is generic: about us and our actions. What do we do and why do we do it. Individual character is not
+    the driving force of the hero's actions. The gods are:
+    without the gods we are mere bellies. Homer splits us up in eight 'types' (see <a class="textlink"
+                                                                                      title="Agamemnon's council"
+                                                                                      href="council.php">Agamemnon's
+        council</a>). Then he shows us how we are like Achilles in different ways in our actions. He is also trying to
+    teach us to 'recognize the gods', i.e. to know ourselves. This is why Athena is the most important one, why Zeus has
+    high hopes for her (Il 8.406-), and why she should be thoroughly understood with all her (sometimes contradictory)
+    characteristics. Recognizing Athena is a trope in both the Iliad and the Odyssey.
 </p>
 <br>
 <hr>
@@ -326,15 +389,16 @@ function autoversion($file)
             how this icon came into being. The poet draws a parallel between Heracles
             and Achilles: when Achilles decides to fight and end his quarrel with
             Agamemnon (Il 19.95-), Agamemnon tells the tale of the birth of
-            Heracles. Achilles is not a Heracles: Heracles is a servant who 'ought to be' a king; Achilles is a king who 'ought to be' a servant.
+            Heracles. Achilles is not a Heracles: Heracles is a servant who 'ought to be' a king; Achilles is a king who
+            'ought to be' a servant.
         </li>
         <li>Od 9.3-11, note the reference to 'the most beautiful thing'.</li>
         <li>accordingly, I prefer δαῖτα to πᾶσι in line 5</li>
     </ol>
-<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br>
-</div>
-<script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
-<script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
-<script src="<?php echo autoversion('/scripts/iframes.js');?>"></script>
+    <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br>
+    </div>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
+    <script src="<?php echo autoversion('/scripts/iframes.js');?>"></script>
 </body>
 </html>

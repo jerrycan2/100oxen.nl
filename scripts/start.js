@@ -1,5 +1,6 @@
 import * as utils from '../scripts/myUtils.js';
 import {beta2uni, uni2beta} from '../scripts/beta.js';
+
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
 //region Site global var
@@ -28,13 +29,9 @@ window.site100oxen = {
     /*! global Objects:                                                   */
     /**********************************************************************/
     /**
-
      * object jbNS
-
      * Namespace object for global variables
-
      */
-
     let jbNS = {
         norm_window_width: 1920,
         columns_config: [1, 1, 3, 0], // List/Page=bit0/bit1, Il/Od/Theo/W&D=1-4, GR/EN=bit0/bit1, Text/Help=bit0/bit1
@@ -122,17 +119,13 @@ window.site100oxen = {
     //region Perseus
     /**********************************************************************/
     /*! Perseus:                                                           */
+
     /**********************************************************************/
     /**
-
      * function perseusLookup
-
      * goto perseus site and load the relevant text. also set columns
-
      * @param language //  0=greek, 1=english
-
      */
-
     function perseusLookup(language) {
         let i, n1, n2, text, textindex, url1, parse, s, line;
         s = $("#textinput").val();
@@ -171,6 +164,7 @@ window.site100oxen = {
         } catch (ignore) {
         }
     }
+
     function selectText(containerid) {
         let range;
         if (document.selection) { // IE
@@ -184,12 +178,10 @@ window.site100oxen = {
             window.getSelection().addRange(range);
         }
     }
+
     /**
-
      * goto perseus word-study with word in #textinput
-
      */
-
     function perseus_WS_search() {
         let result, url;
         //selectText("hiddendiv");
@@ -204,16 +196,13 @@ window.site100oxen = {
         // result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
         // result = result.replace(/hi/, "h|"); //(->Perseus beta code)
     }
+
     //endregion Perseus
     //region scrolling & searching
     /**
-
      * function scrollgreek
-
      * scroll #greekframe to the line in jbNS.gr_beginLine
-
      */
-
     function scrollgreek() {
         let begin, $top;
         begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
@@ -227,18 +216,13 @@ window.site100oxen = {
             jbNS.greekanchors[begin].scrollIntoView();
         }
     }
+
     /**
-
      * function gotoAnchor (only in textframe)
-
      * scroll #textframe to a named anchor
-
      * @param aname : string // name of anchor
-
      * @param hovering : boolean // true if not clicked->no scroll
-
      */
-
     function gotoAnchor(aname, hovering) { /* in textframe */
         let anchor;//, hdr;
         anchor = jbNS.textframe.contents().find('a[id="' + aname + '"]');
@@ -250,16 +234,12 @@ window.site100oxen = {
         }
         return false;
     }
+
     /**
-
      * function loadAndGotoTextframeAnchor
-
      * scroll #textframe to a named anchor. Load textframe if needed
-
      * @param name : string // name of anchor
-
      */
-
     function loadAndGotoTextframeAnchor(name) {
         if (jbNS.columns_config[3] !== 1) {
             jbNS.textframe.one("load", function () {
@@ -271,39 +251,30 @@ window.site100oxen = {
             gotoAnchor(name, false);
         }
     }
+
     /**********************************************************************/
     /*! Finding linenrs IN THE TEXT                                       */
+
     /**********************************************************************/
     /**
-
      * function checklastletter
-
      * for Hesiod text: check if last char of a linenumber is a letter
-
      * if so, convert it to a decimal fraction (hack for compare_Butler_Anchors)
-
      * @param lineID : string
-
      * @returns {number}
-
      */
-
     function checklastletter(lineID) {
         let n, ix;
         n = lineID.substr(-1, 1);
         ix = "abcdefghijklmnopqrst".indexOf(n) + 1;
         return (ix * 0.01); //rtns 0 if not a letter
     }
+
     /**
-
      * function lineID_2_lineNR_obj : convert lineID in 1 of the greek/butler texts to standard object
-
      * @param lineID : string // line number as shown onscreen in 1 of 4 formats
-
      * @returns {object} : object // linenumber object: ( c:chapter, l:line ) = {number, number}
-
      */
-
     function lineID_2_lineNR_obj(lineID) { // in: lineID, out: object { chapter, linenr }; chapter = 1 for Hesiod texts
         let i, n, chap, lnr;
         // 3 formats: letter number, number.number, number
@@ -340,20 +311,14 @@ window.site100oxen = {
         }
         return {c: chap, l: lnr};
     }
+
     /**
-
      * function compare_lineNRs
-
      * compare_lineNRs after converting to linenumber objects
-
      * @param t1 : string
-
      * @param t2 : string
-
      * @returns number : 0 if t1 === t2, > 1, < -1
-
      */
-
     function compare_lineNRs(t1, t2) { // for binary search
         let ch1, ln1, ch2, ln2, n1, n2;
         n1 = lineID_2_lineNR_obj(t1);
@@ -385,20 +350,14 @@ window.site100oxen = {
         }
         return 0;
     }
+
     /**
-
      * function compare_lineIDs : lineID = (text language chapter line), lineNR = (chapter line)
-
      * compare 2 lineID strings
-
      * @param t1 : lineID
-
      * @param t2 : lineID
-
      * @returns {number} // 1, -1 or 0
-
      */
-
     function compare_lineIDs(t1, t2) {
         let parsebm, id1, id2, lang1, lang2;
         if (!t1 || t1[0] === "-") {
@@ -418,24 +377,16 @@ window.site100oxen = {
         }
         return compare_lineNRs(id1, id2);
     }
+
     /**
-
      * function compare_Butler_Anchors
-
      * compare linenumbers( x.y or y ) in the butler text (not all butlerlines are numbered)
-
      * -> is 'item' in the section between this (found1) and next (found2)
-
      * @param Aindex : number // index in global array jbNS.butleranchors
-
      * @param item : string // item to search for ( x.y etc )
-
      * @param which : number // flag: if which == 2 count back 1 line (for selecting up to, not including, next section
-
      * @returns : number // flag : 0 if t1 === t2, > 1, < -1
-
      */
-
     function compare_Butler_Anchors(Aindex, item, which) { //which: see bm_butler_search
         let found1, found2, target, this1, this2, nxt1, nxt2, it1, it2, it, fnd, nxt, s;
         if (Aindex >= jbNS.butleranchors.length - 1) {
@@ -477,16 +428,13 @@ window.site100oxen = {
         }
         return -1;
     }
+
     //endregion scrolling & searching
     //region Bookmarks
     /**
-
      * function cleanupBookMarx
-
      * delete empty entries in bookmarx[][] array, also write them to the <select> options
-
      */
-
     function cleanupBookMarx() {
         let i, n, opt, txt, tmp, bm;
         opt = document.getElementById("BMselector");
@@ -518,16 +466,12 @@ window.site100oxen = {
             jbNS.bookMarx[txt][jbNS.bookMarx[txt].length] = tmp;
         }
     }
+
     /**
-
      * function adjustBMselector
-
      * if txt = "": set selectedIndex of bookmark selector to proper text (Il, Od, Theo, WD)
-
      * if txt = bookmark, set selectedIndex to that bm
-
      */
-
     function adjustBMselector(txt) {
         let i, sel;
         sel = $("#BMselector")[0];
@@ -540,22 +484,15 @@ window.site100oxen = {
             }
         }
     }
+
     /**
-
      * function bm_greek_search
-
      * binary search for <a> with text 'lineID' in #greekframe
-
      * @param lineNR : string // linenumber (also bookmark) to search for (4 formats)
-
      * @param scroll : boolean // if true, scroll to there
-
      * @param mark : number // flag: 0: don't color, give error if target doesn't exist; 1: toggle color, no error; 2: no color, no error
-
      * @returns {number} : index to jbNS.greekanchors or -1
-
      */
-
     function bm_greek_search(lineNR, scroll, mark) {
         let step, max, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
         $lines = jbNS.greekanchors; // $("a") array
@@ -620,20 +557,14 @@ window.site100oxen = {
         }
         return i; //return index to jbNS.greekanchors or -1
     }
+
     /**
-
      * function bm_butler_search
-
      * binary search for linenumber (bookmark) in butler text
-
      * @param item : string // linenumber as string
-
      * @param which : number //see compareanchors
-
      * @returns : number // index in array of anchors
-
      */
-
     function bm_butler_search(item, which) {   // which===1 or 2: beginline or "beginline of next section"
         let i, step, max, groter, stepcount;   // 2 is only used for coloring
         if (!item || !jbNS.butleranchors.length) {
@@ -672,16 +603,12 @@ window.site100oxen = {
         }
         return i;
     }
+
     /**
-
      * function butlerGotoBM
-
      * scroll to given butler linenumber
-
      * @param lineNR : string
-
      */
-
     function butlerGotoBM(lineNR) {
         let lineindex;
         lineindex = bm_butler_search(lineNR, 1);
@@ -694,22 +621,15 @@ window.site100oxen = {
         }
         return lineindex;
     }
+
     /**
-
      * function setUnsetBookMark
-
      * Create bookmark from a lineNR, set/unset bookmark marking & combobox select options
-
      * @param bookmark : string // line number as string
-
      * @param toggle : boolean // do/don't toggle bookmark (XOR / OR), do if alt-click, don't if 'select' by combobox
-
      * @param greek : boolean // if true: greek bookmark, false: butler
-
      * @return boolean // false if too many bookmarks
-
      */
-
     function setUnsetBookMark(bookmark, toggle, greek) {
         let linenr, i, $target, currtxt, bms, hascolon, parsebm;
         /* bookmark = lineID = [prefix +] lineNR */
@@ -757,16 +677,12 @@ window.site100oxen = {
         adjustBMselector("");
         return false;
     }
+
     /**
-
      * function putbackBookmarks
-
      * set bookmarks after switching text or reload
-
      * @param greek
-
      */
-
     function putbackBookmarks(greek) {
         let currtxt, i, bm;
         currtxt = jbNS.columns_config[1] - 1;
@@ -782,6 +698,7 @@ window.site100oxen = {
         }
         adjustBMselector("");
     }
+
     function del_all_bm() {
         let i;
         for (i = 0; i < 4; ++i) {
@@ -792,14 +709,11 @@ window.site100oxen = {
         jbNS.butleranchors.removeClass("bmcolor");
         adjustBMselector("");
     }
+
     /**
-
      * function goto_BM_on_load
-
      * read a global let on iframe load, if it's not empty, goto that bm
-
      */
-
     function goto_BM_on_load() {
         let bm, parsebm;
         jbNS.gr_previousLine = 0;
@@ -820,6 +734,7 @@ window.site100oxen = {
         adjustBMselector(jbNS.bm_to_goto);
         jbNS.bm_to_goto = "";
     }
+
     function nextbm(event) {
         let i, $bmsel, bmsel;
         event.stopImmediatePropagation();
@@ -844,6 +759,7 @@ window.site100oxen = {
             changebm(event);
         }
     }
+
     function prevbm(event) {
         let i, $bmsel, bmsel;
         event.stopImmediatePropagation();
@@ -865,22 +781,19 @@ window.site100oxen = {
             changebm(event);
         }
     }
+
     function changebm(event) {
         event.stopImmediatePropagation();
         showAndGotoAnyLine($("#BMselector").val(), true);
     }
+
     //endregion Bookmarks
     //region goto linenrs
     /**
-
      * function showAndGotoAnyLine
-
      * goto any lineID (bookmark), load text /switch language as needed
-
      * @param bookmark // = lineID
-
      */
-
     function showAndGotoAnyLine(bookmark, loadtext) {
         let i, textindex, prefix, parsebm, lang;
         if (loadtext === false &&
@@ -941,16 +854,12 @@ window.site100oxen = {
             goto_BM_on_load();
         }
     }
+
     /**
-
      * function getSelectedText
-
      * get textcontent of user selection (event listener created in iframe)
-
      * @param event
-
      */
-
     function getSelectedText(event) {
         let txt, rng, idoc, doc, ifr = false;
         //find selected text, in an iframe or input/contenteditable element
@@ -989,20 +898,15 @@ window.site100oxen = {
         }
         return txt;
     }
+
     //endregion
     //region user input
     /**
-
      * function gr_bu_MouseDown(event)
-
      * event-handler for mousedown/touchend on greek and butlertexts
-
      * measures time until mouseup. if it's a 'hold', send selected text to textinput or notes
-
      * @param event
-
      */
-
     function gr_bu_MouseDown(event) {
         let time1 = event.timeStamp;
         $(event.delegateTarget).one("mouseup touchend", function (ev2) {
@@ -1038,16 +942,12 @@ window.site100oxen = {
             }
         });
     }
+
     /**
-
      * function gr_bu_MouseUp
-
      * clicked or selected in greek or butler text
-
      * @param event
-
      */
-
     function gr_bu_MouseUp(event) {// set in iframeload()
         let n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
         event.stopImmediatePropagation();
@@ -1115,18 +1015,13 @@ window.site100oxen = {
             }
         }
     }
+
     /**
-
      * function isGreekCode
-
      * in: string with greek chars. return 0: no greek chars, 1:greek, no diacritics, 2:extended unicode
-
      * @param str : string
-
      * @returns {number}
-
      */
-
     function isGreekCode(str) { //
         let i, code, c;
         code = 0;
@@ -1147,16 +1042,12 @@ window.site100oxen = {
         }
         return code;
     }
+
     /**
-
      * function clear_search()
-
      * removes the <b></b> tags from greek text
-
      * then rebuilds the anchors-array
-
      */
-
     function clear_search() {
         let bs, t;
         bs = jbNS.greekframe.contents().find("b:first");
@@ -1171,16 +1062,12 @@ window.site100oxen = {
         }
         jbNS.greekanchors = jbNS.greekframe.contents().find("a");
     }
+
     /**
-
      * function textsearch()
-
      * search for the text or lineID in #textinput, in greek + english
-
      * it's counted greek if there is at least 1 greek char in it.
-
      */
-
     function textsearch() {
         let i, n, len, target, lines, flag, count, bmsel, inp, start, $frame, greekline, betaline, found, pos;
         inp = $("#textinput").val();
@@ -1261,16 +1148,12 @@ window.site100oxen = {
             }, 1000);
         }
     }
+
     /**
-
      * function whatisPutIn
-
      * decide what is in the #textinput: searchword (greek, extended greek or english) or linenr, for butler or greek text
-
      * @returns {{txt: number, lnr: boolean, taal: number, code: number, kind: number}}
-
      */
-
     function whatisPutIn() {
         let txt, i = 0, s, coding, lang = 3, lnr = false, typ = 0, parseln, $inp;
         $inp = $("#textinput");
@@ -1309,14 +1192,11 @@ window.site100oxen = {
         }
         return {txt: i, lnr: lnr, taal: lang, code: coding, kind: typ};
     }
+
     /**
-
      * function setSelButtonText
-
      * rewrite 'select' menu item
-
      */
-
     function setSelButtonText() {
         let what, i, msg = 0, sb, selbutt, m, s;
         s = $("#textinput").val();
@@ -1368,33 +1248,24 @@ window.site100oxen = {
             this.style.display = "none";
         });
     }
+
     /**
-
      * function clrinp
-
      * set #textinput to ""
-
      */
-
     function clrinp(event) {
         event.stopImmediatePropagation();
         $("#textinput").val("");
         setSelButtonText();
     }
+
     /**
-
      * function enterInput
-
      * enter a char/string in the chosen input, at cursor pos., if there is a selection, replace it
-
      * @param str : string // string to be entered (normally 1 char)
-
      * @param inputbox : object // textinput or notepad
-
      * @param keep : boolean //false=discard true=keep selection
-
      */
-
     function enterInput(str, inputbox, keep) {
         let val, start, selend;
         val = inputbox.value;
@@ -1415,21 +1286,15 @@ window.site100oxen = {
             setSelButtonText();
         }
     }
+
     function changeTextCoding(elem, accents) { // only allow input[type=text]/textarea
         /**
-
          * function changeTextCode
-
          * switch the text in elem between greek and betacode
-
          * @param elem : object // textinput or notepad
-
          * @param accents : boolean // if false, discard breathings etc
-
          * @returns {string}
-
          */
-
         let sel;
         if (elem.id === "notes") {
             sel = elem.value.substring(elem.selectionStart, elem.selectionEnd);
@@ -1449,18 +1314,13 @@ window.site100oxen = {
         }
         return sel;
     }
+
     /**
-
      * function keyboardInput
-
      * event handler: keyboard input to #textinput or notepad
-
      * @param event : object // keypress
-
      * @returns {boolean} // for propagation of event
-
      */
-
     function keyboardInput(event) {
         // focus must be on the "#textinput" input or "#notes" textarea element
         let code, sel;
@@ -1472,18 +1332,13 @@ window.site100oxen = {
         enterInput(sel, event.target, false);
         return false;
     }
+
     /**
-
      * function betaclick
-
      * change textarea text into extended greek or vv.
-
      * if nothing selected, the whole text. If mousebtn hold or shift-key: discard diacritics
-
      * @param event : object // (click)
-
      */
-
     function betaclick(event) {
         let time1 = event.timeStamp;
         event.stopImmediatePropagation();
@@ -1497,16 +1352,12 @@ window.site100oxen = {
             enterInput(changeTextCoding(inp, keepdia), inp, true);
         });
     }
+
     /**
-
      * function executeBtnChoice
-
      * execute selectbutton entry
-
      * @param event
-
      */
-
     function executeBtnChoice(event) {
         let trg, index, s, $lst;
         //event.stopImmediatePropagation();
@@ -1550,18 +1401,14 @@ window.site100oxen = {
                 break;
         }
     }
+
     //endregion
     //region blob & filereader
     /**
-
      * function saveTextAsFile
-
      * save string (notepad contents) to a file going to the download directory (blob)
-
      * @param textToWrite ; string
-
      */
-
     function saveTextAsFile(textToWrite) {
         let textFileAsBlob, fileNameToSaveAs, downloadLink;
         textFileAsBlob = new Blob([textToWrite], {type: 'text/html'});
@@ -1579,20 +1426,19 @@ window.site100oxen = {
         }
         downloadLink.click();
     }
+
     function saveBlob() {
         saveTextAsFile(document.getElementById("notes").value);
     }
+
     function destroyClickedElement(event) {
         document.body.removeChild(event.target);
     }
+
     /**
-
      * function loadFileAsText
-
      * create filereader to upload a text and store it in notepad
-
      */
-
     function loadFileAsText() {
         let fileToLoad, fileReader;
         fileToLoad = document.getElementById("fileToLoad").files[0];
@@ -1602,18 +1448,14 @@ window.site100oxen = {
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
+
     //endregion
     //region notepad
     /**
-
      * function showNotes
-
      * show notepad
-
      * @param event
-
      */
-
     function showNotes(event) {
         event.stopImmediatePropagation();
         //$(".btn1 ul").removeClass("menuActive");
@@ -1623,11 +1465,13 @@ window.site100oxen = {
         });
         $("body").off("keyup");
     }
+
     function setMailAdr() {
         let $txt = $("#textinput");
         localStorage.setItem("mailadr", $txt.val().substr(7));
         $txt.val("");
     }
+
     function getMailAdr() {
         let s = localStorage.getItem("mailadr");
         if (s === "evernote") {
@@ -1635,42 +1479,33 @@ window.site100oxen = {
         }
         return s;
     }
+
     /**
-
      * function saveNotes
-
      * save notepad contents to localstorage
-
      */
-
     function saveNotes() {
         let $n = $("#notes");
         localStorage.setItem("Notes", $n.val());
         localStorage.setItem("NotesHeight", $n.height());
         localStorage.setItem("NotesWidth", $n.width());
     }
+
     /**
-
      * function loadNotes
-
      * load notepad contents from localstorage
-
      */
-
     function loadNotes() {
         let $n = $("#notes");
         $n.val(localStorage.getItem("Notes") || "");
         $n.height(localStorage.getItem("NotesHeight")); // not yet? because of Chrome bug
         $n.width(localStorage.getItem("NotesWidth"));
     }
+
     /**
-
      * function gotoclick
-
      * (load and) scroll to prefixed bookmark (in notes)
-
      */
-
     function gotoclick() {
         let inp, str;
         inp = document.getElementById("notes");
@@ -1680,18 +1515,14 @@ window.site100oxen = {
         }
         inp.selectionStart = inp.selectionEnd;
     }
+
     //endregion
     //region menu items
     /**
-
      * function showAlfabet
-
      * show / hide alfabet popup
-
      * @param doit : boolean //true = show
-
      */
-
     function showAlfabet(doit) {
         if (doit) {
             $("#alfabetdiv").show("slow", "swing");
@@ -1699,14 +1530,11 @@ window.site100oxen = {
             $("#alfabetdiv").hide("slow", "swing");
         }
     }
+
     /**
-
      * function showAllLines
-
      * unhide lines hidden by showSelOnly()
-
      */
-
     function showAllLines() {
         let i, len, headers;
         headers = $("#greekframe").contents().find("h4");
@@ -1719,14 +1547,11 @@ window.site100oxen = {
             jbNS.greekanchors[i].parentNode.style.display = "";
         }
     }
+
     /**
-
      * function showSelOnly
-
      * Hide all greek lines that are not bookmarked (Il, Od only)
-
      */
-
     function showSelOnly() {
         let i, len, p, headers;
         len = jbNS.greekanchors.length;
@@ -1742,16 +1567,12 @@ window.site100oxen = {
             headers[i].style.display = "none";
         }
     }
+
     /**
-
      * function toggleSelOnly
-
      * toggle showSelOnly() - showAllLines + menu-entry
-
      * @param event
-
      */
-
     function toggleSelOnly(event) {
         let a;
         event.stopImmediatePropagation();
@@ -1771,20 +1592,15 @@ window.site100oxen = {
             showSelOnly();
         }
     }
+
     //endregion
     //region Tree manip
     /**
-
      * function getindex
-
      * find index of li-element in tree
-
      * @param el : object
-
      * @returns {number} : element index, 0 if not found
-
      */
-
     function getindex(el) {
         let i;
         for (i = 0; i < jbNS.LI_elements.length; i += 1) {
@@ -1794,31 +1610,23 @@ window.site100oxen = {
         }
         return (0); //for scrolling to top even if not found
     }
+
     /**
-
      * function scrolltree
-
      * scroll tree to given element index
-
      * @param el_index : number
-
      */
-
     function scrolltree(el_index) {
         if (jbNS.LI_elements.length) {
             jbNS.LI_elements[el_index].scrollIntoView();
         }
     }
+
     /**
-
      * function handleRemClick
-
      * show the "rem' data-attribute text or hide it and save the text back to the DOM
-
      * @param {*} $element - the clicked html element: either .hasrem or .norem
-
      */
-
     function handleRemClick($element) {
         let $parent, txtrem, newtext;
         $parent = $element.parent();
@@ -1833,16 +1641,12 @@ window.site100oxen = {
             $parent.find(".remtxt:first").slideToggle(350);
         }
     }
+
     /**
-
      * function tree_handleMouseEvents
-
      * event handler: click on treeframe
-
      * @param event
-
      */
-
     function tree_handleMouseEvents(event) { //single click or mouseenter
         let $trg, $prev, $ol, s, ids, bg, lvl, hovering, found, anchor;
         hovering = event.type !== "click";
@@ -1880,20 +1684,14 @@ window.site100oxen = {
             handleRemClick($trg);
         }
     }
+
     /**
-
      * function lineIDmousedown
-
      * timed mousedown event on lineID: click or hold (>500 ms)
-
      * click: scroll textframe to anchor
-
      * hold: set & remember scrolling top of tree
-
      * @param event
-
      */
-
     function lineIDmousedown(event) {
         let time1 = event.timeStamp,
             $trg = $(event.target);
@@ -1924,16 +1722,12 @@ window.site100oxen = {
             }
         });
     }
+
     /**
-
      * function tree_handleKey
-
      * event handler: handle keypress when focus on treeframe. for now only '0'-'8'
-
      * @param event
-
      */
-
     function tree_handleKey(event) {
         let key, trg;
         trg = event.target;
@@ -1947,20 +1741,14 @@ window.site100oxen = {
             utils.expand("list", key, false);
         }
     }
+
     /**
-
      * function element2lineIDs
-
      * given a .ln-class element, search the beginning & end linenumbers
-
      * of its section. (end = beginning of next section)
-
      * @param $el : html element
-
      * @returns object : {beginning, end}
-
      */
-
     function element2lineIDs($el) {
         let $parent, bg, nd;
         bg = $el.text();
@@ -1979,6 +1767,7 @@ window.site100oxen = {
         }
         return {beginning: bg, last: nd};
     }
+
     //endregion
     //region load content
     function get_page_from_menu(ix) {
@@ -1992,6 +1781,7 @@ window.site100oxen = {
             jbNS.pageframe[0].src = txt;
         }
     }
+
     function getNewIframeFile(url, targetframe) {
         let getnew = true;
         let cache$ = 'no-cache';
@@ -2032,16 +1822,12 @@ window.site100oxen = {
                 utils.myAlert(errorThrown);
             });
     }
+
     /**
-
      * loadIframeToPage
-
      * event handler: load external html into pageframe.
-
      * @param event
-
      */
-
     function loadIframeToPage(event) {
         let ix;
         ix = $("#filesmenu li").index($(event.target).parent());
@@ -2051,31 +1837,19 @@ window.site100oxen = {
         //let [c1, c2, c3, c4] = jbNS.columns_config;
         configColumns(0, 2, true);
     }
-    /**
 
+    /**
      * function iFrameLoad
-
      * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
-
      * @param id : string // #id of iframe
-
      * @param src : string //url
-
      * @returns {*}
-
      */
     /**
-
      * function fetchTexts
-
      * fetch greek/butler texts acc. to columns_config
-
      * @param filenr : number // index to filenames array
-
      */
-
-
-
 
 
     //     return $.ajax({
@@ -2145,6 +1919,7 @@ window.site100oxen = {
                 return deferred.promise();
             }); // end iframeload
         }
+
         let dfd = $.Deferred();
         let done = false;
         iFrameLoad("greekframe", jbNS.filenames[1][filenr]);
@@ -2159,18 +1934,14 @@ window.site100oxen = {
             goto_BM_on_load();
         });
     }
+
     //endregion
     //region column manip
     /**
-
      * function mousedowncolresize
-
      * mousedown event handler: column resize with mouse-drag (not on tablets)
-
      * @param event : object
-
      */
-
     function mousedowncolresize(event) {
         let $resizer = $(event.delegateTarget),
             $selected = $resizer.prev(".viewport"),
@@ -2217,14 +1988,11 @@ window.site100oxen = {
         });
         event.preventDefault(); // disable mouse-selection
     }
+
     /**
-
      * function adjustColWidth
-
      * tweak the width of the rightmost viewport-column so it fits in window
-
      */
-
     function adjustColWidth() {
         let w, sum_w = 0;
         $(".viewport:visible, .resizer:visible").each(function () {
@@ -2234,16 +2002,12 @@ window.site100oxen = {
         w = $("#colwrap").width() - sum_w;
         $(".viewport:visible:last").css("width", "+=" + w);
     }
+
     /**
-
      * function createSplitter
-
      * create div where the cursor shows 'splitter' shape & columns can be resized
-
      * rightmost column doesn't get a splitter
-
      */
-
     function createSplitter() {
         $(".resizer").remove();
         $(".viewport:visible").not(":last").after("<div class='resizer'></div>");
@@ -2256,14 +2020,11 @@ window.site100oxen = {
             }).on("mousedown", mousedowncolresize);
         adjustColWidth();
     }
+
     /**
-
      * function setColumns
-
      * set default visible column widths and show/hide them acc. to jbNS.columns_config
-
      */
-
     function setColumns() {
         let colwidth,
             col_ix = 0,
@@ -2366,16 +2127,12 @@ window.site100oxen = {
             jbNS.textframe.width(wcurr).show();
         }
     }
+
     /**
-
      * function resizeLeftColumn
-
      * for tablets: resize left column (swipe in header) and adapt the others
-
      * @param amount : number //pixels, + or -
-
      */
-
     function resizeLeftColumn(amount) {
         let n, colnum, deltaX, columns;
         colnum = jbNS.oldcolnum;
@@ -2394,24 +2151,22 @@ window.site100oxen = {
         }
         scrollgreek();
     }
+
     function growLeftColumn() {
         resizeLeftColumn(jbNS.colResizeStep);
         return true;
     }
+
     function shrinkLeftColumn() {
         resizeLeftColumn(-jbNS.colResizeStep);
         return true;
     }
+
     /**
-
      * function switchColMousedown
-
      * event handler: mousedown on top-of-screen 'pop-down' menu.  on 'pages' > 1/2 sec. : show popup menu
-
      * @param event
-
      */
-
     function switchColMousedown(event) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -2467,14 +2222,11 @@ window.site100oxen = {
             }
         });
     }
+
     /**
-
      * function swcol_up, swcol_down
-
      * jquery css animations for switchcol header
-
      */
-
     function swcol_up() {
         $("#switchColumns, #bm_nav").each(function () {
             let $that = $(this);
@@ -2487,6 +2239,7 @@ window.site100oxen = {
             });
         });
     }
+
     function swcol_down(event) { // for click and mouseenter
         let trg;
         //event.stopImmediatePropagation();
@@ -2502,22 +2255,15 @@ window.site100oxen = {
             "opacity": 1
         }, 400, "swing");
     }
+
     /**
-
      * function configColumns
-
      * implement column-switching logic
-
      * configure column[ colnr ] and set buttons accordingly (if set == true). Then set column width, font, scrollbar etc.
-
      * @param colnr : number // column index (0-3)
-
      * @param ix : number // index of buttons. if undefined (absent), set everything acc. to columns_config
-
      * @param notoggle : boolean // if true: set, don't toggle default = false
-
      */
-
     function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
     {	// NB: index has 1 added so [0] can be 'none'
         let language_choice = 0, $allbuttons;
@@ -2572,18 +2318,14 @@ window.site100oxen = {
         }
         return jbNS.columns_config[colnr];
     }
+
     //endregion
     //region zoom functions
     /**
-
      * function setHeaderContents
-
      * calc window width divided by fontsize, set header contents accordingly during resize / zoom
-
      * @param size : number //fontsize in pixels
-
      */
-
     function setHeaderContents(size) {
         let m1, relwidth;
         relwidth = window.innerWidth / size;
@@ -2603,16 +2345,12 @@ window.site100oxen = {
             m1.css("width", "50%");
         }
     }
+
     /**
-
      * function calcFontsizeDiff
-
      * calc the fontsize relative to the window size (1920px ~ 14pt)
-
      * @returns {number} fontsize difference in pt
-
      */
-
     function calcFontsizeDiff() {
         let winwidth, zoomX, res;
         winwidth = window.innerWidth;
@@ -2620,14 +2358,11 @@ window.site100oxen = {
         res = 0.7 * (0.5 + (10 - (zoomX + 5) / 10));
         return (res); // < 0 if font larger
     }
+
     /**
-
      * function setIframeFont
-
      * try to set font size of iframe
-
      */
-
     function setIframeFont(size) {
         $(".viewport:visible").each(function () { //hier
             try {
@@ -2636,16 +2371,12 @@ window.site100oxen = {
             }
         });
     }
+
     /**
-
      * function setfont
-
      * set basic fontsize of <html> and global let (and iframes)
-
      * @param size : number // in pix
-
      */
-
     function setfont(size) {
         setHeaderContents(size);
         $("html").css("font-size", size + "px");
@@ -2653,30 +2384,24 @@ window.site100oxen = {
         setIframeFont(size);
         scrollgreek();
     }
+
     /**
-
      * function zoominout
-
      * zoom whole page relative to window size
-
      */
-
     function zoominout() {
         let size, diff;
         size = jbNS.basic_fontsize;
         diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
         setfont(size - diff);
     }
+
     //endregion
     //region initialize
     /**
-
      * function hidemenuitems
-
      * hide sliding menu
-
      */
-
     function hidemenuitems() {
         let $fm = $("#filesmenu");
         $fm.animate({
@@ -2688,16 +2413,12 @@ window.site100oxen = {
         //$("#switchColumns").on("mousedown touchstart", switchColMousedown);
         $(".menuitems").css("background-color", "");
     }
+
     /**
-
      * function storeExpansionstate
-
      * save expansion state of treeframe by creating a string of '0' and '1'
-
      * 0 for an OL element that is collapsed, 1 for an expanded one. Save string to localstorage.
-
      */
-
     function storeExpansionstate() {
         let t;
         jbNS.exp_state = "";
@@ -2712,6 +2433,7 @@ window.site100oxen = {
         localStorage.setItem(nm, jbNS.exp_state);
         localStorage.setItem(nm + "_lvl", jbNS.currentLevel);
     }
+
     function get_exp_state_name() {
         let exptxt = "il_exp";
         switch (jbNS.columns_config[1]) {
@@ -2730,16 +2452,12 @@ window.site100oxen = {
         }
         return exptxt;
     }
+
     /**
-
      * function setExpansionstate
-
      * read expansion state of treeframe by loading string from localstorage
-
      * 0 : collapse OL element, 1 : expand it.
-
      */
-
     function setExpansionstate() { // jbNS.OL_level[] must be created already
         let t, exptxt;
         jbNS.exp_state = localStorage.getItem(get_exp_state_name()) || "11";
@@ -2751,6 +2469,7 @@ window.site100oxen = {
             }
         }
     }
+
     function doReset() {
         window.site100oxen.forcereload = true;
         localStorage.clear();
@@ -2761,14 +2480,11 @@ window.site100oxen = {
         //can't do anything after this! or the reload is aborted
         //also: doesn't work on ipad
     }
+
     /**
-
      * function savePageState
-
      * save column config, bookmarks, scroll state, tree config to localStorage
-
      */
-
     function savePageState() {
         let s;
         if (window.site100oxen.forcereload) {
@@ -2793,6 +2509,7 @@ window.site100oxen = {
         //6: save current page in left iframe
         localStorage.setItem("currentpage", site100oxen.currentPage);
     }
+
     function read_in_Bookmarx(s) {
         let arr, i, m, n, bm, nw;
         jbNS.greekanchors = jbNS.greekframe.contents().find("a");
@@ -2817,14 +2534,11 @@ window.site100oxen = {
         }
         cleanupBookMarx();
     }
+
     /**
-
      * function loadPageState
-
      * load column config, bookmarks, scroll state, tree config from localStorage
-
      */
-
     function loadPageState() {
         let s, arr, i, tf, fs = 16;
         s = localStorage.getItem("colconf") || "1,1,3,0";
@@ -2864,18 +2578,19 @@ window.site100oxen = {
         } else {
             $("#splash").hide();
         }
-        if (localStorage.getItem("messages") === $("#messages span").text()
-            && localStorage.getItem("showmsg") === "false") {
-            $("#messages").hide();
-        } else {
-            localStorage.setItem("showmsg", "true");
-            $("#messages").show();
-        }
+        // if (localStorage.getItem("messages") === $("#messages span").text()
+        //     && localStorage.getItem("showmsg") === "false") {
+        $("#messages").hide();
+        // } else {
+        //     localStorage.setItem("showmsg", "true");
+        //     $("#messages").show();
+        // }
         setSelButtonText();
         site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.php";
         $("#pageframe")[0].src = site100oxen.currentPage;
         zoominout();
     }
+
     function init_tree() {
         utils.createTreeFromXML(site100oxen.XML.firstChild, 'list');
         /* initialize */
@@ -2889,8 +2604,15 @@ window.site100oxen = {
             "mousedown": lineIDmousedown
         });
         setExpansionstate();
-        scrolltree(jbNS.treetop_el_index);
+
+        if (jbNS.treetop_el_index > 0) {
+            scrolltree(jbNS.treetop_el_index);
+        } else {
+            $('#treeframe').scrollTop(0);
+
+        }
     }
+
     //endregion
     //region draggable
     // Simple JQuery Draggable Plugin
@@ -2973,7 +2695,6 @@ window.site100oxen = {
     });
     $("#switchColumns").on({
         "mousedown touchstart": switchColMousedown
-
         //"click": swcol_up
     });
     $("#bm_nav").on({
@@ -3270,6 +2991,7 @@ window.site100oxen = {
         localStorage.setItem("showmsg", "false");
         localStorage.setItem("messages", $("#messages span").text());
     });
+
     //endregion
     function init_all() {
         window.site100oxen.forcereload = false;
@@ -3301,6 +3023,7 @@ window.site100oxen = {
             console.log(jbNS.usip);
         });
     }
+
     //region Ajax get xml
     function getXML(filename) {
         if (!filename) {
@@ -3395,4 +3118,3 @@ window.site100oxen = {
         });
     //endregion
 })(jQuery);
-
