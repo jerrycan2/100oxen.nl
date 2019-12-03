@@ -29,10 +29,11 @@ function autoversion($file)
     <ul>
         <li id="firstli"><span class="emph2">Introduction, axioms</span>
             <ul>
-                <li>intro, axioms ⇨ <a class="textlink" href="100oxen.php">
-                    One hundred oxen</a></li>
                 <li><a class="textlink" target="_self" title="explanation" href="textframe.php">Explanation page</a>
                 </li>
+                <li><a class="textlink" target="_self" title="helppage" href="help.php">Help page</a></li>
+                <li>intro, axioms ⇨ <a class="textlink" href="100oxen.php">
+                    One hundred oxen</a></li>
             </ul>
         </li>
         <li><span class="emph2">Where &amp; when (historical)</span>
@@ -159,22 +160,14 @@ function autoversion($file)
         });
     }
 
-    let altmap = sessionStorage.getItem('altmap');
-    if (!altmap) {
-        $.ajax({
-            type: "GET",
-            datatype: "xml",
-            cache: false,
-            url: "altmap.xml"
-        }).done(function (xml) {
-            let serial = new XMLSerializer();
-            sessionStorage.setItem("altmap", serial.serializeToString(xml));
-            read_altmap(xml);
-        });
-    } else {
-        read_altmap($.parseXML(altmap));
-        console.log("xml from sessionstorage");
-    }
+    $.ajax({
+        type: "GET",
+        datatype: "xml",
+        cache: false,
+        url: "altmap.xml"
+    }).done(function (xml) {
+        read_altmap(xml);
+    });
 
 </script>
 </body>

@@ -47,14 +47,10 @@ function autoversion($file)
             Either, both or none can be visible. The double arrow switches between
             them.
         </li>
-        <li><span class="red">Explanation - Help&nbsp;</span>shows the
-            explanation page or this help page.&nbsp;
-        </li>
     </ol>
-    <p> Click/tap on a linenumber in the Greek or translation text, the other
-        column will scroll to that linenr. Click/tap a linenumber in one of the
-        "pages" (not the external, Perseus pages) or the "explanation" and the
-        texts will load and scroll there.</p>
+    <p> Click/tap on a linenumber in the Greek or translation text, both textcolumns
+        and the collapsible list will scroll to that linenr. Click/tap a linenumber in one of the
+        "pages" and the texts will load and scroll there.</p>
     <p class="italic"> Column resize:</p>
     <p> On the right side of the displayed columns, except the rightmost one,
         a whiteish line shows up on mouse hover. You can drag this line left or
@@ -99,15 +95,17 @@ function autoversion($file)
         <li><span class="red">Load page state</span>: Load the page state as it
             was saved automatically or by hand.
         </li>
-        <li><span class="red">Whodunnit</span>: acknowledgements, and my e-mail
-            address.
-        </li>
         <li><span class="red">Reset all</span>: wipes all remembered settings
             and notes, reloads all pages, displays the page like a first visit. If
             something goes wrong that a page refresh will not cure, try this. Also
             for fetching updates
         </li>
-        <li><span class="red">Help</span>: this text.</li>
+        <li><span class="red">Whodunnit</span>: acknowledgements, and my e-mail
+            address.
+        </li>
+        <li><span class="red">clear colors</span>: reset the color of the linenumbers in the texts</li>
+        <li><span class="red">Editor</span>: An editor for the structure-tree. For now, useful
+            only for the webmaster.</li>
     </ol>
     <p><strong class="italic">search box </strong>and <img class="icon" src="images/lookup.gif"
 
@@ -145,11 +143,12 @@ function autoversion($file)
             text in the Perseus database.
         </li>
         <li>searching for that piece of text in the corresponding poem here, or
-            in the Perseus database. If you search here, all lines (of the
+            a word in the Alpheios database. If you search here, all lines (of the
             currently showing poem) containing that text will be bookmarked and
             will show up in the bookmark selector.&nbsp;English searches are case-sensitive.
             If you select '<strong>word study</strong>' you will be taken to the
-            corresponding entry in the Perseus database's word study / dictionary section.
+            corresponding entry in the Alpheios database's word study / dictionary section.
+            Alpheios word-searches are case-sensitive and all diacritics have to be present and correct.
         </li>
     </ol>
     <em>Betacode:</em>
@@ -158,17 +157,16 @@ function autoversion($file)
         mousebutton &gt; 0.5 sec., the diacitics and uppercase are discarded in
         the transformation.<br>
         The Greek texts here are in Unicode 'Extended Greek', which is polytonic
-        Greek, while Perseus works with 'betacode', an ascii-only lowercase-only
-        transcription of the Greek alfabet. To perform lookups (both internal
-        &amp; external), the unicode is translated into betacode with or without
-        diacritics.<br>
+        Greek, while, for instance, Perseus works with 'betacode', an ascii-only lowercase-only
+        transcription of the Greek alfabet. To perform internal lookups, the unicode
+        is translated into betacode with or without diacritics.<br>
         For searching with accents, f.i. 'ἄλλα' or 'ἀλλὰ', enter 'a)/lla' resp.
         'a)lla\' and click the beta-button. If you're searching&nbsp;<em>with</em>&nbsp;accents,&nbsp;<em>all</em>&nbsp;the
         accents and capitals must be correct or the word will not be found.
         Searching without accents ignores all of these and, for instance, finds
-        both forms of αλλα. This also goes for searching Perseus.<br>
+        both forms of αλλα. This does not go for searching in Alpheios.<br>
         Doubleclicking the search box will clear it.<br>
-        Betacode: lowercase-letters only (for the Perseus-dialect of
+        Betacode: lowercase-letters only (we use the Perseus-dialect of
         betacode).&nbsp;<br>
         <em>In this order:</em><br>
         <span style="color: rgb(255, 0, 0);">*</span>&nbsp;precedes a letter to
@@ -186,7 +184,7 @@ function autoversion($file)
         <span style="color: rgb(255, 0, 0);">|&nbsp;</span>iota subscriptum
         (always follows the letter)<br>
         The choice between 'σ' and 'ς' is made automatically.<br>
-        Untranslatable characters are passed on as they are, illegal
+        Untranslatable characters are kept as they are, illegal
         combinations rarely produce errors, they give undefined results (garbage
         in, garbage out). Not all possible legal betacode-combinations have been
         implemented or tested, but enough to do the Perseus Hesiod and Homer
@@ -216,10 +214,12 @@ function autoversion($file)
         clicking to the right of the text part (it shows '+' if it can expand,
         '-' if it can collapse).<br>
         Click the text part part to scroll both Greek and English text to its
-        start linenumber.<br>
+        start linenumber. The color of the linenumbers belonging to the
+        part you clicked, will toggle to its corresponding color. This can be
+        reset biy clicking again or through the tools-menu.<br>
         If a linenumber (in the list) shows light-blue on hover, clicking it
-        scrolls the explanation-column (if visible) to that item.<br>
-        Holding down the mouse &gt; 1/2 sec. on a linenumber scrolls it to the
+        scrolls the explanation-column (only works if this column is visible) to that item.<br>
+        Holding down the mousebutton785 &gt; 1 sec. on a linenumber scrolls it to the
         top, and lets that item be the top in subsequent expansions of the list.
         Hold down again on the same or on the root item ("The Iliad"), and the
         root item becomes the top. This feature does not work on tablets. </p>
@@ -237,8 +237,8 @@ function autoversion($file)
         into the filename box, clicking 'save' will send it to your default
         download directory, and <em>load</em>: click to select a file on your
         computer and upload it. It will replace any text present in the pad.<br>
-        If the notepad is visible, selecting text and then clicking the
-        selection takes it to there as well as to the searchbox.<br>
+        If the notepad is visible, selecting in the text (and then clicking the
+        selection, in some browsers) enters it in the notepad as well as in the searchbox.<br>
         Resize the pad on the bottom-right corner (not IE, not tablets).</p>
     <p> CTRL-C,X,V work as usual.</p>
     <p><strong>bugs</strong>: If the page doesn't load right (e.g. sometimes
@@ -246,9 +246,9 @@ function autoversion($file)
         columns): try clicking on the frame, or either refreshing the whole page
         or right-clicking the column and choosing 'reload frame'. If this
         doesn't help, try menu-item 'reset'.</p>
-    <p> On Windows, with any up-to-date browser, things seem to work fine. On OSX things
+    <p> On Windows, with any up-to-date browser (except Edge), things seem to work fine. On OSX things
         used to work but it's a long time since I tested. Linux I do not know. On Android:
-        Chrome does best, Firefox gives some problems, others I do not know. On my
+        Chrome does best, Firefox is OK except some small problems, Opera does fine, others I do not know. On my
         old Ipad, nothing works.</p>
 </div>
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>

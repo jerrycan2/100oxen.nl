@@ -263,7 +263,7 @@ function drawBlocks($node, colheight, recursion) {
                 })
                     .animate({
                         "background-color": c1
-                    }, 1000);
+                    }, 2000);
             } else {
                 $col1.css({
                     "color": "#" + ($node.attr("f") || "003388"),
@@ -454,6 +454,17 @@ $(document).ready(function () {
         zindex: 2,
         horizrailenabled: true
     });
+
+    // $(".radiobtn").on("change", function () {
+    //     localStorage.setItem("list_xml_loaded", "false");
+    //     if( $("#get_od")[0].checked) {
+    //         getXML("odyssey.xml");
+    //     }
+    //     else {
+    //         getXML("iliad.xml");
+    //     }
+    //     createBlocks();
+    // });
 
     $("#wrap").on("click", columnclick);
     //$(document).ajaxComplete(createBlocks);

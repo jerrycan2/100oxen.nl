@@ -89,11 +89,6 @@ header img {
   top: 2rem;
   cursor: pointer;
 }
-#switchColumns {
-  display: flex;
-  flex-wrap: wrap;
-  height: auto;
-}
 /**********/
 /*main menu*/
 /**********/
@@ -363,10 +358,9 @@ figure > * {
 }
 #switchColumns ul,
 #bm_nav ul {
-  padding: 0.2rem 0;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-around;
 }
 #switchColumns .switch,
@@ -390,9 +384,12 @@ figure > * {
 #bm_nav .switch li:hover {
   color: pink;
 }
+#switchColumns .switch {
+  font-size: 75%;
+}
 #bm_nav ul {
-  width: 40%;
-  margin: 0 30% 0 30%;
+  width: 70%;
+  margin: 0 15% 0 15%;
 }
 #bm_nav ul li {
   font-size: 1.4rem;
@@ -517,6 +514,19 @@ figure > * {
   background-color: beige;
 }
 /* popups */
+#hiddendiv {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  height: 100px;
+  width: 200px;
+  background-color: #8C796D;
+  color: black;
+  display: none;
+}
+#alphtext {
+  text-align: center;
+}
 #notediv {
   position: absolute;
   top: 10rem;
@@ -571,7 +581,6 @@ figure > * {
   color: white;
   background-color: grey;
   padding: 0 0.2rem;
-  font-size: 90%;
 }
 #toolbar span:hover {
   color: red;

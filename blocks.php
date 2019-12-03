@@ -29,6 +29,16 @@ function autoversion($file)
         click left to go 'up' again.</p>
     <br>
 </section>
+<!--div class="radiobtn">
+    <input type="radio" id="get_il" name="choose" value="huey"
+           checked>
+    <label for="get_il">Iliad</label>
+</div>
+
+<div class="radiobtn">
+    <input type="radio" id="get_od" name="choose" value="dewey">
+    <label for="get_od">Odyssey</label>
+</div-->
 <section id="wrap">
     <h5 id="parenttitle"></h5>
     <h6 id="lines"></h6>

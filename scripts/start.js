@@ -1,5 +1,6 @@
 import * as utils from '../scripts/myUtils.js';
 import {beta2uni, uni2beta} from '../scripts/beta.js';
+//import {myAlert} from "../scripts/myUtils";
 
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
@@ -187,6 +188,7 @@ window.site100oxen = {
         //selectText("hiddendiv");
         $("#hiddendiv").show();
         $("#alphtext").text($("#textinput").val());
+        //$("#textinput").dblclick();
         // result = $.trim($("#textinput").val());
         // result = uni2beta(result, true);
         // if (result === "") {
@@ -631,7 +633,7 @@ window.site100oxen = {
      * @return boolean // false if too many bookmarks
      */
     function setUnsetBookMark(bookmark, toggle, greek) {
-        let linenr, i, $target, currtxt, bms, hascolon, parsebm;
+        let linenr, i, $target, currtxt, bms, hascolon, parsebm, txtindex;
         /* bookmark = lineID = [prefix +] lineNR */
         currtxt = jbNS.columns_config[1] - 1;
         if (currtxt < 0) {
@@ -649,6 +651,11 @@ window.site100oxen = {
         }
         if (!parsebm[2]) {
             bookmark = jbNS.prefixes[currtxt] + (hascolon ? ":" : " ") + linenr;
+        } else {
+            txtindex = $.inArray(parsebm[2], jbNS.prefixes);
+            if (txtindex >= 0) {
+                currtxt = txtindex;
+            }
         }
         if (greek && !hascolon) {
             $target = jbNS.greekanchors.eq(bm_greek_search(linenr, false, 2));
@@ -704,6 +711,7 @@ window.site100oxen = {
         for (i = 0; i < 4; ++i) {
             jbNS.bookMarx[i].length = 1;
         }
+        localStorage.setItem("bookmarks", "---Il:--,---Od:--,---Th:--,---WD:--");
         cleanupBookMarx();
         jbNS.greekanchors.removeClass("bmcolor");
         jbNS.butleranchors.removeClass("bmcolor");
@@ -944,6 +952,38 @@ window.site100oxen = {
     }
 
     /**
+     * function scrollTreeToLinenr
+     * scroll the collapsible tree to given linenumber. It fully expands the tree
+     * and scrolls to the the first node having that number.
+     * (all the linenrs are in the XML greek lines, but not in the HTML)
+     * @param linenr
+     */
+    function scrollTreeToLinenr(linenr) {
+        utils.maptree.line = linenr;
+        utils.maptree(window.site100oxen.XML, function (node) {
+            if (utils.maptree.node) {
+                return false;
+            }
+            if (node.nodeName === "line" &&
+                node.getAttribute("lnr") === utils.maptree.line) {
+                utils.maptree.line = node.parentNode.firstChild.getAttribute("lnr");
+                //return line number of first sibling. This can be found in the HTML
+                return false;
+            }
+            return true;
+        });
+        utils.expand("list", 8, false).then(function () {
+            //level=8 : elements must not be hidden to find offset()
+            const fnd = $(`span:contains("${utils.maptree.line}")`).eq(0);
+            const t = (fnd.offset().top - $(".book").eq(0).offset().top) +
+                ($("#topdiv").height() - $("span.ln:first").height());
+            $("#treeframe").animate({scrollTop: t}, 350); // position can only be calculated after expanding
+            utils.maptree.node = null;
+            utils.maptree.line = "";
+        });
+    }
+
+    /**
      * function gr_bu_MouseUp
      * clicked or selected in greek or butler text
      * @param event
@@ -1001,12 +1041,13 @@ window.site100oxen = {
             }
         } else {
             if (click_lnr) {  // click on linenumber: let the other frame scroll there
+                scrollTreeToLinenr(line);
                 jbNS.bm_to_goto = line;
-                if (greek) {
-                    butlerGotoBM(line);
-                } else {
-                    bm_greek_search(line, true, 0);
-                }
+                //if (greek) {
+                butlerGotoBM(line);
+                //} else {
+                bm_greek_search(line, true, 0);
+                //}
             } else { //click in text, no selection: set bookmark
                 too_many_bm = setUnsetBookMark(bookmark, true, greek);
                 if (too_many_bm) {
@@ -1075,7 +1116,7 @@ window.site100oxen = {
             utils.myAlert("Select what?", false, null);
             return;
         }
-        del_all_bm();
+        //del_all_bm();
         clear_search();
         count = 0;
         flag = isGreekCode(inp);
@@ -1666,6 +1707,11 @@ window.site100oxen = {
                 if (hovering) {
                     return;
                 }
+                if ($trg.parents("ol").eq(0).hasClass("book")) { //click on top element: wipe
+                    wipeColors();//wipe all colored sections
+                    return;
+                }
+                selectTextSection($trg); // color greek lines
                 s = $prev.text();
                 const ix = jbNS.columns_config[1] - 1;
                 if (ix < 2) {
@@ -1743,6 +1789,92 @@ window.site100oxen = {
     }
 
     /**
+     * function wipeColors
+     * remove all coloring + class from linenrs of greekframe / butlerframe
+     */
+    function wipeColors() {
+
+        var i, arr, $t;
+        arr = jbNS.greekanchors;
+        for (i = 0; i < arr.length; i += 1) {
+            $t = $(arr[i]);
+            if ($t.hasClass("colored")) {
+                $t.css(
+                    {
+                        color: "",
+                        "background-color": ""
+                    }
+                ).removeClass("colored");
+            }
+        }
+        arr = jbNS.butleranchors;
+        for (i = 0; i < arr.length; i += 1) {
+            $t = $(arr[i]);
+            if ($t.hasClass("colored")) {
+                $t.css(
+                    {
+                        color: "",
+                        "background-color": ""
+                    }
+                ).removeClass("colored");
+            }
+        }
+    }
+
+    /**
+     * function colorGreekLineNrs
+     * color linenrs of greek & butler lines bg..nd with 'colors'
+     * @param colors : object {fcolor,bcolor}
+     * @param bg : string //"bgchap.bgline"
+     * @param nd : string //"endchap.endline"
+     */
+    function colorGreekLineNrs(colors, bg, nd) //colors: object{fcolor,bcolor}; bg: bgchap.bgline nd:endchap.endline
+    {
+        var gr_endline, bu_endline, gr_beginline, bu_beginline, $all;
+
+        gr_beginline = bm_greek_search(bg, false, 2);
+        gr_endline = bm_greek_search(nd, false, 2);
+        bu_beginline = bm_butler_search(bg, 1);
+        bu_endline = bm_butler_search(nd, 2); //don't include the endline
+        if (gr_endline < 0) { // up to the end
+            $all = jbNS.greekanchors.slice(gr_beginline).add(jbNS.butleranchors.slice(bu_beginline));
+        } else {
+            $all = jbNS.greekanchors.slice(gr_beginline, gr_endline).add(jbNS.butleranchors.slice(bu_beginline, bu_endline + 1));
+        }
+
+        if (jbNS.greekanchors.eq(gr_beginline).hasClass("colored")) {
+            $all.removeClass("colored").css({
+                "color": "",
+                "background-color": ""
+            });
+        } else {
+            $all.addClass("colored").css({
+                "color": colors.fcolor,
+                "background-color": colors.bcolor
+            });
+        }
+    }
+
+    /**
+     * function selectTextSection
+     * clicked on text <span> in treeframe; color greek & butler lines of that section the same colors.
+     * or scroll textframe to anchor whose name contains this linenr
+     * @param $orig : object // element where mouse event originates
+     */
+    function selectTextSection($orig) { // source: tree_handleMouseEvents() on text part
+        var ids, colors;
+
+        ids = element2lineIDs($orig.prev("span"));
+
+        colors = {};
+        colors.bcolor = $orig.css("backgroundColor");
+        colors.fcolor = $orig.css("color");
+
+        showAndGotoAnyLine("il " + ids.beginning);
+        colorGreekLineNrs(colors, ids.beginning, ids.last);
+    }
+
+    /**
      * function element2lineIDs
      * given a .ln-class element, search the beginning & end linenumbers
      * of its section. (end = beginning of next section)
@@ -1815,7 +1947,7 @@ window.site100oxen = {
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
                 iframe.srcdoc = data;
-                console.log(url + " from cache: " + !getnew + "," + etag);
+                if ("console" in window) console.log(url + " from cache: " + !getnew + "," + etag);
             });
         })
             .fail(function (jqXHR, textStatus, errorThrown) {
@@ -1886,35 +2018,13 @@ window.site100oxen = {
                 iframe.src = result;
                 $(iframe).load(deferred.resolve);
                 deferred.done(function () { //what to do after the individual frame has been loaded
-                    let $frame, isgreek;
-                    if (id === "greekframe") {
-                        $frame = $("#greekframe");
-                        isgreek = true;
-                        $("#selonly").text("Show only selection");
-                        jbNS.greekanchors = $frame.contents().find("a"); //collect anchors (linenumbers)
-                        putbackBookmarks(isgreek); // false = butler, true = greek
-                        if (jbNS.gr_beginLine > 0) {
-                            scrollgreek();
-                        }
-                    } else {
-                        $frame = $("#butlerframe");
-                        isgreek = false;
-                        jbNS.butleranchors = $frame.contents().find("a");
-                        putbackBookmarks(isgreek); // false = butler, true = greek
-                    }
-                    $frame.contents().find("body").on({
-                        //"touchhold": gr_bu_hold,
-                        "mousedown": gr_bu_MouseDown,
-                        "touchmove": function () {
-                            jbNS.touchcancel = true;
-                        }
-                    });
+                    $("#selonly").text("Show only selection");
                     if (!done) {
                         done = true;
                     } else {
                         dfd.resolve();
                     }
-                    console.log("ajax2");
+                    if ("console" in window) console.log("ajax2");
                 });
                 return deferred.promise();
             }); // end iframeload
@@ -1926,10 +2036,25 @@ window.site100oxen = {
         iFrameLoad("butlerframe", jbNS.filenames[2][filenr]);
         dfd.done(function () { //what to do after both frames have been loaded:
             setColumns();
+            jbNS.butleranchors = $("#butlerframe").contents().find("a");
+            jbNS.greekanchors = $("#greekframe").contents().find("a"); //collect anchors (linenumbers)
+            console.log(jbNS.butleranchors.length + "," + jbNS.greekanchors.length);
+            if (jbNS.gr_beginLine > 0) {
+                scrollgreek();
+            }
+            putbackBookmarks(true); // false = butler, true = greek
+            putbackBookmarks(false); // false = butler, true = greek
+            $("#greekframe,#butlerframe").contents().find("body").on({
+                //"touchhold": gr_bu_hold,
+                "mousedown": gr_bu_MouseDown,
+                "touchmove": function () {
+                    jbNS.touchcancel = true;
+                }
+            });
             if (window.site100oxen.untouchable) {
                 createSplitter();
             }
-            console.log("fetch");
+            if ("console" in window) console.log("fetch");
             adjustColWidth();
             goto_BM_on_load();
         });
@@ -2188,12 +2313,13 @@ window.site100oxen = {
                 configColumns(colnr, ix + 1, false); //-1
                 if (colnr === 1) {
                     jbNS.gr_beginLine = 0;
-                    if (ix < 2) {
+                    if (ix < 2 && (jbNS.columns_config[0] === 1) || site100oxen.currentPage === "blocks.php") {
+                        //console.log("->"+jbNS.xml_names[ix]);
                         getXML(jbNS.xml_names[ix]).done(() => {
                             init_tree();
                         });
                     } else {
-                        console.log("mousedown");
+                        if ("console" in window) console.log("mousedown");
                         fetchTexts(ix); // fetch greek & butler texts
                     }
                 }
@@ -2206,18 +2332,31 @@ window.site100oxen = {
                     jbNS.textframe[0].src = jbNS.filenames[3][ix];
                 }
             } else { // pages in/out
-                if (jbNS.columns_config[0] === 1 && ix === 1) {
-                    // return;
-                    if (site100oxen.currentPage !== 'sitemap.php') {
-                        $("#pageframe")[0].src = 'sitemap.php';
-                        site100oxen.currentPage = 'sitemap.php';
-                        configColumns(0, 2, true);
-                    } else {
-                        configColumns(0, 2, true); //false
-                    }
-                } else {
-                    configColumns(colnr, ix + 1, false);
-                    configColumns(0, 1, true);
+                switch (jbNS.columns_config[0]) {
+                    case 0:
+                        configColumns(0, ix + 1, true); // show the column, treeframe or page
+                        break;
+                    case 1:
+                        if (ix === 0) {
+                            configColumns(0, 0, true); // hide treeframe
+                        } else {
+                            $("#pageframe")[0].src = site100oxen.currentPage;
+                            configColumns(0, 2, true); // show page
+                        }
+                        break;
+                    case 2:
+                        if (ix === 1) {
+                            if (site100oxen.currentPage !== 'sitemap.php') {
+                                $("#pageframe")[0].src = 'sitemap.php';
+                                site100oxen.currentPage = 'sitemap.php';
+                                configColumns(0, 2, true);
+                            } else {
+                                configColumns(0, 0, true);
+                            }
+                        } else {
+                            configColumns(0, 1, true);
+                        }
+                        break;
                 }
             }
         });
@@ -2242,7 +2381,7 @@ window.site100oxen = {
 
     function swcol_down(event) { // for click and mouseenter
         let trg;
-        //event.stopImmediatePropagation();
+        event.stopImmediatePropagation();
         $(event.target).show();
         if (event.target.id === "columns") {
             trg = "#switchColumns";
@@ -2511,13 +2650,14 @@ window.site100oxen = {
     }
 
     function read_in_Bookmarx(s) {
-        let arr, i, m, n, bm, nw;
+        let arr, i, m, n, bm, nw, isgreek;
         jbNS.greekanchors = jbNS.greekframe.contents().find("a");
         arr = s.split(",");
         m = 0;
         n = -1;
         for (i = 0; i < arr.length; i += 1) {
             bm = arr[i];
+            isgreek = (bm.indexOf(":") < 0);
             nw = false;
             if (bm.substr(0, 1) === "!") {
                 continue;
@@ -2528,11 +2668,11 @@ window.site100oxen = {
                 nw = true;
             }
             if (!nw) {
-                setUnsetBookMark(bm, false, (n === 0 || n === 2));
+                setUnsetBookMark(bm, false, isgreek); // (n === 0 || n === 2)); // ?
             }
             m += 1;
         }
-        cleanupBookMarx();
+        //cleanupBookMarx();
     }
 
     /**
@@ -2547,7 +2687,7 @@ window.site100oxen = {
         for (i = 0; i < 4; ++i) {
             jbNS.columns_config[i] = parseInt(arr[i]);
         }
-        console.log("pagestate");
+        if ("console" in window) console.log("pagestate");
         fetchTexts(jbNS.columns_config[1] - 1);
         tf = jbNS.columns_config[3];
         if (tf) {
@@ -2686,10 +2826,10 @@ window.site100oxen = {
     //endregion
     //region bound event handlers
     $("#hiddendiv").on({
-        "dblclick": function () {
+        "click": function () {
             setTimeout(function () {
                 $("#hiddendiv").hide();
-            }, 1000);
+            }, 500);
             return true;
         }
     });
@@ -2710,10 +2850,20 @@ window.site100oxen = {
             li = $("#col4").find("li");
             if (window.innerWidth < 500) {
                 li.eq(0).text("expl");
-                li.eq(1).text("help");
             } else {
                 li.eq(0).text("explanation");
-                li.eq(1).text("help");
+            }
+            let uls = $("#switchColumns ul li ul");
+            let lft = uls.eq(1).position().left + uls.eq(1).width();
+            let rt = uls.eq(2).position().left;
+            //utils.myAlert(Math.floor(rt - lft) + "," + w, true, null, null);
+            if (rt - lft < 15) {
+                $("#switchColumns").css("fontSize", "90%");
+                $("#switchColumns ul li").css("margin", "0");
+            }
+            else {
+                $("#switchColumns").css("fontSize", "110%");
+                $("#switchColumns ul li").css("margin", "0 0.5rem");
             }
             zoominout();
             jbNS.oldcolnum = -1;
@@ -2804,7 +2954,7 @@ window.site100oxen = {
                 datatype: "text",
                 url: "setmap.php"
             }).done(function (txt) {
-                console.log(txt);
+                if ("console" in window) console.log(txt);
             });
         }
     );
@@ -2835,7 +2985,7 @@ window.site100oxen = {
         m += jbNS.bookMarx[3].join('\n') + '\n';
         $("#notes")[0].value = m;
     });
-    $("#from_pad").click(function () {
+    $("#from_pad").click(function (event) {
         let s, arr;
         event.stopImmediatePropagation();
         //$("#shownotes").trigger("click");
@@ -2844,22 +2994,27 @@ window.site100oxen = {
         read_in_Bookmarx(s);
     });
     $(".btn1 ul li").on({
-        "click": function () {
-            //event.stopImmediatePropagation();
+        "click": function (event) {
+            event.stopImmediatePropagation();
             //utils.myAlert("notok", false);
             $(".btn1 ul").hide();
         }
     });
-    $("#colwrap").on({
+    $("#colwrap, #topdiv").on({
         "click": function () {
             $(".btn1 ul").hide(); // event is not caught, falls through to here
         }
     });
+    $("#showcolnav, #showbmnav").click(function (event) {
+        $(".btn1 > ul").not($(this).parent().children("ul")).hide();
+        swcol_down(event);
+    });
     $(".btn1").on({
-        "mouseenter": function (e) { //correct menu position when screen is too narrow
+        "mouseenter": function (e) { //correct menu position when screen is too narrow //tap?
             let pos, b;
             let menu = $(this).find("ul").eq(0);
             menu.show().addClass("menuActive");
+            e.stopImmediatePropagation();
             if ($(e.target).is("#tools")) {
                 $("#setlevel tr :nth-child(" + jbNS.currentLevel + ")").css("backgroundColor", "black");
                 pos = $(menu).position();
@@ -2870,7 +3025,7 @@ window.site100oxen = {
                     menu.css({left: $("#tools").last().position().left});
                 }
             }
-        }
+        },
     });
     $(".btn1 ul").on({
         "mouseleave": function () {
@@ -2883,11 +3038,13 @@ window.site100oxen = {
         },
         "mouseleave": function () {
             $(this).css("outline", "0");
-        },
-        "click": function () {
-            $(".btn1 > ul").not($(this).parent().children("ul")).hide(); //0, function () {
-            //     $(this).parent().children("ul").css({"display": "block"});
-            // });
+        }
+    });
+    $("#tools, #select").on({
+        "click": function (e) {
+            $(this).parent().children("ul").css({"display": "block"});
+            //utils.myAlert("click");
+            e.stopImmediatePropagation();
         }
     });
     $(".btn1 #tools").on({
@@ -2907,7 +3064,7 @@ window.site100oxen = {
             //event.stopImmediatePropagation();
             return false;
         },
-        //"dblclick": clrinp
+        "dblclick": clrinp
     });
     $("#selonly").click(toggleSelOnly);
     $("#shownotes").click(showNotes);
@@ -2980,10 +3137,9 @@ window.site100oxen = {
         site100oxen.currentPage = 'editor.php';
         configColumns(0, 2, true);
     });
-    $("#contact").click(function () {
-        get_page_from_menu(3);
+    $("#clearcolors").click(function () {
+        wipeColors();
     });
-    $("#showcolnav, #showbmnav").click(swcol_down);
     $("#savefile").click(saveBlob);
     $("#loadfile").click(loadFileAsText);
     $("#messages button").click(function () {
@@ -3020,7 +3176,7 @@ window.site100oxen = {
             url: "https://api.ipify.org?format=json"
         }).done(function (json) {
             jbNS.usip = json.ip;
-            console.log(jbNS.usip);
+            if ("console" in window) console.log(jbNS.usip);
         });
     }
 
@@ -3045,7 +3201,7 @@ window.site100oxen = {
         localStorage.setItem('textToLoad', filename);
         jbNS.newXML = true;
         let dfr = $.Deferred();
-        console.log("loading " + filename);
+        if ("console" in window) console.log("loading " + filename);
         $.ajax({
             type: "HEAD",
             async: true,
@@ -3067,7 +3223,7 @@ window.site100oxen = {
                     dataType: "text",
                     success: function (xmlstring) {
                         localStorage.setItem(`${filename}.txt`, xmlstring);
-                        console.log(`${filename} downloaded`);
+                        if ("console" in window) console.log(`${filename} downloaded`);
                         try {
                             window.site100oxen.XML = $.parseXML(xmlstring);
                             if (filename === "iliad.xml") { // save a ref
@@ -3080,7 +3236,7 @@ window.site100oxen = {
                         } catch (e) {
                             dfr.reject(e);
                         }
-                        console.log(`${filename} from cache: ${!jbNS.newXML}`);
+                        if ("console" in window) console.log(`${filename} from cache: ${!jbNS.newXML}`);
                         dfr.resolve(xmlstring);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -3094,7 +3250,7 @@ window.site100oxen = {
                     utils.myAlert("please do full reset", true);
                     return;
                 }
-                console.log(`${filename} from localStorage`);
+                if ("console" in window) console.log(`${filename} from localStorage`);
                 window.site100oxen.XML = $.parseXML(xml);
                 if (filename === "iliad.xml") { // save a ref
                     window.site100oxen.ilXML = window.site100oxen.XML;
