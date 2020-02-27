@@ -23,7 +23,7 @@ function autoversion($file)
 </head>
 <body class="contents latin">
 
-<h2>Thematic structure</h2>
+<h2 id="blocks_header" title="click to show list view">Thematic structure</h2>
 <section>
     <p>Here the subdivisions of the poem are shown in proportion. Click in the middle column to go 'down',
         click left to go 'up' again.</p>

@@ -1,7 +1,6 @@
 import * as utils from './myUtils.js';
-//import {myAlert} from "./myUtils";
-//import Linenumber from '../scripts/myUtils.js';
-//import { MD5 } from '../scripts/md5.js';
+//import {setnodeattributes} from "./myUtils";
+
 /**
  * Created by jeroe on 07-Aug-18.
  */
@@ -75,7 +74,7 @@ import * as utils from './myUtils.js';
     /**
      * function switchdivs
      * switch screen display between: 0: half struct half edit, 1: only struct, 2: only edit
-     * @param {boolean} hueb_open - if colorpicker open, take away 350px for it
+     * @param {boolean} hueb_open - if colorpicker open, take away 300px for it
      * @param {number} which_div
      */
     function switchdivs(hueb_open, which_div) {
@@ -83,8 +82,8 @@ import * as utils from './myUtils.js';
         const $ed = $("#edit");
         let half, whole;
         if (hueb_open) {
-            half = "calc((100% - 3rem - 350px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
-            whole = "calc(100% - 3rem - 350px)";
+            half = "calc((100% - 3rem - 300px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
+            whole = "calc(100% - 3rem - 300px)";
         } else {
             half = "50%";
             whole = "100%";
@@ -123,6 +122,7 @@ import * as utils from './myUtils.js';
 
     /**
      * function checkbox_clicked
+     * in edit frame: check select boxes. 1 level, consecutive only
      * @param {Object} $node - <input type="checkbox"> element (jQuery)
      */
     function checkbox_clicked($node) {
@@ -264,7 +264,6 @@ import * as utils from './myUtils.js';
      * a newly created childnode of parent
      * new OL-nodes classname is "lvl' because it's too much work to calculate the level
      * and it's not important (for xmltree) as long as it's not a "line"
-     * todo: adjust 100oxen start.js to this
      * also adjust level attributes
      */
     function insertNode() {
@@ -289,7 +288,7 @@ import * as utils from './myUtils.js';
         const $li_elements = $checked.parent("label").parent("li");
         if ($li_elements.children("ol").length === 0) {
             utils.myAlert("You cannot delete textlines", false);
-        } else if ($li_elements.parent("ol:first").data("level") === 0) {
+        } else if ($li_elements.parents("ol").length < 2) {
             utils.myAlert("You cannot delete a root node", false);
         } else {
             utils.myAlert("Deleted " + $checked.length + " nodes", false);
@@ -302,7 +301,7 @@ import * as utils from './myUtils.js';
 
     /**
      * splitNode
-     * split a node in two: all siblings from the first selected one to the end
+     * split a parentnode in two: all siblings from the first selected one to the end
      * are moved to a newly created sibling of the parent
      */
     function splitNode() {
@@ -318,7 +317,7 @@ import * as utils from './myUtils.js';
             const $targetnode = $selnode.parent().parent();
             // make sure we have exactly one rootnode:
             if ($targetnode.parent("ol")[0] === $edit.find("ol:first")[0]) {
-                utils.myAlert("Edit tree can only have ONE root. Edit one level up!", false);
+                utils.myAlert("Edit tree can only have ONE root. Edit one level down!", false);
             } else {
                 $targetnode.after(HTMLtoInsert(linenr)); //create new node
                 $("#new").append($edit.find(":checked").closest("li")).removeAttr("id"); //move selection to it
@@ -464,6 +463,11 @@ import * as utils from './myUtils.js';
         return [count, result];
     }
 
+    /**
+     * count nr of 'paragraphs', nodes containing greek text lines and count how many
+     * are more than 10 lines and report these
+      * @returns {(number|string)[]}
+     */
     function checkParagraphs() {
         let paragraphs = 0, pcount = 0;
         let morelines = 0, mcount = 0;
@@ -556,6 +560,27 @@ import * as utils from './myUtils.js';
         return [count, result];
     }
 
+    /**
+     * function checkClass
+     * the classname 'lvlX' where X is a number is no longer used to determine the level of a html-node
+     * nor is the XML nodename. But editing mangles it (it removes the number, see insertNode()).
+     * Iltree.exe recalculates it
+     * so load and save iliad.xml with that program and the XML will be perfect again.
+      * @returns {number}
+     */
+    function checkClass() {
+        let errors = 0;
+        utils.maptree(glob.XML, function (node) {
+            const classname = node.nodeName;
+            if (classname === "lvl") {++errors;}
+            return true;
+        });
+        return errors;
+    }
+    /**
+     * siblings must have the same nodename: no mixing of textlines and inner nodes
+      * @returns {(number|string)[]}
+     */
     function checkSiblings() {
         let result = "";
         let count = 0;
@@ -572,6 +597,11 @@ import * as utils from './myUtils.js';
         return [count, result];
     }
 
+
+    /**
+     * count number of inner nodes and the nr of textlines
+      * @returns {number[]}
+     */
     function count_nodes() {
         let Lcount = 0;
         let Hcount = 0;
@@ -589,6 +619,10 @@ import * as utils from './myUtils.js';
         return [Lcount, Hcount];
     }
 
+    /**
+     * newly created inner nodes have default text "fill in..."
+      * @returns {number}
+     */
     function count_fillins() {
         let Lcount = 0;
         utils.maptree(glob.XML, function (node) {
@@ -619,6 +653,7 @@ import * as utils from './myUtils.js';
                 let [n_of_lines, n_of_headers] = count_nodes();
                 let [paragr, pcount, larger, lcount, longs] = checkParagraphs();
                 let fillincount = count_fillins();
+                let lvls = checkClass();
                 let result =
                     `counted ${n_of_lines} textlines, ${n_of_headers} title nodes<br>\n
 linenumber integrity: ${count1} errors<br>\n
@@ -628,6 +663,7 @@ larger than 10 lines: ${larger}, totalling ${lcount} lines, ${longs}<br>\n
 paragraphs in Greek, not in Butler: ${count3}<br>\n
 paragraphs in Butler, not in Greek: ${count2}<br>\n
 paragraphs with 'fill in...': ${fillincount}<br>\n
+lvl errors: ${lvls}<br>\n
 <br>\n
 linenumber integrity:<br>\n ${result1} <br>\n
 node uniformity: <br>\n ${result4} <br>\n
@@ -644,6 +680,8 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             });
         }
     });
+
+
     $("#help,#helptext").on({
         "click": function () {
             let $trg = $("#helptext");
@@ -735,11 +773,11 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 const lines = $("#edit").find("ol.line");
                 if (glob.showing_greek === false) {
                     el.target.textContent = "Hide Greek";
-                    lines.slideDown(600);
+                    lines.show();
                     glob.showing_greek = true;
                 } else {
                     el.target.textContent = "Show Greek";
-                    lines.slideUp(600);
+                    lines.hide();
                     glob.showing_greek = false;
                 }
                 lines.promise().done(function () {
@@ -933,6 +971,9 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             });
         }
     });
+    /**
+     * set edit mode. allows html elements to be edited, also allows colors to be set
+     */
     $("#b_ed").on('change', function () {
         if ($(this).prop("checked")) {
             $("#edit .remtxt, #edit .en, #edit ol ol li .ed")
@@ -953,6 +994,14 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         });
     });
     /**
+     *
+     */
+    $("#fg").on('click', function () {
+        $(".iltxt,.remtxt").slideToggle(350, function () {
+            $(this).remove();
+        });
+    });
+    /**
      * transparent button click
      * like a swatch, but makes the background transparent and the color black
      */
@@ -965,30 +1014,47 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             }
         );
     });
-    $("#test").on({
-        "click": function () {
-            // const a = new Linenumber(1, 1);
-            // let b = a.nextline().tostring();
-            // console.log(b);
-            // b = a.prevline().tostring();
-            // console.log(b);
-            // b = a.fromstring("2.870").tostring();
-            // console.log(b);
-            // let c = new Linenumber(1, 611);
-            // console.log(c.nextline().tostring());
-            // console.log(a.lessthan(c));
-            // c.fromstring("3.10");
-            // while (!c.prevline().lessthan(a)) {
-            //     console.log(c.tostring());
-            // }
-            //
-            // let txt = new XMLSerializer().serializeToString(parent.site100oxen.XML);
-            //
-            // var result = MD5(txt);
-            //
-            // console.log('hash: ' + result);
-        }
-    });
+
+    /**
+     * 'test' click
+     * turn off color on top level (below 'line') nodes that are all colored the same
+     * color attributes of the xml get removed
+      */
+    // $("#test").on({
+    //     "click": function () {
+    //         utils.maptree(glob.XML, function(node) {
+    //                 let match, fg, bg, sib;
+    //
+    //                 if(node.firstChild && node.firstChild.nodeName === "line") {
+    //                     fg = node.getAttribute('f');
+    //                     bg = node.getAttribute('c');
+    //                     sib = utils.getelementnode(node.nextSibling);
+    //                     match = false;
+    //                     while (sib) {
+    //                         match = (sib.getAttribute('f') === fg && sib.getAttribute('c') === bg
+    //                             && sib.firstChild.nodeName === "line");
+    //                         sib = utils.getelementnode(sib.nextSibling);
+    //                         if (!match) {
+    //                             break;
+    //                         }
+    //                     }
+    //                     if (match) {
+    //                         sib = utils.getelementnode(node);
+    //                         while (sib) {
+    //                             sib.removeAttribute('f');
+    //                             sib.removeAttribute('c');
+    //                             sib = utils.getelementnode(sib.nextSibling);
+    //                         }
+    //                         return false;
+    //                     }
+    //                 }
+    //                 return true;
+    //             }
+    //         );
+    //         parent.site100oxen.XML = glob.XML;
+    //         parent.site100oxen.init_tree();
+    //     }
+    // });
     //endregion Events
     //region Tree Events
     /**
@@ -1031,7 +1097,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 case "plm": // "+" or "-": expand/collapse subtree
                     $clicktarget.closest("li").eq(0).children("ol:first").slideToggle(350)
                         .promise().done(function () {
-                        utils.setlevel($clicktarget.closest("ol"), 0, 0);
+                        utils.setnodeattributes(glob.targetdiv);
                     });
                     break;
                 case "chk": //checkbox clicked. Selects adjacent siblings only.
@@ -1059,13 +1125,13 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      */
     glob.hueb = new Huebee('.color-input', {
         // options
-        hues: 16,
+        hues: 12,
         // number of hues of the color grid
         // default: 12
         hue0: 0,
         // the first hue of the color grid
         // default: 0
-        shades: 8,
+        shades: 5,
         // number of shades of colors and shades of gray between white and black
         // default: 5
         saturations: 1,
@@ -1137,13 +1203,17 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     function choose_colors(target, xpos, ypos) {
         if (xpos < 0) {
             xpos = 0;
-        } else if (xpos > 15) {
-            xpos = 17;
+        } else if (xpos > 11) {
+            xpos = 13;
         }
-        if (ypos < 2) {
+        if (xpos < 13 && ypos < 2) {
             ypos = 2;
-        } else if (ypos > 9) {
-            ypos = 9;
+        }
+        if (xpos === 13 && ypos === 0) {
+            ypos = 1; // for some reason, ypos 0 (=>white) as bg, hides the text irreversably
+        }
+        if (ypos > 6) {
+            ypos = 6;
         }
         const swatch = glob.hueb.swatches[xpos + "," + ypos]; // Huebee dictionary of colors by position
         target.style.backgroundColor = swatch.color;
@@ -1161,12 +1231,18 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      * on the middle node (like abcba "ring structure")
      */
     glob.hueb.on('click', function (color) {  // , hue, sat, lum also available
+        const $targets = $("#edit").find(":checked").prop("checked", false)
+            .closest("li").find("span:first");
+        if ($("#fg").prop("checked")) {
+                $targets.each(function (i, el) {
+                    el.style.color = color;
+            });
+            return;
+        }
         const pos = glob.hueb.colorGrid[color]; // Huebee's reverse lookup: list of positions by color
         let xpos = pos.x;
         let ypos = pos.y;
         let direction = $("#direct input[type=radio]:checked").val();
-        const $targets = $("#edit").find(":checked").prop("checked", false)
-            .closest("li").find("span:first");
         const halflen = Math.floor($targets.length / 2);
         const turn = $("#turning").prop("checked") === true;
         $targets.each(function (i, el) {

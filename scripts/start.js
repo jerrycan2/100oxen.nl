@@ -11,9 +11,10 @@ window.site100oxen = {
     global_flag_updating: false,
     XML: null, //here comes the XML parsetree
     xml_loaded: false,
-    ilXML: null,
-    odXML: null,
+    // ilXML: null,
+    // odXML: null,
     showAndGotoAnyLine: null,
+    loadAndGotoTextframeAnchor: null,
     init_tree: null,
     createlist: null,
     setnodeattributes: null,
@@ -21,6 +22,7 @@ window.site100oxen = {
     untouchable: true,
     getNewIframeFile: null,
     configColumns: null,
+    set_beginLine: null,
     currentPage: "",
 };
 //endregion Site global vars endregion
@@ -50,7 +52,7 @@ window.site100oxen = {
             ["1999.01.0133", "1999.01.0135", "1999.01.0129", "1999.01.0131"],//iliad, odyssey
             ["1999.01.0134", "1999.01.0136", "1999.01.0130", "1999.01.0132"] //theo, wd
         ],
-        perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0072:entry=i(/hmi-contents'",
+        perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
         pages_local: [
             ["100oxen.php", "100 Oxen"],
             ["editor.php", "editor"],
@@ -67,14 +69,13 @@ window.site100oxen = {
         greekframe: $("#greekframe"),
         butlerframe: $("#butlerframe"),
         textframe: $("#textframe"),
+        fileindex: 0,
         pages_menu_expanded: false,
         basic_fontsize: 16, //px
         keepFontsize: false, //if true: fontsize remains same after window resize
         OL_level: null,
         LI_elements: null,
-        gr_beginLine: 0,
-        bu_beginLine: 0,
-        gr_previousLine: 0,
+        beginLine: [0, 0, 0, 0],
         greekanchors: null,
         butleranchors: null,
         treetop_el_index: 0,
@@ -93,11 +94,12 @@ window.site100oxen = {
         selectBtnMessages: [
             [""],
             ["???"],
-            ["Goto gr.", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Greek", "English"],
-            ["Goto eng.", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Greek", "English"],
+            ["Goto gr.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
+            ["Goto eng.", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Greek", "English"],
             ["Goto"],
-            ["Find Greek", "<img id='perseus' alt='Alpheios icon' src='../images/alpheios.png'> :", "Word Study"],
-            ["Find Eng."]
+            ["Find Greek", "<img id='perseus' alt='Perseus icon' src='../images/perseus_digital_lib.gif'> :", "Word Study"],
+            ["Find Eng."],
+            ["set email adr."]
         ],
         selectBtnActions: [
             [showAndGotoAnyLine, null, perseusLookup, perseusLookup],
@@ -115,6 +117,7 @@ window.site100oxen = {
         currentLevel: 2,
         newXML: true,
         usip: "",
+        setlevel_expanded: false,
     };
     //endregion Page global
     //region Perseus
@@ -129,6 +132,10 @@ window.site100oxen = {
      */
     function perseusLookup(language) {
         let i, n1, n2, text, textindex, url1, parse, s, line;
+        // if (window.location.hostname !== "127.0.0.1") {
+        //     utils.myAlert("This only works with localhost");
+        //     return;
+        // }
         s = $("#textinput").val();
         parse = s.match(jbNS.parse_lineID);
         if (parse[4]) {
@@ -157,46 +164,43 @@ window.site100oxen = {
         } else {
             url1 = url1 + ":card=" + n2;
         }
-        //url1 = encodeURI( url1 ); ??
-        $("#pageframe")[0].src = url1;
-        configColumns(0, 2, true);
-        try {
-            history.pushState(null, "", url1);
-        } catch (ignore) {
-        }
+        url1 = encodeURI(url1);
+        window.open(url1);
+        // jbNS.pageframe[0].src = url1;
+        // configColumns(0, 2, true);
+        // try {
+        //     history.pushState(null, "", url1);
+        // } catch (ignore) {
+        // }
     }
 
-    function selectText(containerid) {
-        let range;
-        if (document.selection) { // IE
-            range = document.body.createTextRange();
-            range.moveToElementText(document.getElementById(containerid));
-            range.select();
-        } else if (window.getSelection) {
-            range = document.createRange();
-            range.selectNode(document.getElementById(containerid));
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+    function perseus_WS_search() {
+        var result, url;
+
+        result = $.trim($("#textinput").val());
+        result = uni2beta(result, true);
+        if (result === "") {
+            utils.myAlert("no selection!", false, null);
+            return;
         }
+        result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
+        result = result.replace(/hi/, "h|"); //(->Perseus beta code)
+        url = 'http://www.perseus.tufts.edu/hopper/morph?l=' + result + '&la=greek';
+        window.open(url);
+        // $("#pageframe")[0].src = url;
+        // try {
+        //     history.pushState(null, "", url);
+        // } catch (ignore) {
+        // }
+        // configColumns(0, 2, true);
     }
 
     /**
-     * goto perseus word-study with word in #textinput
+     * goto Alpheios word-study with word in #textinput
      */
-    function perseus_WS_search() {
-        let result, url;
-        //selectText("hiddendiv");
+    function WS_search() {
         $("#hiddendiv").show();
         $("#alphtext").text($("#textinput").val());
-        //$("#textinput").dblclick();
-        // result = $.trim($("#textinput").val());
-        // result = uni2beta(result, true);
-        // if (result === "") {
-        //     myAlert("no selection!", false, null);
-        //     return;
-        // }
-        // result = result.replace(/wi/, "w|"); //replace iota subscriptum after eta en omega
-        // result = result.replace(/hi/, "h|"); //(->Perseus beta code)
     }
 
     //endregion Perseus
@@ -207,7 +211,8 @@ window.site100oxen = {
      */
     function scrollgreek() {
         let begin, $top;
-        begin = jbNS.gr_beginLine < 1 ? 0 : jbNS.gr_beginLine - 1; //top = the previous line
+        begin = get_beginLine();
+        begin = begin < 1 ? 0 : begin - 1; //top = the previous line
         if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
             return;
         }
@@ -356,8 +361,8 @@ window.site100oxen = {
     /**
      * function compare_lineIDs : lineID = (text language chapter line), lineNR = (chapter line)
      * compare 2 lineID strings
-     * @param t1 : lineID
-     * @param t2 : lineID
+     * @param t1 : string // lineID
+     * @param t2 : string // lineID
      * @returns {number} // 1, -1 or 0
      */
     function compare_lineIDs(t1, t2) {
@@ -429,6 +434,23 @@ window.site100oxen = {
             return 1;
         }
         return -1;
+    }
+
+    /**
+     * function set_beginLine
+     * set the beginline (scroll top) of current text
+     * @param n : number //index to <a> element in greek text (jbNS.greekanchors), see common.js
+     */
+    function set_beginLine(n) {
+        jbNS.beginLine[jbNS.columns_config[1] - 1] = n;
+    }
+
+    /**
+     * get_beginLine
+     * @returns : number //first visible line of current text
+     */
+    function get_beginLine() {
+        return jbNS.beginLine[jbNS.columns_config[1] - 1];
     }
 
     //endregion scrolling & searching
@@ -531,13 +553,11 @@ window.site100oxen = {
                     if (tl.className === "bmcolor") {
                         tl.className = "";
                     } else {
-                        jbNS.gr_previousLine = jbNS.gr_beginLine = i + 1;
                         tl.className = "bmcolor";
                     }
                 }
                 if (scroll) {
-                    jbNS.gr_previousLine = jbNS.gr_beginLine;
-                    jbNS.gr_beginLine = i + 1;
+                    set_beginLine(i + 1);
                     scrollgreek();
                 }
                 break;
@@ -699,7 +719,6 @@ window.site100oxen = {
         bm = jbNS.bookMarx[currtxt];
         for (i = 0; i < bm.length; ++i) {
             if (bm[i].substr(0, 1) !== "-") {
-                jbNS.gr_previousLine = 0;
                 setUnsetBookMark(bm[i], false, greek);
             }
         }
@@ -724,12 +743,8 @@ window.site100oxen = {
      */
     function goto_BM_on_load() {
         let bm, parsebm;
-        jbNS.gr_previousLine = 0;
-        if (!jbNS.bm_to_goto) {
-            return;
-        }
         parsebm = jbNS.bm_to_goto.match(jbNS.parse_lineID);
-        if (!parsebm[4]) {
+        if (!parsebm || !parsebm[4]) {
             return;
         } // 4 = lineID
         bm = parsebm[4];
@@ -854,6 +869,9 @@ window.site100oxen = {
             if (loadtext) {
                 fetchTexts(textindex - 1);// callback also goes to goto_BM_on_load()
                 configColumns(1, textindex, true); // right text.
+                if (textindex < 3) {
+                    getXML(jbNS.xml_names[textindex - 1]);
+                }
             } else {
                 jbNS.bm_to_goto = "";
                 return;
@@ -918,21 +936,25 @@ window.site100oxen = {
     function gr_bu_MouseDown(event) {
         let time1 = event.timeStamp;
         $(event.delegateTarget).one("mouseup touchend", function (ev2) {
-            let notes, txt, time2, greek;
+            let notes, txt, time2, greek, parse;
             time2 = ev2.timeStamp - time1;
-            if (time2 < 500) {
-                gr_bu_MouseUp(ev2);
+            const holding = time2 > 500;
+            if (!holding) { // click/tap only
+                gr_bu_MouseUp(ev2, holding);
             } else { //'hold'
                 //ev2.preventDefault();
                 txt = getSelectedText(ev2);
                 greek = ev2.view.name === "greekframe";
-                if ($(ev2.target).is("a")) {
-                    if (greek) {
-                        txt = " " + txt;
-                    } else {
-                        txt = ":" + txt;
+                parse = txt.match(jbNS.parse_lineID);
+                if (parse && parse[4]) {
+                    if (!parse[2]) {
+                        if (greek) {
+                            txt = " " + txt;
+                        } else {
+                            txt = ":" + txt;
+                        }
+                        txt = jbNS.prefixes[jbNS.columns_config[1] - 1] + txt;
                     }
-                    txt = jbNS.prefixes[jbNS.columns_config[1] - 1] + txt;
                 }
                 if (txt !== "") {
                     notes = $("#notes:visible");
@@ -946,6 +968,8 @@ window.site100oxen = {
                             $("#textinput").val("selection too large");
                         }
                     }
+                } else {
+                    gr_bu_MouseUp(ev2, holding);
                 }
             }
         });
@@ -961,9 +985,9 @@ window.site100oxen = {
     function scrollTreeToLinenr(linenr) {
         utils.maptree.line = linenr;
         utils.maptree(window.site100oxen.XML, function (node) {
-            if (utils.maptree.node) {
-                return false;
-            }
+            // if (utils.maptree.node) {
+            //     return false;
+            // }
             if (node.nodeName === "line" &&
                 node.getAttribute("lnr") === utils.maptree.line) {
                 utils.maptree.line = node.parentNode.firstChild.getAttribute("lnr");
@@ -977,8 +1001,8 @@ window.site100oxen = {
             const fnd = $(`span:contains("${utils.maptree.line}")`).eq(0);
             const t = (fnd.offset().top - $(".book").eq(0).offset().top) +
                 ($("#topdiv").height() - $("span.ln:first").height());
-            $("#treeframe").animate({scrollTop: t}, 350); // position can only be calculated after expanding
-            utils.maptree.node = null;
+            jbNS.treeframe.animate({scrollTop: t}, 350); // position can only be calculated after expanding
+            // utils.maptree.node = null;
             utils.maptree.line = "";
         });
     }
@@ -987,8 +1011,9 @@ window.site100oxen = {
      * function gr_bu_MouseUp
      * clicked or selected in greek or butler text
      * @param event
+     * @param holding: boolean // true if mousedown time > 500ms
      */
-    function gr_bu_MouseUp(event) {// set in iframeload()
+    function gr_bu_MouseUp(event, holding) {// set in iframeload()
         let n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
         event.stopImmediatePropagation();
         if (jbNS.touchcancel) {
@@ -1041,7 +1066,9 @@ window.site100oxen = {
             }
         } else {
             if (click_lnr) {  // click on linenumber: let the other frame scroll there
-                scrollTreeToLinenr(line);
+                if (event.ctrlKey || holding) {
+                    scrollTreeToLinenr(line);
+                }
                 jbNS.bm_to_goto = line;
                 //if (greek) {
                 butlerGotoBM(line);
@@ -1120,9 +1147,9 @@ window.site100oxen = {
         clear_search();
         count = 0;
         flag = isGreekCode(inp);
-        $frame = $("#greekframe");
+        $frame = jbNS.greekframe;
         if (flag === 0) { //search in Butler text. No <b> tagging of found words here, only the bookmarks
-            $("#butlerframe").contents().find("p:contains('" + inp + "')").each(function (i, el) {
+            jbNS.butlerframe.contents().find("p:contains('" + inp + "')").each(function (i, el) {
                 let bm;
                 bm = $(el).children("a:first").text();
                 count += 1;
@@ -1199,37 +1226,38 @@ window.site100oxen = {
         let txt, i = 0, s, coding, lang = 3, lnr = false, typ = 0, parseln, $inp;
         $inp = $("#textinput");
         s = $inp.val();
-        if (s.indexOf("mailto:") >= 0) {
+        if (s.indexOf("mailto:") === 0) {
             typ = 2; // email addr
-        }
-        parseln = s.match(jbNS.parse_lineID);
-        if (parseln && lineID_2_lineNR_obj(parseln[4])) {
-            txt = parseln[2];
-            if (txt) {
-                for (i = 1; i <= 4; i += 1) {
-                    if (txt.toLowerCase() === jbNS.prefixes[i - 1].toLowerCase()) {
-                        break;
+        } else {
+            parseln = s.match(jbNS.parse_lineID);
+            if (parseln && lineID_2_lineNR_obj(parseln[4])) {
+                txt = parseln[2];
+                if (txt) {
+                    for (i = 1; i <= 4; i += 1) {
+                        if (txt.toLowerCase() === jbNS.prefixes[i - 1].toLowerCase()) {
+                            break;
+                        }
                     }
+                } else {
+                    i = jbNS.columns_config[1];
+                }
+                lnr = true;
+                if (parseln[3] === " ") {
+                    lang = 1;
+                } else if (parseln[3] === ":") {
+                    lang = 2;
                 }
             } else {
-                i = jbNS.columns_config[1];
+                if (!isNaN(parseInt(s, 10))) {
+                    //utils.myAlert( "ill-formed line number", false, null );
+                    typ = -1; // -1 = error
+                } else {
+                    coding = isGreekCode(s);
+                }
+            } //coding: text encoding 0=latin 1=greek 2=extended greek
+            if (i > 2 && (parseln[7] || parseInt(parseln[6]) > 1)) {
+                typ = -1;
             }
-            lnr = true;
-            if (parseln[3] === " ") {
-                lang = 1;
-            } else if (parseln[3] === ":") {
-                lang = 2;
-            }
-        } else {
-            if (!isNaN(parseInt(s, 10))) {
-                //utils.myAlert( "ill-formed line number", false, null );
-                typ = -1; // -1 = error
-            } else {
-                coding = isGreekCode(s);
-            }
-        } //coding: text encoding 0=latin 1=greek 2=extended greek
-        if (i > 2 && (parseln[7] || parseInt(parseln[6]) > 1)) {
-            typ = -1;
         }
         return {txt: i, lnr: lnr, taal: lang, code: coding, kind: typ};
     }
@@ -1390,6 +1418,7 @@ window.site100oxen = {
             keepdia = !(time2 > 500 || event.shiftKey); //click or hold
             inp = $(event.target).parent().siblings(".input")[0];
             //document.getElementById( "notes" );
+            inp.value = inp.value.toLowerCase();
             enterInput(changeTextCoding(inp, keepdia), inp, true);
         });
     }
@@ -1433,6 +1462,7 @@ window.site100oxen = {
                 break;
             case 5: // search greek
             case 6:
+                s = s.toLowerCase();
                 jbNS.selectBtnActions[1][index]();
                 break;
             case 7: //set email addr
@@ -1508,9 +1538,20 @@ window.site100oxen = {
     }
 
     function setMailAdr() {
-        let $txt = $("#textinput");
-        localStorage.setItem("mailadr", $txt.val().substr(7));
-        $txt.val("");
+        let txt = $("#textinput").val();
+        if (txt.length > 7) {
+            txt = $.trim(txt.substr(7));
+        } else return;
+        const check = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i;
+        const res = txt.match(check);
+        if(!res) {
+            utils.myAlert(`email adr. ${txt} seems invalid. Enter anyway?`, true, function () {
+                localStorage.setItem("mailadr", txt);
+            })
+        }
+        else {
+            localStorage.setItem("mailadr", txt);
+        }
     }
 
     function getMailAdr() {
@@ -1578,7 +1619,7 @@ window.site100oxen = {
      */
     function showAllLines() {
         let i, len, headers;
-        headers = $("#greekframe").contents().find("h4");
+        headers = jbNS.greekframe.contents().find("h4");
         len = headers.length;
         for (i = 0; i < len; i += 1) {
             headers[i].style.display = "";
@@ -1602,7 +1643,7 @@ window.site100oxen = {
                 p.parentNode.style.display = "none";
             }
         }
-        headers = $("#greekframe").contents().find("h4");
+        headers = jbNS.greekframe.contents().find("h4");
         len = headers.length;
         for (i = 0; i < len; i += 1) {
             headers[i].style.display = "none";
@@ -1689,8 +1730,11 @@ window.site100oxen = {
      * @param event
      */
     function tree_handleMouseEvents(event) { //single click or mouseenter
-        let $trg, $prev, $ol, s, ids, bg, lvl, hovering, found, anchor;
-        hovering = event.type !== "click";
+        const hovering = event.type === "mouseenter";
+        if (!((event.type === "click") || hovering)) {
+            return;
+        }
+        let $trg, $prev, $ol, s, ids, bg, lvl, found, anchor;
         $trg = $(event.target);
         if (hovering) {
             ids = element2lineIDs($trg);
@@ -1704,19 +1748,22 @@ window.site100oxen = {
         } else if ($trg.is("span")) {
             $prev = $trg.prev("span");
             if ($prev && $prev.hasClass("ln")) { /*click on text part*/
-                if (hovering) {
+                const ix = jbNS.columns_config[1] - 1;
+                if (hovering || jbNS.fileindex !== ix) {
+                    if (jbNS.fileindex === 0) {
+                        utils.myAlert("load Iliad text first", false);
+                    } else if (jbNS.fileindex === 1) {
+                        utils.myAlert("load Odyssey text first", false);
+                    }
                     return;
                 }
                 if ($trg.parents("ol").eq(0).hasClass("book")) { //click on top element: wipe
-                    wipeColors();//wipe all colored sections
+                    wipeColors([jbNS.greekanchors, jbNS.butleranchors]);//wipe all colored sections
                     return;
                 }
                 selectTextSection($trg); // color greek lines
                 s = $prev.text();
-                const ix = jbNS.columns_config[1] - 1;
-                if (ix < 2) {
-                    showAndGotoAnyLine(`${jbNS.prefixes[ix]} ${s}`, false);
-                }
+                showAndGotoAnyLine(`${jbNS.prefixes[ix]} ${s}`, false);
             } else if (!hovering && $trg.is(".plm")) { /*click on + or - */
                 $ol = $trg.closest("li").eq(0).children("ol").eq(0);
                 $ol.slideToggle(400); //this = LI element
@@ -1791,34 +1838,27 @@ window.site100oxen = {
     /**
      * function wipeColors
      * remove all coloring + class from linenrs of greekframe / butlerframe
+     * @param targets: array // of arrays of <a> elements
      */
-    function wipeColors() {
+    function wipeColors(targets) { // targets = [jbNS.greekanchors, jbNS.butleranchors]
 
-        var i, arr, $t;
-        arr = jbNS.greekanchors;
-        for (i = 0; i < arr.length; i += 1) {
-            $t = $(arr[i]);
-            if ($t.hasClass("colored")) {
-                $t.css(
-                    {
-                        color: "",
-                        "background-color": ""
-                    }
-                ).removeClass("colored");
+        function removeColor(arr) {
+            function wipeItem(i, val) {
+                let $item = $(val);
+                if ($item.hasClass("colored")) {
+                    $item.css(
+                        {
+                            color: "",
+                            "background-color": ""
+                        }
+                    ).removeClass("colored");
+                }
             }
+
+            arr.each(wipeItem);
         }
-        arr = jbNS.butleranchors;
-        for (i = 0; i < arr.length; i += 1) {
-            $t = $(arr[i]);
-            if ($t.hasClass("colored")) {
-                $t.css(
-                    {
-                        color: "",
-                        "background-color": ""
-                    }
-                ).removeClass("colored");
-            }
-        }
+
+        targets.forEach(removeColor);
     }
 
     /**
@@ -1862,16 +1902,17 @@ window.site100oxen = {
      * @param $orig : object // element where mouse event originates
      */
     function selectTextSection($orig) { // source: tree_handleMouseEvents() on text part
-        var ids, colors;
 
-        ids = element2lineIDs($orig.prev("span"));
+        const ids = element2lineIDs($orig.prev("span"));
 
-        colors = {};
+        let colors = {};
         colors.bcolor = $orig.css("backgroundColor");
         colors.fcolor = $orig.css("color");
-
-        showAndGotoAnyLine("il " + ids.beginning);
-        colorGreekLineNrs(colors, ids.beginning, ids.last);
+        showAndGotoAnyLine(`${jbNS.prefixes[jbNS.columns_config[1] - 1]} ${ids.beginning}`);
+        if (!(parseInt(utils.rgb2hex(colors.bcolor), 10) === 0 &&
+            parseInt(utils.rgb2hex(colors.fcolor), 10) === 0)) {
+            colorGreekLineNrs(colors, ids.beginning, ids.last);
+        }
     }
 
     /**
@@ -1947,7 +1988,7 @@ window.site100oxen = {
             }).done(function (data, textStatus, jqXHR) {
                 let iframe = document.getElementById(targetframe);
                 iframe.srcdoc = data;
-                if ("console" in window) console.log(url + " from cache: " + !getnew + "," + etag);
+                //if ("console" in window) console.log(url + " from cache: " + !getnew + "," + etag);
             });
         })
             .fail(function (jqXHR, textStatus, errorThrown) {
@@ -1971,77 +2012,52 @@ window.site100oxen = {
     }
 
     /**
-     * function iFrameLoad
-     * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
-     * @param id : string // #id of iframe
-     * @param src : string //url
-     * @returns {*}
-     */
-    /**
      * function fetchTexts
      * fetch greek/butler texts acc. to columns_config
-     * @param filenr : number // index to filenames array
+     * @param fileindex : number // index to filenames array
      */
+    function fetchTexts(fileindex) {
+        let deferred = $.Deferred();
 
-
-    //     return $.ajax({
-    //         type: "HEAD",
-    //         async: true,
-    //         cache: false,
-    //         datatype: "text",
-    //         url: src,
-    //     }).done(function (message, textStatus, jqXHR) {
-    //         const resp = jqXHR.getAllResponseHeaders();
-    //         const etag = resp.match(/etag: \"(.*)\"/i);
-    //         let here = localStorage.getItem(src);
-    //         let getnew = true;
-    //         if (here && here === etag[1]) {
-    //             getnew = false;
-    //         }
-    //         if (getnew && etag) {
-    //             localStorage.setItem(src, etag[1]);
-    //             here = etag[1];
-    //         }
-    //         //src += `?_=${here}`;
-    //         iFrameLoad1(id, src);
-    //     });
-    // }
-    function fetchTexts(filenr) {
+        /**
+         * function iFrameLoad
+         * deferred load an iframe (greek/butler) and return a promise (so a callback can be called after loading )
+         * @param id : string // #id of iframe
+         * @param src : string //url
+         * @returns {*}
+         */
         function iFrameLoad(id, src) {
             $.ajax({
                 type: "GET",
                 datatype: "text",
-                url: "getmtime.php?file=" + src,
+                url: "getmtime.php?file=" + src, //get filename (with modified-date built in)
             }).done(function (result) {
-                let deferred = $.Deferred(),
-                    iframe = document.getElementById(id);
+                let iframe = document.getElementById(id),
+                    dfd = $.Deferred();
                 iframe.src = result;
-                $(iframe).load(deferred.resolve);
-                deferred.done(function () { //what to do after the individual frame has been loaded
-                    $("#selonly").text("Show only selection");
-                    if (!done) {
-                        done = true;
-                    } else {
-                        dfd.resolve();
+                $(iframe).load(dfd.resolve);
+                dfd.done(function () {
+                    if ("console" in window) console.log(src);
+                    if (--filestogo === 0) {
+                        deferred.resolve();
                     }
-                    if ("console" in window) console.log("ajax2");
+                    console.log("to go: " + filestogo);
                 });
-                return deferred.promise();
             }); // end iframeload
         }
 
-        let dfd = $.Deferred();
-        let done = false;
-        iFrameLoad("greekframe", jbNS.filenames[1][filenr]);
-        iFrameLoad("butlerframe", jbNS.filenames[2][filenr]);
-        dfd.done(function () { //what to do after both frames have been loaded:
+        let filestogo = 2; //nr of files to load
+        iFrameLoad("greekframe", jbNS.filenames[1][fileindex]);
+        iFrameLoad("butlerframe", jbNS.filenames[2][fileindex]);
+        deferred.done(function () { //what to do after both frames have been loaded:
             setColumns();
-            jbNS.butleranchors = $("#butlerframe").contents().find("a");
-            jbNS.greekanchors = $("#greekframe").contents().find("a"); //collect anchors (linenumbers)
-            console.log(jbNS.butleranchors.length + "," + jbNS.greekanchors.length);
-            if (jbNS.gr_beginLine > 0) {
-                scrollgreek();
-            }
+            jbNS.butleranchors = jbNS.butlerframe.contents().find("a");
+            jbNS.greekanchors = jbNS.greekframe.contents().find("a"); //collect anchors (linenumbers)
+            //console.log(jbNS.butleranchors.length + "," + jbNS.greekanchors.length);
+            $("#selonly").text("Show only selection");
+            //if (jbNS.gr_beginLine > 0) {
+            scrollgreek();
+            //}
             putbackBookmarks(true); // false = butler, true = greek
             putbackBookmarks(false); // false = butler, true = greek
             $("#greekframe,#butlerframe").contents().find("body").on({
@@ -2054,9 +2070,16 @@ window.site100oxen = {
             if (window.site100oxen.untouchable) {
                 createSplitter();
             }
-            if ("console" in window) console.log("fetch");
+            if ("console" in window) console.log("fetched");
             adjustColWidth();
-            goto_BM_on_load();
+            if (!jbNS.bm_to_goto) {
+                scrollgreek();
+                let begin = get_beginLine();
+                begin = begin > 0 ? begin - 1 : 0;
+                butlerGotoBM(jbNS.greekanchors[begin].textContent);
+            } else {
+                goto_BM_on_load();
+            }
         });
     }
 
@@ -2104,7 +2127,7 @@ window.site100oxen = {
                 });
             });
             if (site100oxen.untouchable) {
-                $("#treeframe").getNiceScroll().resize();
+                jbNS.treeframe.getNiceScroll().resize();
             }
             scrollgreek();
         });
@@ -2184,27 +2207,34 @@ window.site100oxen = {
         col1 = jbNS.columns_config[0]; // list or page or none
         jbNS.treeframe.hide();
         jbNS.pageframe.hide();
-        // if (col1 && colnum > 2) {
-        //     colwidth = (scr / (colnum + 1)) - 8; //8 for resizer
-        // } else {
-        //     colwidth = (scr / colnum) - 8;
-        // }
         colwidth = scr / 60;
         switch (colnum) {
             case 1:
                 w1 = 60 * colwidth;
                 break;
             case 2:
-                w1 = 40 * colwidth;
-                w2 = 20 * colwidth;
+                if (jbNS.columns_config[0]) {
+                    w1 = 40 * colwidth;
+                    w2 = 20 * colwidth;
+                } else {
+                    w1 = w2 = 30 * colwidth;
+                }
                 break;
             case 3:
-                w1 = 30 * colwidth;
-                w2 = 15 * colwidth;
+                if (jbNS.columns_config[0]) {
+                    w1 = 30 * colwidth;
+                    w2 = 15 * colwidth;
+                } else {
+                    w1 = w2 = 20 * colwidth;
+                }
                 break;
             case 4:
-                w1 = 24 * colwidth;
-                w2 = 12 * colwidth;
+                if (jbNS.columns_config[0]) {
+                    w1 = 24 * colwidth;
+                    w2 = 12 * colwidth;
+                } else {
+                    w1 = w2 = 15 * colwidth;
+                }
                 break;
         }
         w1 -= 8;
@@ -2295,71 +2325,68 @@ window.site100oxen = {
     function switchColMousedown(event) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        $("#switchColumns").one("mouseup touchend", function (e) { //handler deleted after execution
-            let $trg, $par, colnr, ix, time2, t;
-            $trg = $(e.target);
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            if ($trg.is("nav") || $trg.is("ul")) {
-                swcol_up();
-                return;
+        const $trg = $(event.target);
+        if ($trg.is("nav") || $trg.is("ul")) {
+            swcol_up();
+            return;
+        }
+        const $par = $trg.parents("li");
+        const ix = $trg.index(); // content button index 0-1, but 0-3 if colnr == 1
+        const colnr = $par.index(); // column index: 0=list/page, 1=Il,Od,Theo,WD 2=gr/transl 3=expl/? NOTE:colnr - 1 if left & right btns
+        // button clicked: show/hide/switch pages or texts
+        if (colnr > 0) {// button clicked: show/hide/switch pages or texts
+            storeExpansionstate();
+            localStorage.setItem("scrollpos", jbNS.beginLine.toString());
+            const doload = jbNS.columns_config[1] - 1;
+            configColumns(colnr, ix + 1, false); //-1
+            //store_colconf();
+            if (colnr === 1) {
+                if (ix < 2) {
+                    //console.log("->" + jbNS.xml_names[ix]);
+                    getXML(jbNS.xml_names[ix]).done(() => {
+                        init_tree();
+                    });
+                }
+                if (ix !== doload) {
+                    fetchTexts(ix); // fetch greek & butler texts
+                }
             }
-            $par = $trg.parents("li");
-            ix = $trg.index(); // content button index 0-1, but 0-3 if colnr == 1
-            colnr = $par.index(); // column index: 0=list/page, 1=Il,Od,Theo,WD 2=gr/transl 3=expl/? NOTE:colnr - 1 if left & right btns
-            // button clicked: show/hide/switch pages or texts
-            if (colnr > 0) {// button clicked: show/hide/switch pages or texts
-                storeExpansionstate();
-                configColumns(colnr, ix + 1, false); //-1
-                if (colnr === 1) {
-                    jbNS.gr_beginLine = 0;
-                    if (ix < 2 && (jbNS.columns_config[0] === 1) || site100oxen.currentPage === "blocks.php") {
-                        //console.log("->"+jbNS.xml_names[ix]);
-                        getXML(jbNS.xml_names[ix]).done(() => {
-                            init_tree();
-                        });
+            if (colnr === 2) {
+                goto_BM_on_load();
+            } else {
+                jbNS.bm_to_goto = "";
+            }
+            if (colnr === 3) {
+                jbNS.textframe[0].src = jbNS.filenames[3][ix];
+            }
+        } else if (!$trg.is(".switch")) { // pages in/out
+            switch (jbNS.columns_config[0]) {
+                case 0:
+                    configColumns(0, ix + 1, true); // show the column, treeframe or page
+                    break;
+                case 1:
+                    if (ix === 0) {
+                        configColumns(0, 0, true); // hide treeframe
                     } else {
-                        if ("console" in window) console.log("mousedown");
-                        fetchTexts(ix); // fetch greek & butler texts
+                        jbNS.pageframe[0].src = site100oxen.currentPage;
+                        configColumns(0, 2, true); // show page
                     }
-                }
-                if (colnr === 2) {
-                    goto_BM_on_load();
-                } else {
-                    jbNS.bm_to_goto = "";
-                }
-                if (colnr === 3) {
-                    jbNS.textframe[0].src = jbNS.filenames[3][ix];
-                }
-            } else { // pages in/out
-                switch (jbNS.columns_config[0]) {
-                    case 0:
-                        configColumns(0, ix + 1, true); // show the column, treeframe or page
-                        break;
-                    case 1:
-                        if (ix === 0) {
-                            configColumns(0, 0, true); // hide treeframe
+                    break;
+                case 2:
+                    if (ix === 1) {
+                        if (site100oxen.currentPage !== 'sitemap.php') {
+                            jbNS.pageframe[0].src = 'sitemap.php';
+                            site100oxen.currentPage = 'sitemap.php';
+                            configColumns(0, 2, true);
                         } else {
-                            $("#pageframe")[0].src = site100oxen.currentPage;
-                            configColumns(0, 2, true); // show page
+                            configColumns(0, 0, true);
                         }
-                        break;
-                    case 2:
-                        if (ix === 1) {
-                            if (site100oxen.currentPage !== 'sitemap.php') {
-                                $("#pageframe")[0].src = 'sitemap.php';
-                                site100oxen.currentPage = 'sitemap.php';
-                                configColumns(0, 2, true);
-                            } else {
-                                configColumns(0, 0, true);
-                            }
-                        } else {
-                            configColumns(0, 1, true);
-                        }
-                        break;
-                }
+                    } else {
+                        configColumns(0, 1, true);
+                    }
+                    break;
             }
-        });
+        }
     }
 
     /**
@@ -2428,6 +2455,9 @@ window.site100oxen = {
                 jbNS.columns_config[colnr] = (jbNS.columns_config[colnr] === ix ? 0 : ix);
             }
         }
+        // const s = jbNS.columns_config.toString();
+        // localStorage.setItem("colconf", s);
+
         $allbuttons.removeClass("switchselect");
         if (colnr === 1) { //text select
             if (jbNS.columns_config[1]) {
@@ -2443,6 +2473,7 @@ window.site100oxen = {
                 $allbuttons.eq(1 + language_choice).addClass("switchselect");
             }
         }
+
         if (jbNS.dontSetColumns) {
             jbNS.dontSetColumns = false;
             return jbNS.columns_config[colnr];
@@ -2467,7 +2498,7 @@ window.site100oxen = {
      */
     function setHeaderContents(size) {
         let m1, relwidth;
-        relwidth = window.innerWidth / size;
+        relwidth = Math.round(window.innerWidth / size);
         m1 = $("#menu1");
         $(".lrpic, #hdpic1, #hdpic2").hide();
         m1.css("width", "95%");
@@ -2630,12 +2661,12 @@ window.site100oxen = {
             return;
         }
         //1: save column config
-        if (jbNS.columns_config[1] === 0) {
-            jbNS.columns_config[1] = 1;
-        }
-        s = jbNS.columns_config.toString();
-        localStorage.setItem("colconf", s);
+        // if (jbNS.columns_config[1] === 0) {
+        //     jbNS.columns_config[1] = 1;
+        // }
+        store_colconf();
         // 2: save bookmarks
+
         s = jbNS.bookMarx.toString();
         localStorage.setItem("bookmarks", s);
         // 3: save list expansion state
@@ -2647,6 +2678,10 @@ window.site100oxen = {
         localStorage.setItem("fontsize", jbNS.basic_fontsize);
         //6: save current page in left iframe
         localStorage.setItem("currentpage", site100oxen.currentPage);
+        //7: save scroll positions
+        s = jbNS.beginLine.toString();
+        localStorage.setItem("scrollpos", s);
+        localStorage.setItem("treetop", jbNS.treetop_el_index);
     }
 
     function read_in_Bookmarx(s) {
@@ -2675,42 +2710,58 @@ window.site100oxen = {
         //cleanupBookMarx();
     }
 
+    function get_colconf() {
+        const s = localStorage.getItem("colconf") || "1,1,3,0";
+        console.log("getconf " + s);
+        const arr = s.split(",");
+        for (let i = 0; i < 4; ++i) {
+            jbNS.columns_config[i] = parseInt(arr[i]);
+        }
+    }
+
+    function store_colconf() {
+        const s = jbNS.columns_config.toString();
+        localStorage.setItem("colconf", s);
+        console.log('saveps ' + s);
+    }
+
     /**
      * function loadPageState
-     * load column config, bookmarks, scroll state, tree config from localStorage
+     * load bookmarks, scroll state, tree config from localStorage
+     * columns config loaded separately, has to be set here
      */
     function loadPageState() {
         let s, arr, i, tf, fs = 16;
-        s = localStorage.getItem("colconf") || "1,1,3,0";
-        //s = "0,0,1,2";
-        arr = s.split(",");
-        for (i = 0; i < 4; ++i) {
-            jbNS.columns_config[i] = parseInt(arr[i]);
-        }
-        if ("console" in window) console.log("pagestate");
-        fetchTexts(jbNS.columns_config[1] - 1);
-        tf = jbNS.columns_config[3];
-        if (tf) {
-            jbNS.textframe[0].src = jbNS.filenames[3][tf - 1];
-        }
-        for (i = 0; i < 4; ++i) {
-            jbNS.dontSetColumns = true; //this works only for 1 call
-            configColumns(i, jbNS.columns_config[i], true);
-        }
-        s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";
-        read_in_Bookmarx(s);
-        jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
-        jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name() + "_lvl")) || 1;
         jbNS.keepFontsize = localStorage.getItem("keepfontsize") === "1";
         jbNS.basic_fontsize = fs; //can be set different
-        if (window.location.href !== parent.location.href) { //?
+        if (window.location.href !== parent.location.href) { // if the page is loaded outside index.php
             jbNS.keepFontsize = false;
         }
         if (jbNS.keepFontsize) {
             jbNS.basic_fontsize = parseInt(localStorage.getItem("fontsize")) || fs;
         }
         $("#keepfs")[0].checked = !jbNS.keepFontsize; //"auto"
-        setHeaderContents(jbNS.basic_fontsize);
+        zoominout();
+
+        //console.log("pagestate " + s);
+        // ft
+        tf = jbNS.columns_config[3];
+        if (tf) {
+            jbNS.textframe[0].src = jbNS.filenames[3][tf - 1];
+        }
+        for (i = 0; i < 4; ++i) { // set switchactive (red color)
+            jbNS.dontSetColumns = true; //this works only for 1 call
+            configColumns(i, jbNS.columns_config[i], true);
+        }
+        fetchTexts(jbNS.columns_config[1] - 1);
+        let s2 = jbNS.columns_config.toString();
+        console.log("pagestate2 " + s2);
+        doResize();
+        s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";
+        read_in_Bookmarx(s);
+        jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
+        jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name() + "_lvl")) || 1;
+        //setHeaderContents(jbNS.basic_fontsize);
         loadNotes();
         s = localStorage.getItem("splash") || "";
         if (s !== "hide") {
@@ -2727,8 +2778,12 @@ window.site100oxen = {
         // }
         setSelButtonText();
         site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.php";
-        $("#pageframe")[0].src = site100oxen.currentPage;
-        zoominout();
+        jbNS.pageframe[0].src = site100oxen.currentPage;
+        let s1 = localStorage.getItem("scrollpos") || "0,0,0,0";
+        let arr1 = s1.split(",");
+        for (let i = 0; i < 4; ++i) {
+            jbNS.beginLine[i] = parseInt(arr1[i]);
+        }
     }
 
     function init_tree() {
@@ -2751,6 +2806,32 @@ window.site100oxen = {
             $('#treeframe').scrollTop(0);
 
         }
+    }
+
+    function doResize() {
+        let li;
+        li = $("#col4").find("li");
+        if (window.innerWidth < 500) {
+            li.eq(0).text("expl");
+            $("#switchColumns").css("fontSize", "90%");
+            $("#switchColumns ul li").css("margin", "0");
+        } else {
+            li.eq(0).text("explanation");
+            $("#switchColumns").css("fontSize", "110%");
+            $("#switchColumns ul li").css("margin", "0 0.5rem");
+        }
+        // let uls = $("#switchColumns ul li ul");
+        // let lft = uls.eq(1).position().left + uls.eq(1).width();
+        // let rt = uls.eq(2).position().left;
+        // //utils.myAlert(Math.floor(rt - lft) + "," + w, true, null, null);
+        // if (rt - lft < 15) {
+        //     $("#switchColumns").css("fontSize", "90%");
+        //     $("#switchColumns ul li").css("margin", "0");
+        // } else {
+        //     $("#switchColumns").css("fontSize", "110%");
+        //     $("#switchColumns ul li").css("margin", "0 0.5rem");
+        // }
+        // utils.myAlert("w: " + window.innerWidth);
     }
 
     //endregion
@@ -2818,12 +2899,6 @@ window.site100oxen = {
         return this;
     };
     //endregion
-    //region set globals
-    window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
-    window.site100oxen.init_tree = init_tree;
-    window.site100oxen.getNewIframeFile = getNewIframeFile;
-    window.site100oxen.configColumns = configColumns;
-    //endregion
     //region bound event handlers
     $("#hiddendiv").on({
         "click": function () {
@@ -2846,34 +2921,23 @@ window.site100oxen = {
     });
     $(window).on({
         "resize": function () {
-            let li;
-            li = $("#col4").find("li");
-            if (window.innerWidth < 500) {
-                li.eq(0).text("expl");
-            } else {
-                li.eq(0).text("explanation");
-            }
-            let uls = $("#switchColumns ul li ul");
-            let lft = uls.eq(1).position().left + uls.eq(1).width();
-            let rt = uls.eq(2).position().left;
-            //utils.myAlert(Math.floor(rt - lft) + "," + w, true, null, null);
-            if (rt - lft < 15) {
-                $("#switchColumns").css("fontSize", "90%");
-                $("#switchColumns ul li").css("margin", "0");
-            }
-            else {
-                $("#switchColumns").css("fontSize", "110%");
-                $("#switchColumns ul li").css("margin", "0 0.5rem");
-            }
+            doResize();
             zoominout();
             jbNS.oldcolnum = -1;
             setColumns();
             adjustColWidth();
             scrollgreek();
         },
-        //"unload": savePageState,
         "beforeunload": function () {
             savePageState();
+        },
+        "blur": function () {
+            savePageState();
+        },
+        "visibilityChange": function () {
+            if (document.visibilityState === "hidden") {
+                savePageState();
+            }
         }
     });
     $("iframe").on({
@@ -2904,16 +2968,48 @@ window.site100oxen = {
     $("#bmnext").on({"click": nextbm});
     $("#bmprev").on({"click": prevbm});
     $("#setlevel").on({
+        "mouseenter": function () {
+            if (window.site100oxen.untouchable && !jbNS.setlevel_expanded) {
+                $("#setlevel").css({
+                    'transform': 'scale(2,1)',
+                });
+                $("#setlevel tr td").css("backgroundColor", "darkblue");
+                jbNS.setlevel_expanded = true;
+            }
+        },
+        "mouseleave": function () {
+            if (window.site100oxen.untouchable) {
+                $("#setlevel").css({
+                    'transform': 'scale(1,1)',
+                });
+                $("#setlevel tr td").css("backgroundColor", "rgb(0,0,0,0)");
+                jbNS.setlevel_expanded = false;
+            }
+        },
         "click": function (event) {
             event.stopImmediatePropagation();
-            let $targ = $(event.target);
-            let t = $targ.text();
-            $("#setlevel tr td").css("backgroundColor", "");
-            if (t !== "level:") {
-                utils.expand("list", parseInt(t, 10), false);
-            }
-            if ($targ.is("td")) {
-                $targ.css("backgroundColor", "black");
+            if (jbNS.setlevel_expanded) {
+                let $targ = $(event.target);
+                let t = $targ.text();
+                $("#setlevel tr td").css("backgroundColor", "");
+                if (t !== "level:") {
+                    utils.expand("list", parseInt(t, 10), false);
+                }
+                if ($targ.is("td")) {
+                    $targ.css("backgroundColor", "black");
+                    jbNS.currentLevel = parseInt(t, 10);
+                }
+                $("#setlevel").css({
+                    'transform': 'scale(1,1)',
+                });
+                $("#setlevel tr td").css("backgroundColor", "rgb(0,0,0,0)");
+                jbNS.setlevel_expanded = false;
+            } else {
+                $("#setlevel").css({
+                    'transform': 'scale(2,1)'
+                });
+                $("#setlevel tr td").css("backgroundColor", "darkblue");
+                jbNS.setlevel_expanded = true;
             }
         }
     });
@@ -2949,13 +3045,6 @@ window.site100oxen = {
             event.stopImmediatePropagation();
             del_all_bm();
             clear_search();
-            $.ajax({
-                type: "GET",
-                datatype: "text",
-                url: "setmap.php"
-            }).done(function (txt) {
-                if ("console" in window) console.log(txt);
-            });
         }
     );
     $("#empty").on({
@@ -2969,14 +3058,14 @@ window.site100oxen = {
             clear_search();
         }
     });
-    $("#goback").click(function (event) {
-        let tmp;
-        event.stopImmediatePropagation();
-        tmp = jbNS.gr_beginLine;
-        jbNS.gr_beginLine = jbNS.gr_previousLine;
-        jbNS.gr_previousLine = tmp;
-        scrollgreek();
-    });
+    // $("#goback").click(function (event) {
+    //     let tmp;
+    //     event.stopImmediatePropagation();
+    //     tmp = jbNS.gr_beginLine;
+    //     jbNS.gr_beginLine = jbNS.gr_previousLine;
+    //     jbNS.gr_previousLine = tmp;
+    //     scrollgreek();
+    // });
     $("#to_pad").click(function () {
         $("#shownotes").trigger("click");
         let m = "!BM\n" + jbNS.bookMarx[0].join('\n') + '\n';
@@ -2995,7 +3084,7 @@ window.site100oxen = {
     });
     $(".btn1 ul li").on({
         "click": function (event) {
-            event.stopImmediatePropagation();
+            //event.stopImmediatePropagation();
             //utils.myAlert("notok", false);
             $(".btn1 ul").hide();
         }
@@ -3060,8 +3149,8 @@ window.site100oxen = {
         "paste": function () {
             setTimeout(setSelButtonText, 100);
         }, //delay because "paste" fires before the text is entered
-        "click": function () {
-            //event.stopImmediatePropagation();
+        "click": function (event) {
+            event.preventDefault();
             return false;
         },
         "dblclick": clrinp
@@ -3095,8 +3184,13 @@ window.site100oxen = {
     });
     $("#savestate").click(savePageState);
     $("#loadstate").click(function () {
-        loadPageState();
-        setExpansionstate();
+        getXML(jbNS.xml_names[jbNS.columns_config[1] - 1]).done(() => { //xml load what is in localStorage or iliad.xml
+            get_colconf();
+            init_all();
+        })
+            .fail((msg) => {
+                utils.myAlert(msg, true);
+            });
     });
     $("#beta, #betaswitch").on("mousedown", betaclick);
     $("#betaswitch").click(function () {
@@ -3115,11 +3209,16 @@ window.site100oxen = {
         $("#notes")[0].value = "";
     });
     $("#send").click(function () {
-        $(location).attr('href', 'mailto:' + getMailAdr() + '?subject=' +
-            encodeURIComponent("homepage note") +
-            "&body=" +
-            encodeURIComponent($("#notes")[0].value)
-        );
+        const adr = getMailAdr();
+        if (adr === "") {
+            utils.myAlert("no email address! Type 'mailto:[adr] in search box", false);
+        } else {
+            $(location).attr('href', 'mailto:' + getMailAdr() + '?subject=' +
+                encodeURIComponent("homepage note") +
+                "&body=" +
+                encodeURIComponent($("#notes")[0].value)
+            );
+        }
     });
     $("#arktos").click(function () {
         showAndGotoAnyLine("od 5.273", true);
@@ -3133,12 +3232,12 @@ window.site100oxen = {
         }
     });
     $("#editor").click(function () {
-        $("#pageframe")[0].src = 'editor.php';
+        jbNS.pageframe[0].src = 'editor.php';
         site100oxen.currentPage = 'editor.php';
         configColumns(0, 2, true);
     });
     $("#clearcolors").click(function () {
-        wipeColors();
+        wipeColors([jbNS.greekanchors, jbNS.butleranchors]);
     });
     $("#savefile").click(saveBlob);
     $("#loadfile").click(loadFileAsText);
@@ -3147,39 +3246,14 @@ window.site100oxen = {
         localStorage.setItem("showmsg", "false");
         localStorage.setItem("messages", $("#messages span").text());
     });
+    $("#struct_header").click(function () {
+        if (!jbNS.pageframe[0].src.includes("blocks.php")) {
+            jbNS.pageframe[0].src = "blocks.php";
+        }
+        configColumns(0, 2, false);
+    });
 
     //endregion
-    function init_all() {
-        window.site100oxen.forcereload = false;
-        window.site100oxen.xml_loaded = true;
-        init_tree();
-        localStorage.setItem("colconf", jbNS.columns_config.toString());
-        //storeExpansionstate();
-        window.site100oxen.untouchable = // are we on a touch device?
-            !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-        if (window.site100oxen.untouchable) {
-            $("#treeframe").niceScroll({
-                cursorcolor: "#888",
-                cursorwidth: "7px",
-                background: "rgba(0,0,0,0.1)",
-                cursoropacitymin: 0.2,
-                hidecursordelay: 0,
-                zindex: 2,
-                horizrailenabled: true
-            });
-        }
-        loadPageState(); // from localStorage
-        //zoominout();
-        $.ajax({
-            type: "GET",
-            datatype: "json",
-            url: "https://api.ipify.org?format=json"
-        }).done(function (json) {
-            jbNS.usip = json.ip;
-            if ("console" in window) console.log(jbNS.usip);
-        });
-    }
-
     //region Ajax get xml
     function getXML(filename) {
         if (!filename) {
@@ -3192,6 +3266,7 @@ window.site100oxen = {
             localStorage.setItem(filename, "");
         }
         let fileindex = jbNS.xml_names.indexOf(filename);
+        jbNS.fileindex = fileindex;
         if (fileindex < 0) {
             utils.myAlert(`unknown filename ${filename}`, true);
             return;
@@ -3201,7 +3276,7 @@ window.site100oxen = {
         localStorage.setItem('textToLoad', filename);
         jbNS.newXML = true;
         let dfr = $.Deferred();
-        if ("console" in window) console.log("loading " + filename);
+        //if ("console" in window) console.log("loading " + filename);
         $.ajax({
             type: "HEAD",
             async: true,
@@ -3223,21 +3298,21 @@ window.site100oxen = {
                     dataType: "text",
                     success: function (xmlstring) {
                         localStorage.setItem(`${filename}.txt`, xmlstring);
-                        if ("console" in window) console.log(`${filename} downloaded`);
+                        //if ("console" in window) console.log(`${filename} downloaded`);
                         try {
                             window.site100oxen.XML = $.parseXML(xmlstring);
-                            if (filename === "iliad.xml") { // save a ref
-                                window.site100oxen.ilXML = window.site100oxen.XML;
-                                configColumns(1, 1, true);
-                            } else if (filename === "odyssey.xml") {
-                                window.site100oxen.odXML = window.site100oxen.XML;
-                                configColumns(1, 2, true);
-                            }
+                            // if (filename === "iliad.xml") { // save a ref
+                            //     window.site100oxen.ilXML = window.site100oxen.XML;
+                            //     //configColumns(1, 1, true);
+                            // } else if (filename === "odyssey.xml") {
+                            //     window.site100oxen.odXML = window.site100oxen.XML;
+                            //     //configColumns(1, 2, true);
+                            // }
                         } catch (e) {
                             dfr.reject(e);
                         }
-                        if ("console" in window) console.log(`${filename} from cache: ${!jbNS.newXML}`);
-                        dfr.resolve(xmlstring);
+                        //if ("console" in window) console.log(`${filename} from cache: ${!jbNS.newXML}`);
+                        dfr.resolve();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         window.site100oxen.xml_loaded = false;
@@ -3250,27 +3325,84 @@ window.site100oxen = {
                     utils.myAlert("please do full reset", true);
                     return;
                 }
-                if ("console" in window) console.log(`${filename} from localStorage`);
+                //if ("console" in window) console.log(`${filename} from localStorage`);
                 window.site100oxen.XML = $.parseXML(xml);
                 if (filename === "iliad.xml") { // save a ref
                     window.site100oxen.ilXML = window.site100oxen.XML;
-                    configColumns(1, 1, true);
+                    //configColumns(1, 1, true);
                 } else if (filename === "odyssey.xml") {
                     window.site100oxen.odXML = window.site100oxen.XML;
-                    configColumns(1, 2, true);
+                    //configColumns(1, 2, true);
                 }
-                init_all();
+                //get_colconf()
+                //init_all();
+                dfr.resolve();
             }
+            $.ajax({
+                type: "POST",
+                url: 'xml_modified.php',
+                dataType: 'text',
+                data: {data: filename},
+                success: function (txt) {
+                    $("#mtime").text(txt);
+                }
+            });
+
         }).fail((xhr) => {
             utils.myAlert(`${xhr.status} ${xhr.statusText}`, true);
         });
         return dfr.promise();
     };
+    //endregion
+    //region active part
+    function init_all() {
+        //console.log(document.compatMode);
+        window.site100oxen.forcereload = false;
+        window.site100oxen.xml_loaded = true;
+        console.log('init_all');
+        init_tree();
+        //localStorage.setItem("colconf", jbNS.columns_config.toString());
+        //storeExpansionstate();
+        window.site100oxen.untouchable = // are we on a touch device?
+            !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+        if (window.site100oxen.untouchable) {
+            jbNS.treeframe.niceScroll({
+                cursorcolor: "#888",
+                cursorwidth: "7px",
+                background: "rgba(0,0,0,0.1)",
+                cursoropacitymin: 0.2,
+                hidecursordelay: 0,
+                zindex: 2,
+                horizrailenabled: true
+            });
+        }
+        loadPageState(); // from localStorage if possible
+        //zoominout();
+        // $.ajax({
+        //     type: "GET",
+        //     datatype: "json",
+        //     url: "https://api.ipify.org?format=json"
+        // }).done(function (json) {
+        //     jbNS.usip = json.ip;
+        //     //if ("console" in window) console.log(jbNS.usip);
+        // });
+    }
+
+    // set globals
+    window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
+    window.site100oxen.init_tree = init_tree;
+    window.site100oxen.getNewIframeFile = getNewIframeFile;
+    window.site100oxen.configColumns = configColumns;
+    window.site100oxen.set_beginLine = set_beginLine;
+    window.site100oxen.loadAndGotoTextframeAnchor = loadAndGotoTextframeAnchor;
+
     getXML().done(() => { //xml load what is in localStorage or iliad.xml
+        get_colconf();
         init_all();
     })
         .fail((msg) => {
             utils.myAlert(msg, true);
         });
     //endregion
+
 })(jQuery);

@@ -14,162 +14,153 @@ function autoversion($file)
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <title>Explanation</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
-    <link rel="stylesheet" href="css/common.css" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
-<body>
+<body style="direction: ltr;">
 <div id="expltext" class="latin">
-    <a id="1:1.1"></a>
-    <h2>Interpretation</h2>
-    <h4>The structure</h4>
-    <p> The structure presented in the left-hand frame is an organization of
-        the large and small themes of the Iliad, in the form of a hierarchical
-        tree-structure. It is not meant to be a formal structure, nor does it
-        claim to be the only possible arrangement. What it aims to do is present
-        the themes in such a way that correspondences (that is, themes related
-        by likeness and contrast) are emphasized by color and to show that they
-        form <em>ring-structures</em> and <em>catalogues</em> all through the poem
-        and on many levels (see <a class="textlink" target="pageframe" href="ring.php"
-                                   onclick="parent.site100oxen.configColumns(0, 2, true)">ring.html</a>
-        for more details).<br>
-        What exactly constitutes a 'theme' and how best to formulate it, is of
-        course not a self-evident matter. It cannot be separated from
-        interpretation, therefore not from subjectivity, making the whole a
-        possibly too flexible affair. It often depends on a judgement of "what
-        the poet is trying to tell us here" which historically has led to an
-        infinite number of wildly different interpretations. Nevertheless, some
-        of the correspondences are too obvious and simple to ignore and they
-        form the basis of our structure. This basis can help with the
-        interpretation which in turn allows us a better view of themes. Thus we
-        can bootstrap our way up the tree to the smallest structures.</p>
-    <h4>The Chimaera Model</h4>
-    <p>A useful analogy for the top level is the Chimaera<a class="ptr">(0)</a> (she-goat), a
-        fire-breathing monster killed by Bellerophon (Il 6.179-) that has three
-        parts: a lion in front, a snake at the rear and a goat in the middle<a class="ptr">(2)</a>.
-        <figure><a class="piclink" target="_blank" title="Chimaera" href="images/chimaera3.jpg"><img
+    <h1>Interpretation</h1>
+    <h3>The Chimaera Model</h3>
+    <p>A useful metaphor for the top level structure is the Chimaera<a class="ptr">(0)</a> (she-goat),
+        a fire-breathing monster killed by Bellerophon (Il 6.179-) that has three parts and four legs: a lion
+        in front, a snake at the rear and a goat in the middle<a class="ptr">(2)</a>.
+        The Iliad divides into three battle parts: the immortal hero - the plan of Zeus - the mortal
+        hero. The first and last of these have two 'embassy and assembly' episodes, dedicated to
+        'talk' rather than battle. These are the four legs of the beast. For more on the structure,
+        see <a class="textlink" target="pageframe" href="themata.php" title="load themata page">here</a>.
 
-                class="fitpage" alt="Chimaera" src="images/chimaera3.jpg"></a>
-            <figcaption>The Chimera on a red-figure Apulian plate, c. 350–340 BC (Musée du Louvre) <br>
+        <figure><a class="piclink" target="_blank" title="Chimaera" href="images/chimaera3.jpg"><img class="fitpage" alt="Chimaera" src="images/chimaera3.jpg"></a>
+            <figcaption>The Chimera on a red-figure Apulian plate, c. 350–340
+                BC (Musée du Louvre) <br>
                 Picture and text from <a class="textlink" target="_blank" title="Chimera"
-                                         href="https://en.wikipedia.org/wiki/Chimera_(mythology)">
+                                         href="https://en.wikipedia.org/wiki/Chimera_%28mythology%29">
                     wikipedia</a> <br>
             </figcaption>
         </figure>
-    </p><p>
-        I take the lion's head to stand for the 'immortal hero' (Diomedes), the
-        goat as a (scapegoat-)sacrifice, i.e. Patrocles, and the snake as a
-        symbol of death and the 'mortal hero' (Achilles). The four legs can be
-        seen as the four 'embassy and assembly' parts that connect the three
-        battle-parts. This description may need some clarification but I will
-        provide this ad loc.
     </p>
-    <p>
-        Oliver Taplin talks about a 'three-arched structure on four pillars'
-    </p>
-    <p>The point is that the three parts create a balanced structure or <em>ring-structure</em> and the whole
-        composition of the Iliad is based on that kind of structures. The
-        principle is that a central part is surrounded by two parts that are
-        related by sameness or contrast. Often they are a comment on the central
-        part, though this is not always so. See the page about
-        <a class="textlink" title="ring structures" href="ring.php">ring-structures</a>
-        for more on the subject.</p>
-    <p>The intention of all this is to make clear that the Iliad is a careful
-        oral composition most likely by one man, using this structure as a mnemonic for
-        organizing and remembering his poem. This is not something that is intended to be noticed by a
-        listening public but a way to keep a handle on a large amount of
-        material that would otherwise be amorphous and, even for someone from a
-        scriptless culture, hard to remember.</p>
-    <br>
-    <hr>
-    <a id="2:3.15">&nbsp;</a> <a id="dio1">&nbsp;</a>
-    <h4>I: The Immortal Hero</h4>
-    <p>Diomedes' aristeia<a class="ptr">(7)</a> forms the
-        centerpiece of the first part. I call him 'the Immortal
-        Hero' because that is what he becomes through the help of Athena.
-        He is basically an ironical Achilles. Ref. Il 5.118-20 where D. is angry,
-        because someone hit him with an arrow and said he didn't have long to live...<br>
-        Everybody loves him, especially Nestor, and he acquires a golden armor, the
-        unfailing sign of immortal heroism. This picture is in strong ironical
-        contrast with that of Achilles. The latter of course will never come
-        home again and he knows it, he is the greatest hero <em>because he dies for us</em>,
-        while D. will sail home without a hitch and is the
-        first one to reach it.
-        It is Athena who teaches him that. All he has to do is: learn to <em>distinguish gods from men</em> on the
-        battlefield, i.e. know when to fight and when not to fight. Keep this in
-        mind when we see Diomedes during Hector's attack on the wall and on the
-        ships together with the other (conveniently) wounded heroes at the back
-        Agamemnon, Odysseus and Nestor (see Il 11.407-10 for the standard
-        heroic view), 'encouraging from behind' as Homer calls it. Diomedes'
-        story is summed up nicely by Homer saying that Diomedes' deal acquiring
-        his golden armour is like making a deal worth 'a hundred oxen for nine'
-        (with double meaning: a hecatomb<a class="ptr">(1)</a> for nine oxen).</p>
-    <br>
-    <hr>
-    <a id="2:11.1">&nbsp;</a>
-    <h4>II: The Plan of Zeus </h4>
-    <p>The middle part tells us the reality of heroic war. It starts with the
-        confident marching-out of the Achaeans, and it ends with Menelaos
-        desperately defending the body of his comrade and Antilochos running for
-        help to Achilles. In the middle is a harsh analysis of the justice (in
-        Achaean terms) of war, as the 'Plan of Zeus' comes to fulfillment. The
-        scales of Zeus are the symbol of this justice: are you willing to pay
-        for what you want? The Achaeans, when Poseidon is helping them, are not.
-        Patrocles is the price. Nestor, Agamemnon et al. are quite willing to pay that price. Their manipulation of Patrocles (the Achilles) is a trick (metis) and Homer makes it quite clear. See <a class="textlink" title="scapegoat" href="goat.php">scapegoat</a>.
-    </p>
-    <br>
-    <hr>
-    <a id="2:19.357"></a>
-    <h4>III: The Mortal Hero</h4>
-    <p>Patrocles, of course, is <em>an Achilles</em>.
-        He is "the mortal hero" and the addressee of the poem. The shock and horror of the Achaean
-        near-defeat and Patrocles' death are healed by what seems very much like
-        a revenge fantasy, the rampage of Achilles. Justice at work again: if
-        you want too much (like Patrocles), you pay for it with your life.
-        Achilles avoids his fate in the Iliad, but everyone knows what will
-        happen: one day he will go too far, just like his friend. He is still
-        the greatest of heroes though: a 'hero of the counter-attack' who takes
-        revenge for and <em>heals</em> the
-        suffering of the population during the siege<em>
-        </em>and who in so doing gives up his life as per Thetis' prophecy.</p>
     <br>
     <hr>
     <a id="2:1.1">&nbsp;</a>
-    <h3>The Chimaera's legs</h3>
+    <h3>I: The Immortal Hero</h3>
+    <p>
+        Diomedes, the 'head' of the chimaera, forms the centre piece of this triptych. His aristeia
+        is surrounded by two 'truce and duel' themata which really would make sense mainly in the
+        beginning of the war. Thus this thema is firmly associated with 'yesterday' or 'what was'.
+        The B themata look like ironical comments on the 'abduction of Helen' motif,
+        the supposed cause of the war. Ironical because, in the real world, impossible.
+        They appear to refer to each other rather than to Diomedes' aristeia proper. More about them ad loc.<br>
+        The tone of this whole thema is somewhat lighthearted and ironical, a tone which gradually
+        changes into the tragic as the poem progresses through the other two top-level themata.<br>
+        In the E&A parts of the 'immortal hero', Achilles chooses life. In the Quarrel with Agamemnon,
+        when he sheaths his sword, in E&A 2, the Embassy, when he refuses to go to battle.
+        In E&A 3, he chooses death (as does Hector). In 4, he is virtually dead already and his proxy Patroclus actually
+        is. For more on Diomedes see <a class="explink" title="link to explanation page" data-ref="3:3.15">here</a>.
+    </p><br>
+    <a id="3:3.15">&nbsp;</a>
+    <h5>Diomedes' aristeia<a class="ptr">(7)</a></h5>
+    <p>
+        Diomedes is an ironical hero. The irony already becomes clear in the introduction
+        where Agamemnon does the round of his troops and manages to say just about the wrong thing
+        to everybody. An introductory episode was very likely a traditional part of an
+        aristeia, a laudatory poem for a warrior: compare the more traditional sounding
+        intro's to Patroclus' and Achilles' aristeia's. Diomedes does not get such a glorious
+        'arming and marching out' picture, he gets unfairly dissed by Agamemnon. He is a good
+        soldier though, does not talk back to his commander. The unspoken consequence of this
+        scene, is that Diomedes is extra motivated to prove his worth on the battlefield.<br>
+        Note the likeness to - and contrast with Achilles who also gets insulted by the king.
+        More severely wounded in his honour, Achilles withdraws as a result of this. Both heroes
+        have a special relation to Athena, again with a difference: she makes the 'wounded'
+        Achilles withdraw from the fight, she heals the physically wounded Diomedes and
+        makes him fight with redoubled fury.<br>
+        Athena likes Diomedes. He prays to her and she not only heals him, she teaches him
+        'to know gods from men'. In Homeric parlance this means to know exactly how far you can go
+        and take a step back when faced with a fight you cannot win, i.e. your fate. This
+        is demonstrated in Diomedes' confrontation with Apollo, the first of three such in the poem.
+        Patroclus goes too far and dies, Achilles in ironic reversal is 'like a god', and survives
+        the confrontation when he attacks Hector who is under the protection of Apollo.<br>
+        For the extraordinary scene of Diomedes chasing Aphrodite from the battlefield, see
+        <a class="textlink" target="pageframe" href="helen.php" title="about Helen, Ares and Aphrodite">here</a>.
+    </p><br>
+    <hr>
+    <a id="2:11.1">&nbsp;</a>
+    <h3>II: The Plan of Zeus </h3>
+    <p>
+        The middle part tells us the harsh reality of war. The name comes from Il 2.3-4 where Zeus is pondering
+        how to honour Achilles and decides to have many Achaeans slaughtered. This is first part of a Plan whose
+        full meaning only becomes clear in book 24, with Priam's embassy to Achilles.<br>
+        The day starts with the confident marching out of the Achaeans, and it ends with Menelaos
+        desperately defending the body of his comrade and Antilochos running for help to Achilles. In the
+        middle, an irreverent story about Hera trying to get her way by seducing Zeus
 
-    <h4>Embassy &amp; Assembly 1</h4>
-    <p>A most carefully structured part of the poem. Two assemblies surround
-        an intermezzo which is set up as a repeated sequence of themes. The
-        assembly parts start off with a short introduction, first explaining the
-        wrath of Apollo, then the plan/wrath of Zeus (both kill many Achaeans).
-        Also Agamemnon's position is set out: he "obeys the wrong old man"
-        (sending away Chryses and obeying the Dream in the form of Nestor).
-        Agamemnon does not get a good press in Homer.</p>
+        Their manipulation of Patroclus (the Achilles) is a
+        trick (metis) and Homer makes it quite clear. See <a class="textlink" target="pageframe" href="goat.php"
+            title="page about scapegoats">here</a>.
+    </p>
+    <br>
+    <a id="3:13.1">&nbsp;</a>
+    <h5>Idomeneus' aristeia</h5>
+    <p>pom pom pom</p>
+    <br>
+    <hr>
+    <h3>III: The Mortal Hero</h3>
+    <p>
+        Patroclus, of course, is <em>an Achilles</em>. He
+        is "the mortal hero" and the addressee of the poem. The shock and
+        horror of the Achaean near-defeat and Patroclus' death are healed by
+        what seems very much like a revenge fantasy, the rampage of Achilles.
+        Justice at work again: if you want too much (like Patroclus), you pay
+        for it with your life. Achilles avoids his fate in the Iliad, but
+        everyone knows what will happen: one day he will go too far, just like
+        his friend. He is still the greatest of heroes though: a 'hero of the
+        counter-attack' who takes revenge for and <em>heals</em>
+        the suffering of the population during the siege and
+        who in so doing gives up his life as per Thetis' prophecy.</p>
+    <br>
+    <a id="4:20.1">&nbsp;</a>
+    <h5>The gods may help you...</h5>
+    <p>
+        ti ti ti
+    </p>
+    <hr>
+    <h3>The Chimaera's legs</h3>
+    <a id="3:1.1">&nbsp;</a>
+    <h5>Embassy &amp; Assembly 1</h5>
+    <p>A most carefully structured part of the poem. Two assemblies
+        surround an intermezzo which is set up as a repeated sequence of
+        themes. The assembly parts start off with a short introduction, first
+        explaining the wrath of Apollo, then the plan/wrath of Zeus (both kill
+        many Achaeans). Also Agamemnon's position is set out: he "obeys the
+        wrong old man" (sending away Chryses and obeying the Dream in the form
+        of Nestor). Agamemnon does not get a good press in Homer.</p>
     <br>
     <hr>
     <ol id="footnotes">
-        <li>it is doubtful whether Homer uses this analogy, but the the likeness is
-            too good to pass up.
+        <li>This is <em>my</em> image. I'm not sure Homer
+            uses it in this manner, but the the likeness is too good to pass up.
         </li>
-        <li>Oliver Taplin also sees a 'three-arched structure on four pillars' but
-            his is not quite like mine.
+        <li>Oliver Taplin also sees a 'three-arched structure on four
+            pillars' but his is not quite like mine.
         </li>
-        <li>a part of the poem with a typical formal structure (arming - marching
-            out - doing battle), describing the excellence in battle of one hero.
-            There are 4 complete aristeia's in the Iliad: those of Diomedes,
-            Agamemnon, Patrocles and Achilles.
+        <li>a part of the poem with a typical structure (introduction - battle, where the introduction
+            is typically made up of arming - praying - exhortation - marching out), likely an independant
+            form of praise poetry describing the excellence in battle of one hero.
+            There are 4 complete aristeia's in the Iliad: those of
+            Diomedes, Agamemnon, Patroclus and Achilles. The latter two are presumably the most typical
+            and un-ironical. Idomeneus and Menelaos also get a large stretch mainly devoted to them but they
+            are not standard aristeia's.
         </li>
-        <li>sacrifice to the gods of a hundred oxen, the ultimate sacrifice. Also
-            simply meaning a great slaughter, like a battle.
+        <li>sacrifice to the gods of a "hundred oxen" (or just many cattle), the ultimate
+            sacrifice. Also simply meaning a great slaughter, like a battle.
         </li>
     </ol>
     <br>
     <br>
-
 </div>
-<div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
+<div class="mtime"><br>
+</div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
-<script src="scripts/iframes.js" type="module"></script>
+<script src="scripts/jquery.nicescroll.min.js"></script>
+<script src="<?= autoversion('/scripts/iframes.js');?>"></script>
 </body>
 </html>

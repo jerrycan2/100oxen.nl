@@ -30,21 +30,18 @@ function autoversion($file)
     Hesiod attempts to derive the name Τιτῆνες (Titans) from τιταίνω (stretch, strive) (Th 207-). Possibly the above picture is an explanation of this.
 </p>
 <p>
-    In ancient Greece, just as everywhere else, honor and status are age dependent. Siblings of the same sex are ranked according to their age and the first-born has a special place of honor. If this is true of humans, it must be even more important among the gods<a class="ptr">(1)</a>. So in a well-ordered society gods and people would find a husband/wife of their own rank. All this goes without comment in the Theogony although, Kronos being the youngest, his becoming King of the gods is shown as a kind of coup d'état. I will call a relation like Kronos-Rhea an <em>upward</em> relation (from the male p.o.v.) and one like Okeanos-Tethys a <em>downward</em> relation.
+    In ancient Greece, just as most everywhere, honor and status are age dependent. Siblings of the same sex are ranked according to their age and the first-born has a special place of honor. If this is true of humans, it must be even more important among the gods<a class="ptr">(1)</a>. So in a well-ordered society gods and people would find a husband/wife of their own rank. All this goes without comment in the Theogony although, Kronos being the youngest, his becoming King of the gods is shown as a kind of coup. I will call a relation like Kronos-Rhea an <em>upward</em> relation (from the male p.o.v.) and one like Okeanos-Tethys a <em>downward</em> relation.
 </p>
 <br>
 <h5>unequal human relations</h5>
 <p>
-    These things do play a part in the human world. For instance the trope 'hero wins the hand of the princess' can be viewed as an upward relation. The king (or his son) are conceptually the 'best men' in the community<a class="ptr">(2)</a>. If there is a problem they cannot solve and the newcomer can, the latter has shown himself to be better and therefore worthy to be king. The princess is his prize, his future kingly status depends on her. No one asks her, of course: the desire is usually painted as being on his side (ref. the Peleus and Thetis story). Often but not always, the newcomer turns out to be a highborn prince in disguise. Thus proper order is maintained.
+    These things do play a part in the human world. For instance the trope 'hero wins the hand of the princess' can be viewed as an upward relation. The king (or his son) are conceptually the 'best men' in the community<a class="ptr">(2)</a>. If there is a problem they cannot solve and the newcomer can, the latter has shown himself to be better and therefore worthy to be king. The princess is his prize, his future kingly status depends on her. Often but not always, the newcomer turns out to be a highborn prince in disguise. Thus proper order is maintained.
 </p>
 <p>
-    The reverse is the case in Cinderella-like stories. The servant-girl is often a highborn princess who has lost her status. This again, to prevent disturbing the class structure. Here the desire may be on both sides.
+    The reverse is the case in Cinderella-like stories. The servant-girl is often a highborn princess who has lost her status. This again, to prevent disturbing the class structure.
 </p>
 <p>
     The range of meaning of the up/down picture extends even further. There may be negative connotations as in rape (upward) and prostitution (downward). But this is not the web page to go deeply into these matters.
-</p>
-<p>
-
 </p>
 <br>
 <h5>the demigods</h5>

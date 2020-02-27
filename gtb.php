@@ -15,7 +15,7 @@ function autoversion($file)
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="Description" CONTENT="A discussion of the words 'good', 'true', 'beautiful' and 'just' in the context of Homer and Plato.">
     <title>The Good, the True, the Beautiful</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
 
       rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
@@ -33,9 +33,49 @@ function autoversion($file)
     <h2>The Good, the True, the Beautiful...and Justice</h2>
     <section>
       <p>From the mythical to the philosophical...</p>
+      <br> <br>
     </section>
-    <section id="gtbjtable" class="wrap">
-      <div id="tableheader">
+    <br> <br>
+    <section id="table1" class="tablewrap1">
+      <div id="tableheader1">
+        <div class="tabcell1">
+          <p>Homer's gods</p>
+        </div>
+        <div class="tabcell1 middle">
+          <p>&nbsp;</p>
+        </div>
+        <div class="tabcell1">
+          <p>Plato's Good</p>
+        </div>
+      </div>
+      <div class="tablerow1">
+        <div class="tabcell1">
+          <p>
+            <br>
+            <img src="images/zeus3.png" alt="Olympic hierarchy" title="Zeus and the goddesses, hierarchy">
+            <br>
+            <span class="gold">Zeus</span> is supposed to be in charge. He boasts of being stronger than all the other gods together but
+            appears to avoid putting it to the test. See 'the golden rope', Il. 8.19. <span class="red">Hera</span> is number two though she
+            wants more, <span class="blue">Athena</span> is Tritogeneia, third-born (just as Zeus became first-born) and
+            <span class="green">Aphrodite</span> is fourth, though sometimes stronger than Zeus himself.
+          </p>
+        </div>
+        <div class="tabcell1 middle">
+        </div>
+        <div class="tabcell1">
+          <img id="thegood" src="images/platogood.png" alt="Plato's view of the Absolute Good"
+                  title="Plato's view of the Absolute Good">
+          <p>
+            The solid red part is our Nomos, its border is Sophrosyne
+          </p>
+        </div>
+      </div>
+      <p><br>
+      </p>
+    </section>
+    <br>
+    <section id="gtbjtable" class="tablewrap1">
+      <div id="tableheader2">
         <div class="rowname">
           <p>concept:</p>
         </div>
@@ -108,13 +148,13 @@ function autoversion($file)
           <p>Plato:</p>
         </div>
         <div class="tabcell">
-          <p>Spirit <a class="ptr">(1)</a></p>
+          <p>Spirit<a class="ptr">(1)</a>, thumos</p>
         </div>
         <div class="tabcell">
-          <p>Reason</p>
+          <p>Reason, calculation</p>
         </div>
         <div class="tabcell">
-          <p>Desire</p>
+          <p>Desire, Eros</p>
         </div>
         <div class="tabcell">
           <p>-</p>
@@ -122,7 +162,24 @@ function autoversion($file)
       </div>
       <div class="tablerow">
         <div class="rowname">
-          <p>subject:</p>
+          <p>class:</p>
+        </div>
+        <div class="tabcell">
+          <p>auxiliaries (soldiers)</p>
+        </div>
+        <div class="tabcell">
+          <p>rulers</p>
+        </div>
+        <div class="tabcell">
+          <p>working class</p>
+        </div>
+        <div class="tabcell">
+          <p>-</p>
+        </div>
+      </div>
+      <div class="tablerow">
+        <div class="rowname">
+          <p>object<a class="ptr">(1)</a>:</p>
         </div>
         <div class="tabcell">
           <p>status</p>
@@ -139,7 +196,7 @@ function autoversion($file)
       </div>
       <div class="tablerow">
         <div class="rowname">
-          <p>object:</p>
+          <p>subject<a class="ptr">(1)</a>:</p>
         </div>
         <div class="tabcell">
           <p>excellence (ἀρετή),</p>
@@ -165,7 +222,7 @@ function autoversion($file)
           <p>courage, manliness</p>
         </div>
         <div class="tabcell">
-          <p>φρόνησις</p>
+          <p>φρόνησις, σοφία</p>
           <p>wisdom</p>
         </div>
         <div class="tabcell">
@@ -195,11 +252,11 @@ function autoversion($file)
       </div>
       <div class="tablerow">
         <div class="rowname">
-          <p>Agamemnon's daughter:</p>
+          <p>wife<a class="ptr">(4)</a>:</p>
         </div>
         <div class="tabcell">
           <p>Χρυσόθεμις</p>
-          <p>"golden themis"</p>
+          <p>"golden order"</p>
         </div>
         <div class="tabcell">
           <p>Λαοδίκη</p>
@@ -207,7 +264,7 @@ function autoversion($file)
         </div>
         <div class="tabcell">
           <p>Ἰφιάνασσα</p>
-          <p>"rules by force"</p>
+          <p>"she rules by force"</p>
         </div>
         <div class="tabcell">
           <p>-</p>
@@ -216,12 +273,18 @@ function autoversion($file)
       <p><br>
       </p>
     </section>
-    <h3>What is best?</h3>
+    <br>
+    <h4>What is Good?</h4>
+    <p>
+      What is Good in Plato's Republic is made clear by the postulated similarity between the soul and the polis. The three classes of the population (
+    </p><br>
+    <h4>What is best?</h4>
     <p>
       First, one important caveat: 'good' here is the <em>qualitative</em> good, not the <em>moral</em> good. It is a-moral (see <a class="textlink" title="the gods" href="thegods.php#morality">the gods</a>). Our platonist and christian habits of speech have really shifted the meaning of the word. So what is the good in ancient Greece?
     </p>
     <p>
-      A member of Plato's class, the aristocracy, would soon know the answer to that: '<em>we</em> are'. We are Kalos kagathos; our fathers were the best men and we inherited their ἀρετὴ; we boast of being warriors and winners. Here is one characteristic of the good: it is that which gives <em>status</em>. But birth or boasting alone is not enough: a good man must be manly (ἀνδρεία) with all that implies: brave, dominant, steady (not going this way and that, ἔνθα καὶ ἔνθα<a class="ptr">(2)</a> but straight on), and possessing
+      A member of Plato's class, the aristocracy, would soon know the answer to that: '<em>we</em> are'. We are Kalos kagathos; our fathers were the best men and we inherited their ἀρετὴ; we boast of being warriors and winners. Here is one characteristic of the good: it is that which gives <em>status</em>. But birth or boasting alone is not enough: a good man must be manly (ἀνδρεία) with all that implies: brave, dominant, steady (not going this way and that,
+      ἔνθα καὶ ἔνθα<a class="ptr">(2)</a> but straight on), and possessing
         <em>spirit</em> (the Homeric word is thymos, θῡμός)<a class="ptr">(3)</a>, an important concept which describes the man of quality. It implies all the above character traits and also a dynamic quality: ambition, energy, drive.
     </p>
     <p>
@@ -237,6 +300,15 @@ function autoversion($file)
           which is 'Spirit', and the higher, which is the highest Platonic Good,
           the source of everything. This one appropriates the place of Zeus.
         </li>
+      <li>
+        "what it gives"
+      </li>
+      <li>
+        "what it is about"
+      </li>
+      <li>
+        One of Agamemnon's daughters, promised to Achilles if he will come back to fight
+      </li>
       <li>As in the metaphor in Il 2.397 or 2.779</li>
         <li>One can have too much of it, it is also related to anger. It may lead to hubris (ὕβρις) and ἀγηνορίη, like the lion in Il 12.46, Achilles in Il 24.42, Hector in Il 22.457 or the suitors. <br>
         Unfortunately the Homeric style is not really geared to precise use of individual words so we have to struggle to decide by context what words such as thumos mean.</li>

@@ -40,7 +40,8 @@ input {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5 {
   background-image: linear-gradient(to right, rgba(16, 16, 16, 0) 10%, #ffffff 50%, rgba(16, 16, 16, 0) 90%);
   color: black;
   text-shadow: 0 1px 0 white;
@@ -63,6 +64,10 @@ h3 {
 }
 h4 {
   font-size: 120%;
+  margin: 0.5em 10%;
+}
+h5 {
+  font-size: 100%;
   margin: 0.5em 10%;
 }
 .emph2 {
@@ -127,19 +132,18 @@ figure img {
   border: 0.2rem groove #003388;
   border-radius: 0.4rem;
 }
-.textlink {
-  color: black;
-  text-decoration: underline;
-  font-weight: bolder;
+.textlink,
+.explink {
+  color: black !important;
   cursor: pointer;
-}
-.textlink:visited {
-  color: darkblue;
+  text-decoration: none;
+  background-color: rgba(5, 5, 5, 0.2);
 }
 /*only for greek & butler frame:*/
 .contents p a {
   color: white;
   padding: 0;
+  margin-right: 0.2rem;
   display: inline-block;
   /*for the first-line selector*/
   border: solid rgba(50, 50, 50, 0.2) thin;
@@ -148,9 +152,14 @@ figure img {
 }
 .latin p {
   margin-left: 2rem;
+  margin-right: 1rem;
 }
-.greek p a {
+.greek p a,
+.latin p a {
   border-width: 0 0.2rem;
+}
+.indent {
+  padding: 1rem 5rem 1rem 3rem;
 }
 .citation {
   margin-left: 4rem;

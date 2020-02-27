@@ -255,8 +255,8 @@ function drawBlocks($node, colheight, recursion) {
                 } //last box drawn
             }
             c1 = $node.attr("c");
-            //if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
-            c1 = c1 ? "#" + c1 : "rgba(200,200,200,0)"; //col1 start-color = transparent
+            if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
+            else { c1 = "#" + c1; } //col1 start-color = transparent
             if (pg1Namespace.index >= 0) {
                 $col1.css({
                     "color": "#" + ($node.attr("f") || "003388")
@@ -359,6 +359,7 @@ function drawBlocks($node, colheight, recursion) {
     } else {
         draw(); // and here for the middle blocks (recursive calls)
     }
+    pg1Namespace.blocks_drawn = true;
 }
 
 /**
@@ -445,6 +446,10 @@ function columnclick(e) {
 $(document).ready(function () {
     var from;
 
+    $("#blocks_header").click(function(){
+        parent.site100oxen.configColumns(0, 1, false);
+    });
+
     $("html").niceScroll({
         cursorcolor: "#888",
         cursorwidth: "7px",
@@ -472,7 +477,7 @@ $(document).ready(function () {
     if (parent.site100oxen) {
         if (parent.site100oxen.forcereload || !parent.site100oxen.xml_loaded) {
             from = getXML("iliad.xml"); //fetch from the web (async, callback) or localStorage
-            if (from === "local") {
+           if (from === "local") {
                 createBlocks();
             }
         }

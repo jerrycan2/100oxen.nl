@@ -119,7 +119,7 @@ function autoversion($file)
         in all
         probability the "king" of the city must have lived with his family, servants and slaves.
         It is impossible to date these relative to Homer's lifetime, but his life could very well
-        have spanned the situations between Abb. 15 and 19.
+        have spanned the situations between Abb. 15 and 19. I cannot judge how reliable Akurgal's dates are.<br>
         In 15 we have a cluster of round huts. Recognizable are building C: the big megaron, only partly visible,
         which must have been the main building. Behind this, there is a cluster d, e and f which were connected
         and formed the oldest multi-room building known from this area. At the left and top (not visible) there were

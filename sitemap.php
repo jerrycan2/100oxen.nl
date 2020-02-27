@@ -16,8 +16,7 @@ function autoversion($file)
     <meta name="Description" CONTENT="Links to all pages on 100oxen.nl">
     <title>sitemap</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-
-          rel="stylesheet" type="text/css">
+            rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
 </head>
@@ -40,7 +39,8 @@ function autoversion($file)
             <ul>
                 <li>the Ionian migration
                     <ul>
-                        <li><!--a class="textlink" target="_self" title="Charter Myth" href="charter.php"></a-->Charter myth
+                        <li><!--a class="textlink" target="_self" title="Charter Myth" href="charter.php"></a-->Charter
+                            myth
                         </li>
                         <li><a class="textlink" target="_self" title="Poseidon" href="poseidon.php">Poseidon</a></li>
                     </ul>
@@ -53,20 +53,26 @@ function autoversion($file)
                     <ul>
                         <li> the language
                             <ul>
-                                <li><a class="textlink" title="basics of interpretation" href="basics.php">basics</a></li>
+                                <li>
+                                    <!--a class="textlink" title="basics of interpretation" href="basics.php">basics</a-->
+                                    basics
+                                </li>
                                 <li><a class="textlink" target="_self" title="likenesses"
-                                       href="likenesses.php">Likenesses</a></li>
+                                        href="likenesses.php">Likenesses</a></li>
                                 <li>type, character and 'position'</li>
                             </ul>
                         </li>
                         <li> Structures
                             <ul>
                                 <li><a class="textlink" target="_self" title="proportional view"
-                                       href="blocks.php">A proportional view of the summary</a></li>
-                                <li>Geometrics: <a class="textlink" href="ring.php">ring composition,
-                                    catalogues</a></li>
+                                        href="blocks.php">A proportional view of the summary</a></li>
+                                <li>Geometrics: <a class="textlink" href="themata.php">the Thematic Structure, ring composition</a>.
+                                </li>
+                                <li>
+                                    <a class="textlink" title="other structures" href="structures.php">Other structures</a>: time, pathos.
+                                </li>
                                 <li><a class="textlink" target="_self" title="Stitched verse"
-                                       href="stitches.php">Stitched verse - alterations? </a></li>
+                                        href="stitches.php">Stitched verse - alterations? </a></li>
                                 <li><a class="textlink" title="" href="council.php">Agamemnon's council</a></li>
                             </ul>
                         </li>
@@ -77,12 +83,12 @@ function autoversion($file)
                         <li> Apollo and the Art of Archery
                             <ul>
                                 <li><a class="textlink" target="_self" title=" Poetry, Prophecy, Healing"
-                                       href="apollo.php"> Poetry, Prophecy, Healing</a></li>
+                                        href="apollo.php"> Poetry, Prophecy, Healing</a></li>
                                 <li><a class="textlink" title="" href="wrath.php">the Wrath of Apollo</a></li>
                             </ul>
                         </li>
                         <li><a class="textlink" target="_self" title="Persuasive rhetoric"
-                               href="rhetoric.php">persuasive rhetoric</a></li>
+                                href="rhetoric.php">persuasive rhetoric</a></li>
                     </ul>
                 </li>
             </ul>
@@ -107,7 +113,7 @@ function autoversion($file)
                 <li> the Polis
                     <ul>
                         <li><a class="textlink" target="_self"
-                               title="Homer's Politeia" href="politeia.php">Homer's Politeia </a></li>
+                                title="Homer's Politeia" href="politeia.php">Homer's Politeia </a></li>
                         <li><a class="textlink" href="plato.php">Plato's Politeia</a></li>
                     </ul>
                 </li>
@@ -121,7 +127,8 @@ function autoversion($file)
         </li>
         <li><span class="emph2">Who (reflexive)</span>
             <ul>
-                <li> <a class="textlink" title="self-reflection" href="self.php">Self-reflection in Iliad and Odyssey (overview)</a>
+                <li><a class="textlink" title="self-reflection" href="self.php">Self-reflection in Iliad and Odyssey
+                    (overview)</a>
                     <ul>
                         <li>The Odyssey's discussion of the Iliad</li>
                         <li>What the singer does: Proteus</li>
@@ -147,7 +154,7 @@ function autoversion($file)
 <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
 <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
 <script>
-    function read_altmap(xml) {
+    function read_altmap(xml) { // write updated altmap into DOM
         const $pages = $(".textlink");
         let txt;
         $pages.each(function () {
@@ -159,6 +166,14 @@ function autoversion($file)
             $(this).after(`<span> (update ${date})</span>`);
         });
     }
+    $.ajax({ //creates new altmap
+        type: "GET",
+        datatype: "text",
+        url: "setmap.php"
+    });
+    // .done(function (txt) {
+    //     if ("console" in window) console.log(txt);
+    // });
 
     $.ajax({
         type: "GET",
@@ -168,7 +183,6 @@ function autoversion($file)
     }).done(function (xml) {
         read_altmap(xml);
     });
-
 </script>
 </body>
 </html>

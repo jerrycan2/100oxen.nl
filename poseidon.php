@@ -46,7 +46,8 @@ function autoversion($file)
     Poseidon.</li>
     <li>A powerful Great House, the Neleids from Pylos, claimed descendance from the god.</li>
     <li>A branch of this family was powerful in Athens and was also connected to the Ionian
-    migration. </li>
+    migration. This easily connects to a myth about a contest between Athena and Poseidon
+    for power in Athens.</li>
     <li>Smyrna was a Ionian-ruled city but they were not original members of the Ionian league,
         for reasons which Herodotus explains in Hdt 1.148: the city was Aeolian but was
         captured at an unknown date by a group who was exiled from Colophon. This group

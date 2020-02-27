@@ -1,0 +1,49 @@
+body {
+    height: 100%;
+    width: 100%;
+}
+.tablewrap {
+    top: 0;
+    left: 0;
+    display: table;
+    height: auto;
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+    /*min-width: 40rem;*/
+    /*box-shadow: 3px 3px 5px 2px #444;*/
+    /*border-radius: 0.25rem;*/
+
+    /*white-space: nowrap;*/
+}
+
+.tablerow {
+    display: table-row;
+    height: auto;
+    width: 100%;
+    color: black;
+}
+#tableheader {
+    display: table-header-group;
+    height: 2rem;
+    width: 30%;
+    background-color: darkblue;
+    color: white;
+}
+.tabcell {
+    position: relative;
+    display: table-cell;
+    width: 30%;
+    border: dotted 1px darkblue;
+}
+.tabcell p {
+    margin: auto 0.3rem;
+    text-align: left;
+}
+.tabcell img {
+    width: 100%;
+    vertical-align: top;
+}
+.tabcell.middle {
+    width: 5%;
+}

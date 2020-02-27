@@ -1,335 +1,335 @@
-html {
-    margin: 0;
-    font-size: 16px;
-    font-family: "Noto Sans", sans-serif;
-    height: 100%;
-}
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-}
-header {
-    width: 100%;
-    top: 0;
-}
-h5{
-    background-color: gray;
-    color: white;
-}
-#b_clr{
-    margin-left: 2rem;
-}
-#hdrbtns{
-    display: inline-flex;
-    flex-wrap: wrap;
-    height: auto;
-}
-#wrapper {
-    height: calc(100% - 3rem);
-    width: 85%;
-    margin: 0;
-    display: block;
-    overflow: hidden;
-}
-#hdrbtns button, #hdrbtns form {
-    display: inline-block;
-    flex-shrink: 2;
-}
-.lvlbutt, h5, header span {
-    margin: 0 0 0 1rem;
-    text-align: center;
-    font-weight: bold;
-}
-.lvlbutt:disabled {
-    color: gray;
-}
-.lvlbutt:enabled {
-    color: red;
-}
-#showGreek:disabled {
-    color: gray;
-}
-#showGreek:enabled {
-    color: black;
-}
-#helptext, #result, #sender{
-    background-color: darkkhaki;
-    padding: 0 1rem;
-    overflow: hidden;
-    display: none;
-}
-#helptext h4 {
-    margin: 0;
-}
-#helptext em {
-    font-weight: bold;
-    font-style: normal;
-}
-#checksresult{
-    background-color: navajowhite;
-    padding: 0 1rem;
-    overflow: hidden;
-    display: none;
-}
-#sidebar {
-    height: calc(100% - 3rem);
-    width: 15%;
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    left: 85%;
-    top: 3rem;
-    background-color: lightgray;
-}
-#showtext{
-    /*display: inline-block;*/
-    margin-left: 2rem;
-}
-#struct {
-    width: 98%;
-    height: calc((100% - 3rem - 365px) / 2);
-    background-color: #f0dd9d;
-    overflow: auto;
-    border-bottom: 2px solid gray;
-}
-#edit {
-    width: 98%;
-    height: calc((100% - 3rem - 365px) / 2);
-    padding-left: 1.2rem;
-    background-color: #a1c8db;
-    overflow: auto;
-    border-top: 2px solid gray;
-}
-#pick {
-    width: 98%;
-    height: auto;
-    background-color: cornflowerblue;
-    display: inline-flex;
-}
-#direct {
-    background-color: cornflowerblue;
-    margin-right: 20px;
-}
-#doturn {
-    background-color: #007FFF;
-    margin-right: 20px;
-}
-#transparent {
-    display: inline-block;
-}
-#colors {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    height: 350px;
-}
-#frag ol {
-    list-style: none;
-}
-#struct ol, #edit ol {
-    list-style: none;
-    padding: 0 0 0 0.5rem;
-    margin: 0;
-}
-.tree span .ln,.lt{
-    cursor: default;
-    border-radius: 0.35rem;
-    margin: 2px;
-    padding: 0 3px;
-    height: 1.2rem;
-}
-.tree li {
-    height: auto;
-    white-space: nowrap;
-    margin: 3px 0;
-}
-.tree li li {
-    margin-left: 1.5rem;
-}
-.ln {
-    margin-right: 1rem;
-    display: inline-block;
-    width: 3.5rem;
-}
-.plm {
-    background-color: rgba(0,0,0,0);
-    border-radius: 0.35rem;
-    padding: 0 1rem;
-    text-align: center;
-    /*font-weight: bold;*/
-}
-#sidebar button, select {
-    margin-top: 1rem;
-    width: 80%;
-}
-/* POPUP */
-#msgbox {
-    width: 14rem;
-    height: auto;
-    min-height: 5rem;
-    position: absolute;
-    left: 40%;
-    top: 7rem;
-    z-index: 10;
-    text-align: center;
-    font-size: inherit;
-    overflow: hidden;
-    padding: 1rem;
-    background: radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue 100%);
-    background: -o-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
-    background: -webkit-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
-    background: -moz-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
-    border: 1px solid black;
-    border-radius: 0.25rem;
-    box-shadow: 3px 3px 5px 2px #444;
-    color: black;
-    display: none;
-}
-#msgbox div {
-    width: 3rem;
-    height: 2rem;
-    line-height: 2rem;
-    position: absolute;
-    bottom: 0;
-    color: red;
-    background-color: white;
-    display: none;
-}
-#msgbox #ok {
-    left: 0;
-}
-#msgbox #cancel {
-    right: 0;
-}
-#coverall {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: -8;
-    background: rgba(128, 128, 128, 0.3);
-}
-.hasrem, .norem {
-    height: auto;
-    width: 0; /*!*/
-    float: left;
-    display: block;
-    position: relative;
-    left: -1.5rem;
-    background-color: rgba(0,0,0,0);
-}
-#edit .remtxt, #edit .iltxt .en{
-    -webkit-user-modify: read-write;
-    -moz-user-modify: read-write;
-    user-modify: read-write;
-}
-.remtxt,.iltxt {
-    position: relative;
-    width: auto;
-    white-space: normal;
-    text-align: left;
-    padding: 2px 4px;
-    overflow: hidden;
-    display: none;
-    font-size: 1rem;
-    min-height: 1rem;
-}
-.iltxt.en{
-    background-color: white;
-    color: red;
-}
-.iltxt.gr{
-    background-color: white;
-    color: #0d65ff;
-}
-.remtxt {
-    border: rgba(0,0,0,0.3) dotted 1px;
-}
-.huebee__cursor {
-    width: 35px;
-    height: 35px;
-}
-#loadem, #savem {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    background-color: #A0A0C0;
-}
-#loadem button, #savem button {
-    width: auto;
-    background-color: #81819C;
-}
-#edit ol ol li .ed {
-    -webkit-user-modify: read-write;
-    -moz-user-modify: read-write;
-    user-modify: read-write;
-}
-#bmdiv {
-    margin-top: 1rem;
-    margin-right: 0.5rem;
-    height: auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-    font-size: 80%;
-    white-space: nowrap;
-    cursor: default;
-    background-color: #8C796D;
-}
-#transparent {
-    background-color: rgba(0,0,0,0);
-}
-#bmdiv button {
-    width: auto;
-    margin: 2px;
-}
-.delable {
-    background-color: #7F007F;
-}
-#openhueb {
-    background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
-}
-#commit {
-    background: linear-gradient(to right, #a1c8db, #f0dd9d);
-}
-#showGreek,#insertnode,#delnodes,#pushtree,#poptree,#undoArray,#split,#merge {
-    background-color: #a1c8db;
-}
-#switch {
-    background-color: #f0dd9d;
-}
-
-button {
-    cursor: pointer;
-}
-
-ol {
-    background-color: rgba(0, 0, 0, 0);
-}
-ol ol {
-    background-color: rgba(0, 0, 0, 0.02);
-}
-ol ol ol {
-    background-color: rgba(0, 0, 0, 0.04);
-}
-ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.06);
-}
-ol ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-ol ol ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.10);
-}
-ol ol ol ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.12);
-}
-ol ol ol ol ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.14);
-}
-ol ol ol ol ol ol ol ol ol {
-    background-color: rgba(0, 0, 0, 0.16);
-}
-
+html {
+    margin: 0;
+    font-size: 16px;
+    font-family: "Noto Sans", sans-serif;
+    height: 100%;
+}
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+header {
+    width: 100%;
+    top: 0;
+}
+h5{
+    background-color: gray;
+    color: white;
+}
+#b_clr{
+    margin-left: 2rem;
+}
+#hdrbtns{
+    display: inline-flex;
+    flex-wrap: wrap;
+    height: auto;
+}
+#wrapper {
+    height: calc(100% - 3rem);
+    width: 85%;
+    margin: 0;
+    display: block;
+    overflow: hidden;
+}
+#hdrbtns button, #hdrbtns form {
+    display: inline-block;
+    flex-shrink: 2;
+}
+.lvlbutt, h5, header span {
+    margin: 0 0 0 1rem;
+    text-align: center;
+    font-weight: bold;
+}
+.lvlbutt:disabled {
+    color: gray;
+}
+.lvlbutt:enabled {
+    color: red;
+}
+#showGreek:disabled {
+    color: gray;
+}
+#showGreek:enabled {
+    color: black;
+}
+#helptext, #result, #sender{
+    background-color: darkkhaki;
+    padding: 0 1rem;
+    overflow: hidden;
+    display: none;
+}
+#helptext h4 {
+    margin: 0;
+}
+#helptext em {
+    font-weight: bold;
+    font-style: normal;
+}
+#checksresult{
+    background-color: navajowhite;
+    padding: 0 1rem;
+    overflow: hidden;
+    display: none;
+}
+#sidebar {
+    height: calc(100% - 3rem);
+    width: 15%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    left: 85%;
+    top: 3rem;
+    background-color: lightgray;
+}
+#showtext{
+    /*display: inline-block;*/
+    margin-left: 2rem;
+}
+#struct {
+    width: 98%;
+    height: calc((100% - 3rem - 365px) / 2);
+    background-color: #f0dd9d;
+    overflow: auto;
+    border-bottom: 2px solid gray;
+}
+#edit {
+    width: 98%;
+    height: calc((100% - 3rem - 365px) / 2);
+    padding-left: 1.2rem;
+    background-color: #a1c8db;
+    overflow: auto;
+    border-top: 2px solid gray;
+}
+#pick {
+    width: 98%;
+    height: auto;
+    background-color: cornflowerblue;
+    display: inline-flex;
+}
+#direct {
+    background-color: cornflowerblue;
+    margin-right: 20px;
+}
+#doturn {
+    background-color: #007FFF;
+    margin-right: 20px;
+}
+#transparent {
+    display: inline-block;
+}
+#colors {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 320px;
+}
+#frag ol {
+    list-style: none;
+}
+#struct ol, #edit ol {
+    list-style: none;
+    padding: 0 0 0 0.5rem;
+    margin: 0;
+}
+.tree span .ln,.lt{
+    cursor: default;
+    border-radius: 0.35rem;
+    margin: 2px;
+    padding: 0 3px;
+    height: 1.2rem;
+}
+.tree li {
+    height: auto;
+    white-space: nowrap;
+    margin: 3px 0;
+}
+.tree li li {
+    margin-left: 1.5rem;
+}
+.ln {
+    margin-right: 1rem;
+    display: inline-block;
+    width: 3.5rem;
+}
+.plm {
+    background-color: rgba(0,0,0,0);
+    border-radius: 0.35rem;
+    padding: 0 1rem;
+    text-align: center;
+    /*font-weight: bold;*/
+}
+#sidebar button, select {
+    margin-top: 1rem;
+    width: 80%;
+}
+/* POPUP */
+#msgbox {
+    width: 14rem;
+    height: auto;
+    min-height: 5rem;
+    position: absolute;
+    left: 40%;
+    top: 7rem;
+    z-index: 10;
+    text-align: center;
+    font-size: inherit;
+    overflow: hidden;
+    padding: 1rem;
+    background: radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue 100%);
+    background: -o-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
+    background: -webkit-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
+    background: -moz-radial-gradient(ellipse farthest-corner, #ffffff 50%, cornflowerblue  100%);
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    box-shadow: 3px 3px 5px 2px #444;
+    color: black;
+    display: none;
+}
+#msgbox div {
+    width: 3rem;
+    height: 2rem;
+    line-height: 2rem;
+    position: absolute;
+    bottom: 0;
+    color: red;
+    background-color: white;
+    display: none;
+}
+#msgbox #ok {
+    left: 0;
+}
+#msgbox #cancel {
+    right: 0;
+}
+#coverall {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -8;
+    background: rgba(128, 128, 128, 0.3);
+}
+.hasrem, .norem {
+    height: auto;
+    width: 0; /*!*/
+    float: left;
+    display: block;
+    position: relative;
+    left: -1.5rem;
+    background-color: rgba(0,0,0,0);
+}
+#edit .remtxt, #edit .iltxt .en{
+    -webkit-user-modify: read-write;
+    -moz-user-modify: read-write;
+    user-modify: read-write;
+}
+.remtxt,.iltxt {
+    position: relative;
+    width: auto;
+    white-space: normal;
+    text-align: left;
+    padding: 2px 4px;
+    overflow: hidden;
+    display: none;
+    font-size: 1rem;
+    min-height: 1rem;
+}
+.iltxt.en{
+    background-color: white;
+    color: red;
+}
+.iltxt.gr{
+    background-color: white;
+    color: #0d65ff;
+}
+.remtxt {
+    border: rgba(0,0,0,0.3) dotted 1px;
+}
+.huebee__cursor {
+    width: 35px;
+    height: 35px;
+}
+#loadem, #savem {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #A0A0C0;
+}
+#loadem button, #savem button {
+    width: auto;
+    background-color: #81819C;
+}
+#edit ol ol li .ed {
+    -webkit-user-modify: read-write;
+    -moz-user-modify: read-write;
+    user-modify: read-write;
+}
+#bmdiv {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 80%;
+    white-space: nowrap;
+    cursor: default;
+    background-color: #8C796D;
+}
+#transparent {
+    background-color: rgba(0,0,0,0);
+}
+#bmdiv button {
+    width: auto;
+    margin: 2px;
+}
+.delable {
+    background-color: #7F007F;
+}
+#openhueb {
+    background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
+}
+#commit {
+    background: linear-gradient(to right, #a1c8db, #f0dd9d);
+}
+#showGreek,#insertnode,#delnodes,#pushtree,#poptree,#undoArray,#split,#merge {
+    background-color: #a1c8db;
+}
+#switch {
+    background-color: #f0dd9d;
+}
+
+button {
+    cursor: pointer;
+}
+
+ol {
+    background-color: rgba(0, 0, 0, 0);
+}
+ol ol {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+ol ol ol {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+ol ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+ol ol ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.10);
+}
+ol ol ol ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+ol ol ol ol ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.14);
+}
+ol ol ol ol ol ol ol ol ol {
+    background-color: rgba(0, 0, 0, 0.16);
+}
+

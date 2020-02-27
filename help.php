@@ -49,7 +49,7 @@ function autoversion($file)
         </li>
     </ol>
     <p> Click/tap on a linenumber in the Greek or translation text, both textcolumns
-        and the collapsible list will scroll to that linenr. Click/tap a linenumber in one of the
+        and, if the ctrl key is pressed also the collapsible list will scroll to that linenr. Click/tap a linenumber in one of the
         "pages" and the texts will load and scroll there.</p>
     <p class="italic"> Column resize:</p>
     <p> On the right side of the displayed columns, except the rightmost one,
@@ -114,22 +114,23 @@ function autoversion($file)
         Lookup </strong>menu:<br>
         On PC's:<br>
         Mouse-select a word or a linenumber in the Greek or English text then
-        click the selection (or doubleclick a word), it appears in the search
+        if necessary click the selection (or doubleclick a word), it appears in the search
         box. <br>
         On tablets:<br>
         Select a word by tap-holding it. Then you can adjust the selection. Tap
-        it again to make it appear in the search box. (on android - firefox this
-        doesn't work) <br>
+        it again to make it appear in the search box. Sometimes you have to do the
+        selecting twice.
+ <br>
         It can also be typed in. For Greek use betacode (see below) or a Greek
         keyboard. Depending on its language and content, 'Lookup' will then give
         you the option of :</p>
     <ol>
-        <li>&nbsp; <strong></strong>going to that linenumber in the
+        <li>going to that linenumber in the
             corresponding text, in this page or in the Perseus database. If you
             type in a linenumber, it has the following format: (square brackets
             means optional)<strong> [text][language][chapter.]linenumber</strong>
-            where text is one of: il od th wd (upper or lowercase), language is: '
-            ' (space) for Greek, ':' (colon) for English, chapter is a number 1-24
+            where text is one of: il od th wd (upper or lowercase), language is:
+            ' ' (space) for Greek, ':' (colon) for English, chapter is a number 1-24
             plus a dot or a corresponding Greek or Latin letter, linenumber is a
             number. The optional parts default to current text, language or
             chapter. Example: il 1.300 (chapter 1, line 300 of the Greek Iliad) or
@@ -138,35 +139,36 @@ function autoversion($file)
             currently showing chapter &amp; text. (WD and Theogony don't have
             chapter nrs). <br>
             The 'language' char only has effect if no text is showing, otherwise
-            the language(s) of the current text will be loaded. If you select '<strong>english</strong>'
+            the language(s) of the current text will be loaded. <br>
+            If you menu-select '<strong>english</strong>'
             or '<strong>greek</strong>' you will be taken to the corresponding
             text in the Perseus database.
         </li>
         <li>searching for that piece of text in the corresponding poem here, or
-            a word in the Alpheios database. If you search here, all lines (of the
+            a word in the Perseus database. If you search here, all lines (of the
             currently showing poem) containing that text will be bookmarked and
             will show up in the bookmark selector.&nbsp;English searches are case-sensitive.
             If you select '<strong>word study</strong>' you will be taken to the
-            corresponding entry in the Alpheios database's word study / dictionary section.
-            Alpheios word-searches are case-sensitive and all diacritics have to be present and correct.
+            corresponding entry in the Perseus database's word study / dictionary section.
+            Perseus word-searches are case-insensitive and diacritics are optional.
         </li>
     </ol>
     <em>Betacode:</em>
     <p style="margin-left: 20px;"> The grey beta-sign in the search box
         switches the text from Latin alfabet to Greek and v.v. If you hold the
-        mousebutton &gt; 0.5 sec., the diacitics and uppercase are discarded in
+        mousebutton &gt; 0.5 sec., the diacritical marks and uppercase are discarded in
         the transformation.<br>
         The Greek texts here are in Unicode 'Extended Greek', which is polytonic
         Greek, while, for instance, Perseus works with 'betacode', an ascii-only lowercase-only
-        transcription of the Greek alfabet. To perform internal lookups, the unicode
+        transcription of the Greek alfabet. To perform lookups (here or in Perseus), the unicode
         is translated into betacode with or without diacritics.<br>
         For searching with accents, f.i. 'ἄλλα' or 'ἀλλὰ', enter 'a)/lla' resp.
-        'a)lla\' and click the beta-button. If you're searching&nbsp;<em>with</em>&nbsp;accents,&nbsp;<em>all</em>&nbsp;the
-        accents and capitals must be correct or the word will not be found.
-        Searching without accents ignores all of these and, for instance, finds
-        both forms of αλλα. This does not go for searching in Alpheios.<br>
+        'a)lla\' and click the beta-button. If you are searching&nbsp;<em>with</em>&nbsp;diacritics,
+        <em>all</em>&nbsp;the marks and capitals must be correct or the word will not be found.
+        Searching without diacritical marks ignores all of these and, for instance, finds
+        both forms of αλλα.<br>
         Doubleclicking the search box will clear it.<br>
-        Betacode: lowercase-letters only (we use the Perseus-dialect of
+        Betacode: uses lowercase-letters only (we use the Perseus-dialect of
         betacode).&nbsp;<br>
         <em>In this order:</em><br>
         <span style="color: rgb(255, 0, 0);">*</span>&nbsp;precedes a letter to
@@ -201,9 +203,6 @@ function autoversion($file)
         previous/next bookmark in current text</p>
     <p><span class="red"><strong>∅ </strong></span>: clear bookmarks for
         this text only</p>
-    <p><strong><span class="red">⇔&nbsp;</span></strong>: switch back &amp;
-        forth between the current scrollposition of the Greek text, and the
-        previous target of a goto-action (bookmark click etc.) in the same text.</p>
     <p><strong><span class="red">⇓&nbsp;</span></strong>: Save the list of
         bookmarks into the notepad (so it can be locally saved).</p>
     <p><strong><span class="red">⇑&nbsp;</span></strong>: Load a list of
@@ -219,7 +218,7 @@ function autoversion($file)
         reset biy clicking again or through the tools-menu.<br>
         If a linenumber (in the list) shows light-blue on hover, clicking it
         scrolls the explanation-column (only works if this column is visible) to that item.<br>
-        Holding down the mousebutton785 &gt; 1 sec. on a linenumber scrolls it to the
+        Holding down the mousebutton &gt; 1 sec. on a linenumber scrolls it to the
         top, and lets that item be the top in subsequent expansions of the list.
         Hold down again on the same or on the root item ("The Iliad"), and the
         root item becomes the top. This feature does not work on tablets. </p>
@@ -237,7 +236,7 @@ function autoversion($file)
         into the filename box, clicking 'save' will send it to your default
         download directory, and <em>load</em>: click to select a file on your
         computer and upload it. It will replace any text present in the pad.<br>
-        If the notepad is visible, selecting in the text (and then clicking the
+        If the notepad is visible, selecting in the textcolumns (and then clicking the
         selection, in some browsers) enters it in the notepad as well as in the searchbox.<br>
         Resize the pad on the bottom-right corner (not IE, not tablets).</p>
     <p> CTRL-C,X,V work as usual.</p>
@@ -245,11 +244,10 @@ function autoversion($file)
         the scrollbars or some of the content do not show up in one of the
         columns): try clicking on the frame, or either refreshing the whole page
         or right-clicking the column and choosing 'reload frame'. If this
-        doesn't help, try menu-item 'reset'.</p>
-    <p> On Windows, with any up-to-date browser (except Edge), things seem to work fine. On OSX things
+        doesn't help, try menu-item 'reset all'.</p>
+    <p> On Windows, with any up-to-date browser, things seem to work fine. On OSX things
         used to work but it's a long time since I tested. Linux I do not know. On Android:
-        Chrome does best, Firefox is OK except some small problems, Opera does fine, others I do not know. On my
-        old Ipad, nothing works.</p>
+        Chrome does best, Firefox is OK except some small problems, Opera does fine, others I do not know. On my old Ipad, nothing works.</p>
 </div>
 <div class="mtime"><?="Last-Modified: ".gmdate("D, d M Y H:i", $lastModified)." GMT";?><br></div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

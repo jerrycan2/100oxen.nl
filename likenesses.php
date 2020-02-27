@@ -1,5 +1,5 @@
-<?php
-$lastModified=filemtime(__FILE__);
+<!DOCTYPE html>
+<html lang="en"><head><?php $lastModified=filemtime(__FILE__);
 function autoversion($file)
 {
   global $lastModified;
@@ -9,19 +9,15 @@ function autoversion($file)
   return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="Description" CONTENT="A dictionary of Homeric likenesses and Homer's use of them">
-    <title>Homeric likenesses</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
+    <meta name="Description" content="A dictionary of Homeric likenesses and Homer's use of them">
+    
+    <title>Homeric likenesses</title><link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="%3C?=%20autoversion%28%27/css/common.css%27%29;?%3E"></head>
 
-          rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
-</head>
-<body class="contents latin">
+
+<body style="direction: ltr;" class="contents latin">
 <h3>dictionary of Homeric likenesses</h3>
 <p>When Luke writes about the shepherds who keep watch at night it should be
     understood that he is addressing 'leaders of the people', by whatever name
@@ -113,9 +109,7 @@ function autoversion($file)
         <ul>
             <li><a class="textlink" href="#night">night</a>, death, mourning. Note
                 the metaphor of 'gold turning black' (Il 18.548) for the effect that
-                the Iliad is supposed to have on its audience (see <a class="textlink"
-
-                                                                      href="#ploughing">ploughing</a>).
+                the Iliad is supposed to have on its audience (see <a class="textlink" href="#ploughing">ploughing</a>).
             </li>
         </ul>
     </li>
@@ -148,7 +142,7 @@ function autoversion($file)
             <li>bread: food for mortals, or for common people as opposed to
                 aristocrats/warriors
             </li>
-            <li>Patrocles heaps up the bread, Achilles cuts the meat - a level up
+            <li>Patroclus heaps up the bread, Achilles cuts the meat - a level up
                 in the men-gods hierarchy
             </li>
         </ul>
@@ -228,7 +222,13 @@ function autoversion($file)
     <li>deer
         <ul>
             <li>in simile's: victim, prey for the hunter</li>
-            <li>Odysseus and the monster-deer he caught (Od 10.168-), 'συνέδησα πόδας δεινοῖο πελώρου' (binding the fearful monster's feet, presumably to keep it from <a class="textlink" href="#running">running</a>), then he gathers the men, with sweet words approaching each man: "Men, we may be suffering, but we shall not go down to Hades before our Day of Fate comes", and invites them to a meal.</li>
+            <li>Odysseus
+and the monster-deer he caught (Od 10.168-), 'συνέδησα πόδας δεινοῖο
+πελώρου' (binding the fearful monster's feet, presumably to keep it
+from <a class="textlink" href="#running">running</a>), then he gathers
+the men, with sweet words approaching each man: "Men, we may be
+suffering, but we shall not go down to Hades before our Day of Fate
+comes", and invites them to a meal.</li>
         </ul>
     </li>
     <li>dogs
@@ -278,7 +278,10 @@ function autoversion($file)
         <ul>
             <li>'burnt faces'? probably, because they live where the sun comes close</li>
             <li>but also: bright eyes</li>
-            <li>or possibly: the ones looking upon the αἰθήρ (αἴθε = 'I wish') i.e. they do not have their feet on the ground. Zeus, unfortunately, is the one who occupies the Aither (Il 2.412)</li>
+            <li>or
+possibly: the ones looking upon the αἰθήρ (αἴθε = 'I wish') i.e. they
+do not have their feet on the ground. Zeus, unfortunately, is the one
+who occupies the Aither (Il 2.412)</li>
         </ul>
     </li>
     <li>helmet
@@ -303,8 +306,7 @@ function autoversion($file)
             <li>Achilles' speaking horse: it is Hera who gives it voice (Il
                 19.407). Ref. also Il 1.55- where Hera makes Achilles himself talk.
             </li>
-            <li>The Trojan Horse: a wooden horse, i.e. a horse that does not <a class="textlink"
-                 href="#running">run</a>, but wins the war by metis (cleverness,
+            <li>The Trojan Horse: a wooden horse, i.e. a horse that does not <a class="textlink" href="#running">run</a>, but wins the war by metis (cleverness,
                 trick) and patience.
             </li>
         </ul>
@@ -312,8 +314,12 @@ function autoversion($file)
     <li>hundred-arm (Briareus)
         <ul>
             <li>
-                The picture of a hundred arms, fifty heads is easily linked to advanced phalanx-like fighting where a squadron of men has to act like a single being. If this is the metaphor, it is not easily relatable to what Hesiod says about Briareus (Th 149-, 617-, 714-, 734-, 817). It may be significant, however, that the Hundredarm is the actual fighting force behind Zeus' power (Il 1.402-) in Homer as well as in Hesiod.
-            </li>
+The picture of a hundred arms, fifty heads is easily linked to advanced
+phalanx-like fighting where a squadron of men has to act like a single
+being. If this is the metaphor, it is not easily relatable to what
+Hesiod says about Briareus (Th 149-, 617-, 714-, 734-, 817). It may be
+significant, however, that the Hundredarm is the actual fighting force
+behind Zeus' power (Il 1.402-) in Homer as well as in Hesiod. </li>
         </ul>
     </li>
     <li>hunting
@@ -359,7 +365,7 @@ function autoversion($file)
     </li>
     <li>light
         <ul>
-            <li>Note Nestor's exhortation to Patrocles, that he should fight to
+            <li>Note Nestor's exhortation to Patroclus, that he should fight to
                 'become a light to the Achaeans' and the very Homeric irony of its
                 fulfillment in bk 23
             </li>
@@ -421,7 +427,7 @@ function autoversion($file)
             </li>
             <li>
                 pharmakos: the scapegoat-sacrifice. This sacrifice is performed to heal a
-                community. Homer is quite aware of it, see Patrocles, Thersites, Achilles himself. <br>
+                community. Homer is quite aware of it, see Patroclus, Thersites, Achilles himself. <br>
                 small pictures, possibly: Il 1.313, where they purify themselves and the 'dirt' goes into the sea,
                 and Od 4.244- where Odysseus may be posing as a scapegoat.
             </li>
@@ -430,7 +436,7 @@ function autoversion($file)
     <li>mix with
         <ul>
             <li>in Greek: (often) to have sex with. Remember the complaint of
-                Patrocles' ghost to Achilles: (literally translated) 'they will not
+                Patroclus' ghost to Achilles: (literally translated) 'they will not
                 let me mix across the river'. (Il 23.73 οὐδέ μέ πω μίσγεσθαι ὑπὲρ
                 ποταμοῖο ἐῶσιν)
             </li>
@@ -658,15 +664,18 @@ function autoversion($file)
                 misses, Hector throws and misses, Achilles thrusts and wins, spear
                 conquers sword.
             </li>
-            <li>δοῦρε δύω (two spears). Likeness? One for throwing away, one for keeping with you? Note that Hector dies for lack of a second spear.</li>
+            <li>δοῦρε
+δύω (two spears). Likeness? One for throwing away, one for keeping with
+you? Note that Hector dies for lack of a second spear.</li>
         </ul>
     </li>
     <li>star
         <ul>
             <li>Il 22.30 λαμπρότατος μὲν ὅ γ' ἐστί, κακὸν δέ τε σῆμα τέτυκται,<br>
-                Achilles is like Orion's hound, the dog-star, 'though brightest of all, he is a sign of evil'.
-                I wonder sometimes if the 'new star' of Bethlehem, the one that the 3 wise men follow, is a Hellenistic metaphor based on this one (except the evil part of course).
-            </li>
+Achilles is like Orion's hound, the dog-star, 'though brightest of all,
+he is a sign of evil'. I wonder sometimes if the 'new star' of
+Bethlehem, the one that the 3 wise men follow, is a Hellenistic
+metaphor based on this one (except the evil part of course). </li>
         </ul>
     </li>
     <li>sun</li>
@@ -677,7 +686,7 @@ function autoversion($file)
     <li>three and four
         <ul>
             <li>ref. our 'three times lucky': a fourth is one too many. Cp. the
-                theme "3 times..and the fourth.." used in Patrocles' death or
+                theme "3 times..and the fourth.." used in Patroclus' death or
                 Hector's attack on the wall (a.o)
             </li>
         </ul>
@@ -699,7 +708,12 @@ function autoversion($file)
     <li>waves</li>
     <li>whip</li>
     <li>wind(s)</li>
-    <li>wine</li>
+    <li>wine</li><ul><li>a
+metaphor for the effect that the singing of the Iliad had on its
+audience. E.g. Achilles to Patroclus: 'more strongly mix the wine' (Il
+9.203) or the wine that Maron gave to Odysseus (Od 9.196-) which he
+used to subdue the cyclops. It is a courage-enhancing drink (Il 8.228-)
+just as the wine served (and drunk) by Nestor (Il 11.624-)</li><li></li></ul>
     <li><a id="winnow">winnowing shovel</a>:
         <ul>
             <li>(?) the
@@ -721,8 +735,12 @@ function autoversion($file)
 </ul>
 <hr>
 <ol id="footnotes">
-    <li>I propose not to go into the technicalities of likenesses, simile's, symbols, metaphors, allegories, parable, analogy etc. All language based on an observation that A 'is-like' B when telling a story about B, I refer to as likeness. The special thing about Homer's poetry is that he can make his rhetoric work on both levels A and B.
-    </li>
+    <li>I propose not to go into the
+technicalities of likenesses, simile's, symbols, metaphors, allegories,
+parable, analogy etc. All language based on an observation that A
+'is-like' B when telling a story about B, I refer to as likeness. The
+special thing about Homer's poetry is that he can make his rhetoric
+work on both levels A and B. </li>
 </ol>
 <br>
 <br>
@@ -732,5 +750,4 @@ function autoversion($file)
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script src="<?php echo autoversion('/scripts/iframes.js');?>"></script>
-</body>
-</html>
+</body></html>

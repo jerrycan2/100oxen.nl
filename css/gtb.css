@@ -1,45 +1,102 @@
-body {
-    height: 100%;
-    width: 100%;
-}
-.wrap {
-    top: 0;
-    left: 0;
-    display: table;
-    height: auto;
-    margin: 0 auto;
-    width: 90%;
-    min-width: 40rem;
-    text-align: center;
-    /*box-shadow: 3px 3px 5px 2px #444;*/
-    /*border-radius: 0.25rem;*/
-
-    /*white-space: nowrap;*/
-}
-
-.tablerow {
-    display: table-row;
-    height: 4rem;
-    width: 100%;
-    color: black;
-}
-#tableheader {
-    display: table-header-group;
-    height: 2rem;
-    width: 100%;
-    background-color: darkblue;
-    color: white;
-}
-.tabcell {
-    position: relative;
-    display: table-cell;
-    width: auto;
-    border: dotted 1px darkblue;
-}
-.tabcell p {
-    margin: auto 0.3rem;
-}
-.rowname {
-    display: table-cell;
-    width: 12%;
-}
+body {
+    height: 100%;
+    width: 100%;
+}
+.tablewrap1 {
+    top: 0;
+    left: 0;
+    display: table;
+    height: auto;
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+    /*min-width: 40rem;*/
+    /*box-shadow: 3px 3px 5px 2px #444;*/
+    /*border-radius: 0.25rem;*/
+
+    /*white-space: nowrap;*/
+}
+
+.tablerow1 {
+    display: table-row;
+    height: auto;
+    width: 100%;
+    color: black;
+}
+#tableheader1 {
+    display: table-header-group;
+    height: 2rem;
+    width: 49%;
+    background-color: darkblue;
+    color: white;
+}
+.tabcell1 {
+    display: table-cell;
+    width: 49%;
+    border: dotted 1px darkblue;
+}
+.tabcell1 p {
+    margin: auto 0.3rem;
+    text-align: left;
+}
+.tabcell1 img {
+    width: 100%;
+    vertical-align: top;
+}
+.tabcell1.middle {
+    width: 2%;
+}
+/**************************************************/
+span.gold {
+    color: goldenrod;
+}
+span.red {
+    color: red;
+}
+span.green {
+    color: green;
+}
+span.blue {
+    color: blue;
+}
+/******************************************************/
+.tablewrap {
+    top: 0;
+    left: 0;
+    display: table;
+    height: auto;
+    margin: 0 auto;
+    width: 90%;
+    /*min-width: 40rem;*/
+    text-align: center;
+    /*box-shadow: 3px 3px 5px 2px #444;*/
+    /*border-radius: 0.25rem;*/
+
+    /*white-space: nowrap;*/
+}
+
+.tablerow {
+    display: table-row;
+    height: 4rem;
+    width: 80%;
+    color: black;
+}
+#tableheader2 {
+    display: table-header-group;
+    height: 2rem;
+    width: 80%;
+    background-color: darkblue;
+    color: white;
+}
+.tabcell {
+    display: table-cell;
+    width: 22%;
+    border: dotted 1px darkblue;
+}
+.tabcell p {
+    margin: auto 0.3rem;
+}
+.rowname {
+    display: table-cell;
+    width: 12%;
+}
