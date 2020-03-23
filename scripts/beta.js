@@ -1,4 +1,4 @@
-import {LatinGreek} from '../scripts/myUtils.js';
+import {LatinGreek} from '../scripts/myUtils.js?v=0.0.28';
 /**
  * function beta2uni
  * convert ASCI-string (betacode) to unicode extended-greek and normalize the greek

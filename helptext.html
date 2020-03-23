@@ -1,7 +1,7 @@
 <h4>helptext</h4>
 <ul id="htxt">
     <li>select 'edit' checkbox, then click a treenode to start editing it. Node texts can be edited.
-        <i>if you set the checkmark again after the edit frame is loaded</i>.
+        (<i>After the element lost focus, set the checkmark again.</i>).
         The root node of the edit frame is not editable or deletable, it is needed to find the right place in the
         struct-tree.</li>
     <li>checkboxes english, greek, edit: determine what happens if you click a
@@ -9,15 +9,15 @@
         which cannot be expanded further) or if 'edit' checked: copy subtree to Edit.
         Avoid copying large trees to Edit, browsers do not deal with that very well.
     </li>
+    <li>In Struct or Edit, click on "⊛" to scroll the explanation page (if visible) to that item.
+        In Edit, click on "░" to turn it into "⊛" if an anchor is found; "⊛" turns into "░"
+        if no anchor is found. Do not forget to commit.
+    </li>
     <li>switch: switch between <em>Structure</em> View (whole tree, no Greek, yellow)
         and <em>Edit</em> View (subtree, incl. Greek, editable, blue) or both
     </li>
-    <li>click on the circles star to view a short comment-text. In the Edit panel
-        this is editable (see above). Comments attached to Greek textlines will of course
-        not turn up in the 'struct' tree, but they will be stored in the html.
-    </li>
     <li>expand: expand/collapse 'by level' the currently focused tree.</li>
-    <li>Hide Greek: in Edit view, hide visible Greek textlines</li>
+    <li>Hide/Show Greek: in Edit view, show/hide visible Greek textlines</li>
     <li>Insert: create a new node, with selected nodes as its children</li>
     <li>Delete: delete selected node(s), their children take their place</li>
     <li>Split: split the parent of selected nodes into two: first with the

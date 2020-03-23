@@ -42,6 +42,10 @@ ul {
   margin: 0;
   padding: 0;
 }
+#nosplash {
+  width: 2rem;
+  height: 2rem;
+}
 /********************/
 /* header styles   */
 /********************/
@@ -101,7 +105,7 @@ header img {
   z-index: 1;
   width: 50%;
 }
-#menu1 li:not(#setlevel):hover {
+#menu1 li:hover {
   color: red;
 }
 #menu1 > ul {
@@ -157,12 +161,6 @@ header img {
 }
 #menu1 #setfontsize {
   width: 2.5rem;
-}
-#menu1 #setlevel tr td {
-  width: 1rem;
-}
-#menu1 #setlevel tr td:hover {
-  color: red;
 }
 #menu1 #inputicon {
   display: inline-block;
@@ -230,6 +228,37 @@ div#colwrap {
 /*******************/
 /* tree styles     */
 /*******************/
+#mtime {
+  height: 1.5rem;
+}
+#expander {
+  display: block;
+  position: absolute;
+  top: 8.5rem;
+  left: 0;
+  width: 5rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 20px;
+  color: black;
+}
+#expander div {
+  display: inline-block;
+  width: 2rem;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+#expander #plus {
+  background-color: rgba(119, 206, 234, 0.75);
+  margin-right: 0.5rem;
+}
+#expander #min {
+  background-color: rgba(84, 177, 234, 0.75);
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
 #struct_header {
   cursor: pointer;
 }
@@ -605,7 +634,7 @@ figure > * {
   height: auto;
   background-color: beige;
 }
-#alfabetdiv {
+#alphabetdiv {
   position: absolute;
   top: 10rem;
   left: 10rem;
@@ -616,7 +645,7 @@ figure > * {
   border-radius: 0.4rem;
   overflow: hidden;
 }
-#alfabetdiv table {
+#alphabetdiv table {
   color: white;
   width: 100%;
   outline: 2px solid grey;

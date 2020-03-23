@@ -1,8 +1,17 @@
+/*#003399;*/
+@font-face {
+  font-family: "Archaic Greek";
+  src: url("../images/Archaic Greek.ttf");
+}
+@font-face {
+  font-family: "reverse";
+  src: url("../images/reverse.ttf");
+}
 .rounded {
   border-radius: 0.4rem;
 }
 #butlertext {
-  color: #003399;
+  color: #000062;
   margin-right: 1px;
   font-style: italic;
   background-color: rgba(0, 0, 40, 0.1);
@@ -43,46 +52,42 @@ h3,
 h4,
 h5 {
   background-image: linear-gradient(to right, rgba(16, 16, 16, 0) 10%, #ffffff 50%, rgba(16, 16, 16, 0) 90%);
-  color: black;
   text-shadow: 0 1px 0 white;
   text-align: center;
-  box-shadow: 3px 3px 5px 2px #444;
+  box-shadow: 3px 3px 5px 2px #000062;
   line-height: 150%;
+  margin: 1.2rem 10% 0.7rem 10%;
   border-radius: 0.4rem;
 }
 h1 {
   font-size: 200%;
-  margin: 0.5em 10%;
 }
 h2 {
   font-size: 180%;
-  margin: 0.5em 10%;
 }
 h3 {
-  font-size: 140%;
-  margin: 0.5em 10%;
+  font-size: 150%;
 }
 h4 {
   font-size: 120%;
-  margin: 0.5em 10%;
 }
 h5 {
   font-size: 100%;
-  margin: 0.5em 10%;
+}
+h6 {
+  font-size: 100%;
+  margin: 0.3rem 1rem;
 }
 .emph2 {
   background-image: linear-gradient(to right, rgba(16, 16, 16, 0) 10%, #ffffff 50%, rgba(16, 16, 16, 0) 90%);
   outline: 2px solid darkblue;
-  color: black;
   padding: 0 0.5rem;
   text-shadow: 0 1px 0 white;
   text-align: center;
   line-height: 140%;
-  font-size: 120%;
 }
 em {
   font-style: italic;
-  font-weight: bold;
 }
 p {
   padding: 0;
@@ -92,7 +97,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #003399;
+  border-top: 2px solid #000062;
   margin: 1em 0;
   padding: 0;
 }
@@ -112,8 +117,17 @@ hr {
 strong {
   font-weight: bold;
 }
+.gold {
+  color: goldenrod;
+}
 .red {
   color: red;
+}
+.green {
+  color: green;
+}
+.blue {
+  color: blue;
 }
 :focus {
   outline: 0;
@@ -134,10 +148,12 @@ figure img {
 }
 .textlink,
 .explink {
-  color: black !important;
+  color: #000062;
   cursor: pointer;
   text-decoration: none;
   background-color: rgba(5, 5, 5, 0.2);
+  padding: 0 3px;
+  border-radius: 0.4rem;
 }
 /*only for greek & butler frame:*/
 .contents p a {
@@ -150,16 +166,19 @@ figure img {
   border-radius: 0.4rem;
   background-color: rgba(5, 5, 5, 0.2);
 }
+.latin {
+  color: #000062;
+}
 .latin p {
-  margin-left: 2rem;
-  margin-right: 1rem;
+  margin: 0.5rem 1rem;
 }
 .greek p a,
 .latin p a {
   border-width: 0 0.2rem;
 }
 .indent {
-  padding: 1rem 5rem 1rem 3rem;
+  padding: 0.5rem 5rem 0.5rem 3rem;
+  background-color: rgba(200, 200, 0, 0.1);
 }
 .citation {
   margin-left: 4rem;
@@ -229,7 +248,14 @@ div.panel {
   font-size: 1rem;
 }
 div.panel p {
-  margin-left: 1.1rem;
+  margin: 0.5rem 1rem;
+}
+.nobullets {
+  list-style-type: none;
+  padding-left: 0;
+}
+.nobullets li ul {
+  list-style-type: none;
 }
 #thegods header {
   background: linear-gradient(to bottom, #77beff 90%, #008000);
@@ -257,6 +283,9 @@ div.panel p {
 #sendform div {
   margin-bottom: 1rem;
 }
+.hidden {
+  display: none;
+}
 a.footptr {
   vertical-align: super;
   font-size: 0.83em;
@@ -267,15 +296,8 @@ a.refptr {
 }
 .foot-tooltip {
   background-color: #FCF6CF;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  padding-left: 1em;
-  opacity: 0;
-  -webkit-transition: opacity 0.3s linear;
-  -moz-transition: opacity 0.3s linear;
-  -o-transition: opacity 0.3s linear;
-  -ms-transition: opacity 0.3s linear;
-  transition: opacity 0.3s linear;
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
 }
 li:target {
   background-color: #BFEFFF;

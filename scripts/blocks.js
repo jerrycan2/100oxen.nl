@@ -1,4 +1,4 @@
-import {LatinGreek} from '../scripts/myUtils.js';
+import {LatinGreek} from '../scripts/myUtils.js?v=0.0.28';
 "use strict";
 /**
  * Created by WinJeroen on 29-10-2014.
@@ -410,7 +410,7 @@ function columnclick(e) {
         }
         $node = $x.parent();
         if (parent) {
-            if ($node.is("book")) {
+            if ($node.is("lvl0")) {
                 parent.site100oxen.showAndGotoAnyLine("1.1", false);
             }
             else {

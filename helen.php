@@ -1,7 +1,6 @@
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -17,7 +16,7 @@ function autoversion($file)
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="">
-    <title>Helen, Ares and Aphrodite</title>
+    <title>Helen, the myth</title>
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>

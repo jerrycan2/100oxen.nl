@@ -1,12 +1,14 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -27,7 +29,7 @@ function autoversion($file)
 </a> <figcaption></figcaption> </figure>
 
 <p>
-    Hesiod attempts to derive the name Τιτῆνες (Titans) from τιταίνω (stretch, strive) (Th 207-). Possibly the above picture is an explanation of this.
+    Hesiod attempts to derive the name Τιτῆνες (Titans) from τιταίνω (stretch, strive) (Th 207-). Etymologists find this unlikely, but the important point for interpretation is what Hesiod thought, not what science knows better. Possibly the above picture is an explanation of his view.
 </p>
 <p>
     In ancient Greece, just as most everywhere, honor and status are age dependent. Siblings of the same sex are ranked according to their age and the first-born has a special place of honor. If this is true of humans, it must be even more important among the gods<a class="ptr">(1)</a>. So in a well-ordered society gods and people would find a husband/wife of their own rank. All this goes without comment in the Theogony although, Kronos being the youngest, his becoming King of the gods is shown as a kind of coup. I will call a relation like Kronos-Rhea an <em>upward</em> relation (from the male p.o.v.) and one like Okeanos-Tethys a <em>downward</em> relation.
@@ -49,7 +51,7 @@ function autoversion($file)
     But back to the gods: all this would not seem very relevant if it were not for the stories about the <em>demi-gods</em> (ἡμίθεοι), the sons and daughters of gods mating with humans (WD 159-60). This important group (found also in the Old Testament) plays a pivotal role in many if not most of the Greek myths. Relations between gods and women, or goddesses and men, are also either upward or downward. Achilles sprouts from an upward marriage, Peleus and the goddess Thetis; the result is a king. Heracles comes from a downward one: Zeus and Alcmene; the result is a servant. I wonder if there is an ancient theory behind this, that these unequal relations are the cause of much trouble in the world.
 </p>
 <p>
-    There is another point about these demigods - they are not there anymore. They were beautiful - they are gone - they are worshipped. See <a class="textlink" title="scapegoat" href="goat.php">scapegoats</a>. Let us speculate a bit further on that. Both in Homer (Il 12.23-) and Hesiod (WD 157-, about the fourth generation who now live on the Isles of the Blessed in a kind op poetic aside, the demigods are looked back upon as glorious but gone. Is is possible that the semi-divine heroes themselves, as a class, are being scapegoated away<a class="ptr">(3)</a>? See also the Hesiodic Catalogue of women, book 5.201- with fragmentary but interesting references to Zeus' plan to get rid of the demigods, threats of war, the necessity for the Ionians to 'choose the sea' and Apollo's role in this.
+    There is another point about these demigods - they are not there anymore. They were beautiful - they are gone - they are worshipped. See <a class="textlink" title="scapegoats" target="_self" href="<?php echo autoversion('/goat.php');?>">scapegoats</a>. Let us speculate a bit further on that. Both in Homer (Il 12.23-) and Hesiod (WD 157-, about the fourth generation who now live on the Isles of the Blessed in a kind op poetic aside, the demigods are looked back upon as glorious but gone. Is is possible that the semi-divine heroes themselves, as a class, are being scapegoated away<a class="ptr">(3)</a>? See also the Hesiodic Catalogue of women, book 5.201- with fragmentary but interesting references to Zeus' plan to get rid of the demigods, threats of war, the necessity for the Ionians to 'choose the sea' and Apollo's role in this.
 </p>
 <br>
 <h5>the Succession Myth</h5>

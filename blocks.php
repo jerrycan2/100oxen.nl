@@ -1,12 +1,13 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -25,8 +26,8 @@ function autoversion($file)
 
 <h2 id="blocks_header" title="click to show list view">Thematic structure</h2>
 <section>
-    <p>Here the subdivisions of the poem are shown in proportion. Click in the middle column to go 'down',
-        click left to go 'up' again.</p>
+    <p>Here the subdivisions of the poem are shown in proportion. Click in the middle column to go 'up',
+        click left to go 'down' again.</p>
     <br>
 </section>
 <!--div class="radiobtn">
@@ -55,7 +56,7 @@ function autoversion($file)
 <script type="text/javascript" src="scripts/jquery.nicescroll.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.color-2.1.2.min.js"></script>
 <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
-<script src="<?= autoversion('/scripts/myUtils.js');?>" type="module"></script>
+<!--<script src="<?= autoversion('/scripts/myUtils.js');?>" type="module"></script>-->
 <script src="<?= autoversion('/scripts/blocks.js');?>" type="module"></script>
 
 </body>

@@ -1,5 +1,4 @@
-import * as utils from './myUtils.js';
-//import {setnodeattributes} from "./myUtils";
+import * as utils from './myUtils.js?v=0.0.28';
 
 /**
  * Created by jeroe on 07-Aug-18.
@@ -82,11 +81,11 @@ import * as utils from './myUtils.js';
         const $ed = $("#edit");
         let half, whole;
         if (hueb_open) {
-            half = "calc((100% - 3rem - 300px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
-            whole = "calc(100% - 3rem - 300px)";
+            half = "calc((100% - 324px) / 2)"; // header = 3rem? 0rem? I don't get it but it works
+            whole = "calc(100% - 324px)";
         } else {
-            half = "50%";
-            whole = "100%";
+            half = "calc(50% - 12px)";
+            whole = "calc(100% - 24px)";
         }
         const csshalf = {
             display: "block",
@@ -148,27 +147,52 @@ import * as utils from './myUtils.js';
      * @param {*} $element - the clicked html element: either .hasrem or .norem
      */
     function handleRemClick($element) {
-        const $parent = $element.parent();
-        if ($parent.has(".remtxt").length) { // if it's showing: hide it
-            const txtrem = $parent.find(".remtxt:first");
-            const newtext = txtrem.text();
-            if (is_edit_tree($element)) { // save it back on closing
-                $element.closest("li").data("rem", newtext);
-                $element.removeClass();
-                if (newtext) {
-                    $element.addClass("hasrem").text("⊛");
-                } else {
-                    $element.addClass("norem").text("░");
-                }
+        let found;
+        const ids = utils.element2lineIDs($element.next());
+        const bg = ids.beginning;
+        const lvl = parseInt($element.parent().parent().attr("class").substring(3), 10)
+            + parent.site100oxen.startLevel;
+        const anchor = lvl + ":" + bg;
+        found = utils.gotoAnchor(anchor, false); // 2nd par: false = don't go, just check existence
+        if ($element.is(".hasrem")) {
+            if (found) {
+                utils.gotoAnchor(anchor, true);
+            } else {
+                utils.myAlert("explanation not found");
+                $element.attr("class", "norem");
+                $element.text("░");
             }
-            txtrem.slideToggle(350, function () {
-                $(this).remove();
-            });
-        } else { // show it by creating a temporary <div> element with the text
-            $element.nextAll("span:last")
-                .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
-            $parent.find(".remtxt:first").slideToggle(350);
+        } else {
+            if (found) {
+                $element.attr("class", "hasrem");
+                $element.text("⊛");
+                utils.gotoAnchor(anchor, true);
+            } else {
+                utils.myAlert("explanation not found");
+            }
         }
+
+        // const $parent = $element.parent();
+        // if ($parent.has(".remtxt").length) { // if it's showing: hide it
+        //     const txtrem = $parent.find(".remtxt:first");
+        //     const newtext = txtrem.text();
+        //     if (is_edit_tree($element)) { // save it back on closing
+        //         $element.closest("li").data("rem", newtext);
+        //         $element.removeClass();
+        //         if (newtext) {
+        //             $element.addClass("hasrem").text("⊛");
+        //         } else {
+        //             $element.addClass("norem").text("░");
+        //         }
+        //     }
+        //     txtrem.slideToggle(350, function () {
+        //         $(this).remove();
+        //     });
+        // } else { // show it by creating a temporary <div> element with the text
+        //     $element.nextAll("span:last")
+        //         .after(`<div class="remtxt">${$element.closest("li").data("rem") || ""}</div>`);
+        //     $parent.find(".remtxt:first").slideToggle(350);
+        // }
     }
 
     //endregion UI
@@ -181,9 +205,6 @@ import * as utils from './myUtils.js';
     function copy_tree_to_edit($node) {
         const $subtree = $node.parent("li").clone(true, true);
         let classname = $node.closest("ol").attr("class");
-        if (classname === "lvl0") {
-            classname = "book";
-        }
         const txt = $subtree.find(".lt:first").text(); // set editing subtree NB it's XML!
         const targets = $(glob.XML).find(classname + '[d="' + txt + '"]');
         let found = null;
@@ -204,6 +225,8 @@ import * as utils from './myUtils.js';
             $("#edit").find("ol:first").remove().end()   //create html in the edit div
                 .append(utils.createlist(found, "edit", true));
             utils.setnodeattributes("edit");
+            $("#edit").css("overflow", "scroll");
+
         }
     }
 
@@ -254,7 +277,7 @@ import * as utils from './myUtils.js';
         return `<li><div class='norem'>&blk14;</div>
 <label class='ln'><input type='checkbox' class='chk'/>${linenr}</label>
 <span class='lt ed'>inserted node</span><span class='plm'></span>
-<ol id='new' class='lvl'></ol></li>`;
+<ol id='new' class='lvlx'></ol></li>`;
     }
 
     /**
@@ -272,7 +295,7 @@ import * as utils from './myUtils.js';
         const $firstsel = $checked.eq(0).closest("li");
         const linenr = $firstsel.find("label.ln:first").text();
         $firstsel.before(HTMLtoInsert(linenr)); //create new node
-        $("#new").append($checked.closest("li")).removeAttr("id").parents("ol:first").attr("class", "lvl"); //move selection to it
+        $("#new").append($checked.closest("li")).removeAttr("id").parents("ol:first").attr("class", "lvlx"); //move selection to it
         utils.setnodeattributes("edit");
     }
 
@@ -407,6 +430,7 @@ import * as utils from './myUtils.js';
                 glob.XML = xml;
             }
             utils.createTreeFromXML(xml.firstChild, target);
+            utils.setnodeattributes(target);
         };
         fileReader.readAsText(fileToLoad, "UTF-8");
     }
@@ -466,7 +490,7 @@ import * as utils from './myUtils.js';
     /**
      * count nr of 'paragraphs', nodes containing greek text lines and count how many
      * are more than 10 lines and report these
-      * @returns {(number|string)[]}
+     * @returns {(number|string)[]}
      */
     function checkParagraphs() {
         let paragraphs = 0, pcount = 0;
@@ -566,20 +590,23 @@ import * as utils from './myUtils.js';
      * nor is the XML nodename. But editing mangles it (it removes the number, see insertNode()).
      * Iltree.exe recalculates it
      * so load and save iliad.xml with that program and the XML will be perfect again.
-      * @returns {number}
+     * @returns {number}
      */
     function checkClass() {
         let errors = 0;
         utils.maptree(glob.XML, function (node) {
             const classname = node.nodeName;
-            if (classname === "lvl") {++errors;}
+            if (classname === "lvlx") {
+                ++errors;
+            }
             return true;
         });
         return errors;
     }
+
     /**
      * siblings must have the same nodename: no mixing of textlines and inner nodes
-      * @returns {(number|string)[]}
+     * @returns {(number|string)[]}
      */
     function checkSiblings() {
         let result = "";
@@ -597,10 +624,9 @@ import * as utils from './myUtils.js';
         return [count, result];
     }
 
-
     /**
      * count number of inner nodes and the nr of textlines
-      * @returns {number[]}
+     * @returns {number[]}
      */
     function count_nodes() {
         let Lcount = 0;
@@ -621,7 +647,7 @@ import * as utils from './myUtils.js';
 
     /**
      * newly created inner nodes have default text "fill in..."
-      * @returns {number}
+     * @returns {number}
      */
     function count_fillins() {
         let Lcount = 0;
@@ -680,7 +706,6 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             });
         }
     });
-
 
     $("#help,#helptext").on({
         "click": function () {
@@ -750,6 +775,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 $("#savefile").text("Save Edit");
             }
             switchdivs($("div#colors").css("display") !== "none", glob.whichDiv);
+            utils.setnodeattributes(glob.targetdiv);
         }
     });
     /**
@@ -758,7 +784,13 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      */
     $(".lvlbutt").on({
         "click": function (e) {
-            const n = parseInt(e.target.textContent, 10);
+            const t = e.target.textContent;
+            let n;
+            if (t === "all") {
+                n = 20; // should be enough to expand all
+            } else {
+                n = parseInt(t, 10);
+            }
             utils.expand(glob.targetdiv, n, glob.showing_greek);
         }
     });
@@ -911,7 +943,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
             let $trg = $(el.target);
             if ($trg.hasClass("ln")) {
                 $("#struct").animate({
-                    scrollTop: $trg.position().top - $(".book").eq(0).position().top
+                    scrollTop: $trg.position().top - $(".lvl0").eq(0).position().top
                 }, 350);
                 let txt = `${$trg.text()} ${$trg.next("span").text()}`;
                 $("#bookmarx > tbody:last-child").append(`<tr><td>${txt}</td></tr>`);
@@ -943,11 +975,11 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                         let lvl = $ol.data("level");
                         utils.expand("struct", lvl, false).then(function () {
                             $struct.animate({
-                                scrollTop: found.position().top - $(".book").eq(0).position().top
+                                scrollTop: found.position().top - $(".lvl0").eq(0).position().top
                             }, 350); // position can only be calculated after expanding
                         });
                     } else {
-                        const diff = found.position().top - $(".book").eq(0).position().top;
+                        const diff = found.position().top - $(".lvl0").eq(0).position().top;
                         $trg.addClass("delable"); // class is wiped after an actual scroll
                         if ($struct.scrollTop !== diff) { // go to
                             $struct.animate({
@@ -1019,7 +1051,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      * 'test' click
      * turn off color on top level (below 'line') nodes that are all colored the same
      * color attributes of the xml get removed
-      */
+     */
     // $("#test").on({
     //     "click": function () {
     //         utils.maptree(glob.XML, function(node) {
@@ -1065,7 +1097,9 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
     function handleTreeClick($target) {
         if ($("#b_ed").prop("checked")) {
             if (!is_edit_tree($target)) {
+                glob.showing_greek = true;
                 copy_tree_to_edit($target);
+                $("#showGreek").click();
             } else if ($("div#colors").css("display") !== "none") {
                 glob.hueb.setColor(`#${utils.rgb2hex($target.css("backgroundColor")).toUpperCase()}`);
             }
@@ -1097,7 +1131,11 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                 case "plm": // "+" or "-": expand/collapse subtree
                     $clicktarget.closest("li").eq(0).children("ol:first").slideToggle(350)
                         .promise().done(function () {
-                        utils.setnodeattributes(glob.targetdiv);
+                        if ($clicktarget.text() === "⊕") {
+                            $clicktarget.text("⊖");
+                        } else {
+                            $clicktarget.text("⊕");
+                        }
                     });
                     break;
                 case "chk": //checkbox clicked. Selects adjacent siblings only.
@@ -1234,8 +1272,8 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         const $targets = $("#edit").find(":checked").prop("checked", false)
             .closest("li").find("span:first");
         if ($("#fg").prop("checked")) {
-                $targets.each(function (i, el) {
-                    el.style.color = color;
+            $targets.each(function (i, el) {
+                el.style.color = color;
             });
             return;
         }
@@ -1319,6 +1357,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         glob.XML = parent.site100oxen.XML;
         loadPageState(); // from localStorage
         utils.setnodeattributes("struct");
+        //utils.check_expansion("struct");
     }
     /**
      * async load the xml

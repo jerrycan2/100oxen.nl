@@ -1,12 +1,13 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -15,24 +16,23 @@ function autoversion($file)
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="Description" CONTENT="Links to all pages on 100oxen.nl">
     <title>sitemap</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
             rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
 </head>
 <body class="latin contents">
-<h1>What was, what is and what will be</h1>
-<h4>Sitemap</h4>
+<h1>Sitemap</h1>
+<h5>all pages are provisional</h5>
 <div class="map">
     <span class="emph2">Site</span>
     <ul>
         <li id="firstli"><span class="emph2">Introduction, axioms</span>
             <ul>
-                <li><a class="textlink" target="_self" title="explanation" href="textframe.php">Explanation page</a>
+                <li>1. intro, axioms ⇨ <a class="textlink" title="100 oxen" target="_self" href="<?php echo autoversion('/100oxen.php');?>">One hundred oxen</a></li>
+                <li><a class="textlink" target="_self" title="explanation of themata" href="<?php echo autoversion('/textframe.php');?>">2. Explanation page</a>
                 </li>
-                <li><a class="textlink" target="_self" title="helppage" href="help.php">Help page</a></li>
-                <li>intro, axioms ⇨ <a class="textlink" href="100oxen.php">
-                    One hundred oxen</a></li>
+                <li> <a class="textlink" title="helppage" target="_self" href="<?php echo autoversion('/help.php');?>">3. Help page</a></li>
             </ul>
         </li>
         <li><span class="emph2">Where &amp; when (historical)</span>
@@ -42,9 +42,9 @@ function autoversion($file)
                         <li><!--a class="textlink" target="_self" title="Charter Myth" href="charter.php"></a-->Charter
                             myth
                         </li>
-                        <li><a class="textlink" target="_self" title="Poseidon" href="poseidon.php">Poseidon</a></li>
+                        <li><a class="textlink" title="Poseidon" target="_self" href="<?php echo autoversion('/poseidon.php');?>">Poseidon</a></li>
                     </ul>
-                <li><a class="textlink" href="smyrna.php">Smyrna and Lydia</a></li>
+                <li><a class="textlink" title="Smyrna and Lydia" target="_self" href="<?php echo autoversion('/smyrna.php');?>">Smyrna and Lydia</a></li>
             </ul>
         </li>
         <li><span class="emph2">How (poetical)</span>
@@ -57,23 +57,19 @@ function autoversion($file)
                                     <!--a class="textlink" title="basics of interpretation" href="basics.php">basics</a-->
                                     basics
                                 </li>
-                                <li><a class="textlink" target="_self" title="likenesses"
-                                        href="likenesses.php">Likenesses</a></li>
+                                <li><a class="textlink" title="Likeness" target="_self" href="<?php echo autoversion('/likenesses.php');?>">Likenesses</a></li>
                                 <li>type, character and 'position'</li>
                             </ul>
                         </li>
                         <li> Structures
                             <ul>
-                                <li><a class="textlink" target="_self" title="proportional view"
-                                        href="blocks.php">A proportional view of the summary</a></li>
-                                <li>Geometrics: <a class="textlink" href="themata.php">the Thematic Structure, ring composition</a>.
+                                <li><a class="textlink" title="a proportional view" target="_self" href="<?php echo autoversion('/blocks.php');?>">A proportional view of the summary</a></li>
+                                <li>Geometrics: <a class="textlink" title="about the structure" target="_self" href="<?php echo autoversion('/themata.php');?>">the Thematic Structure, ring composition</a>.
                                 </li>
-                                <li>
-                                    <a class="textlink" title="other structures" href="structures.php">Other structures</a>: time, pathos.
+                                <li><a class="textlink" title="other kinds of structure" target="_self" href="<?php echo autoversion('/days.php');?>">other structures</a>: time, pathos, characters.
                                 </li>
-                                <li><a class="textlink" target="_self" title="Stitched verse"
-                                        href="stitches.php">Stitched verse - alterations? </a></li>
-                                <li><a class="textlink" title="" href="council.php">Agamemnon's council</a></li>
+                                <li><a class="textlink" title="stitched verse" target="_self" href="<?php echo autoversion('/stitches.php');?>">Stitched verse - alterations? </a></li>
+                                <li><a class="textlink" title="Agamemnon's council" target="_self" href="<?php echo autoversion('/council.php');?>">Agamemnon's council</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -82,13 +78,10 @@ function autoversion($file)
                     <ul>
                         <li> Apollo and the Art of Archery
                             <ul>
-                                <li><a class="textlink" target="_self" title=" Poetry, Prophecy, Healing"
-                                        href="apollo.php"> Poetry, Prophecy, Healing</a></li>
-                                <li><a class="textlink" title="" href="wrath.php">the Wrath of Apollo</a></li>
+                                <li><a class="textlink" title="Poetry, Prophecy, Healing" target="_self" href="<?php echo autoversion('/apollo.php');?>">Poetry, Prophecy, Healing</a></li>
                             </ul>
                         </li>
-                        <li><a class="textlink" target="_self" title="Persuasive rhetoric"
-                                href="rhetoric.php">persuasive rhetoric</a></li>
+                        <li><a class="textlink" title="Persuasive rhetoric" target="_self" href="<?php echo autoversion('/rhetoric.php');?>">persuasive rhetoric</a></li>
                     </ul>
                 </li>
             </ul>
@@ -98,23 +91,25 @@ function autoversion($file)
                     <ul>
                         <li>1. the Immortal Hero</li>
                         <li>2. the Plan of Zeus</li>
-                        <li>3. <a class="textlink" target="_self" title="the mortal hero" href="achilles.php">the Mortal
-                            Hero</a></li>
+                        <li>3. <a class="textlink" title="the Mortal Hero" target="_self" href="<?php echo autoversion('/achilles.php');?>">the Mortal Hero</a></li>
                     </ul>
                 </li>
                 <li> the Gods
                     <ul>
-                        <li><a class="textlink" title="What we obey" href="thegods.php">'What we obey'</a></li>
-                        <li><a class="textlink" title="Zeus and Justice" href="justice.php">Zeus and Justice</a></li>
-                        <li><a class="textlink" title="Kronos" href="kronos.php">Kronos</a></li>
-                        <li><a class="textlink" title="" href="gtb.php">the Good, the True and the Beautiful</a></li>
+                        <li><a class="textlink" title="What we obey: the gods" target="_self" href="<?php echo autoversion('/thegods.php');?>">'What we obey'</a></li>
+                        <li><a class="textlink" title="Zeus and Justice" target="_self" href="<?php echo autoversion('/justice.php');?>">Zeus and Justice</a></li>
+                        <li><a class="textlink" title="Kronos" target="_self" href="<?php echo autoversion('/kronos.php');?>">Kronos</a></li>
+                        <li><a class="textlink" title="the Good, the True and the Beautiful" target="_self" href="<?php echo autoversion('/gtb.php');?>">the Good, the True and the Beautiful</a></li>
                     </ul>
                 </li>
                 <li> the Polis
                     <ul>
-                        <li><a class="textlink" target="_self"
-                                title="Homer's Politeia" href="politeia.php">Homer's Politeia </a></li>
-                        <li><a class="textlink" href="plato.php">Plato's Politeia</a></li>
+                        <li><a class="textlink" title="Homer's Politeia" target="_self" href="<?php echo autoversion('/politeia.php');?>">Homer's Politeia </a></li>
+                        <li><a class="textlink" title="Plato's Politeia" target="_self" href="<?php echo autoversion('/plato.php');?>">Plato's Politeia</a>
+                            <ul>
+                                <li><a class="textlink" title="Plato's gods" target="_self" href="<?php echo autoversion('/plato_gods.php');?>">Plato's god(s)</a>.</li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li>The Odyssey
@@ -127,7 +122,7 @@ function autoversion($file)
         </li>
         <li><span class="emph2">Who (reflexive)</span>
             <ul>
-                <li><a class="textlink" title="self-reflection" href="self.php">Self-reflection in Iliad and Odyssey
+                <li><a class="textlink" title="self-reflection" target="_self" href="<?php echo autoversion('/self.php');?>">Self-reflection in Iliad and Odyssey
                     (overview)</a>
                     <ul>
                         <li>The Odyssey's discussion of the Iliad</li>
@@ -136,8 +131,8 @@ function autoversion($file)
                         <li>Iliad: Fantasy &amp; Reality, Odyssey: Lie &amp; Truth</li>
                     </ul>
                 </li>
-                <li><a class="textlink" title="Women" href="women.php"> Women</a></li>
-                <li>Melesigenes, Pylos, 2 brothers - theme</li>
+                <li><a class="textlink" title="the women" target="_self" href="<?php echo autoversion('/women.php');?>">The Women</a></li>
+                <li>A hypothetical <a class="textlink" title="Life of Homer" target="_self" href="<?php echo autoversion('/life.php');?>">Life of Homer</a>.</li>
                 <li>Chios, Phoenix, Nausikaa</li>
             </ul>
         </li>
@@ -156,14 +151,20 @@ function autoversion($file)
 <script>
     function read_altmap(xml) { // write updated altmap into DOM
         const $pages = $(".textlink");
-        let txt;
+        let txt, ref, filename;
+        const page = /([a-z0-9_]+)\.[0-9]+(\.php)/;
         $pages.each(function () {
-            txt = $(this).attr("href");
-            let a = `loc:contains('${txt}')`;
+            txt = $(this).attr("href").substring(1);
+            // console.log(txt);
+            ref = page.exec(txt);
+            filename = ref[1]+ref[2];
+            //console.log("fn: "+filename);
+            let a = `loc:contains('${filename}')`;
             let pg = $(xml).find(a);
             let date = pg.siblings("lastmod").text();
-            $(this).next('span').remove();
-            $(this).after(`<span> (update ${date})</span>`);
+            // $(this).next('span').remove();
+            // $(this).after(`<span> (update ${date})</span>`);
+            $(this).attr("title", `updated: ${date}`);
         });
     }
     $.ajax({ //creates new altmap
@@ -171,9 +172,6 @@ function autoversion($file)
         datatype: "text",
         url: "setmap.php"
     });
-    // .done(function (txt) {
-    //     if ("console" in window) console.log(txt);
-    // });
 
     $.ajax({
         type: "GET",

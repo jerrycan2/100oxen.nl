@@ -1,12 +1,13 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -280,7 +281,7 @@ function autoversion($file)
     </p><br>
     <h4>What is best?</h4>
     <p>
-      First, one important caveat: 'good' here is the <em>qualitative</em> good, not the <em>moral</em> good. It is a-moral (see <a class="textlink" title="the gods" href="thegods.php#morality">the gods</a>). Our platonist and christian habits of speech have really shifted the meaning of the word. So what is the good in ancient Greece?
+      First, one important caveat: 'good' here is the <em>qualitative</em> good, not the <em>moral</em> good. It is a-moral (see <a class="textlink" title="the gods and morality" target="_self" href="<?php echo autoversion('/thegods.php#morality.php');?>">the gods</a>). Our platonist and christian habits of speech have really shifted the meaning of the word. So what is the good in ancient Greece?
     </p>
     <p>
       A member of Plato's class, the aristocracy, would soon know the answer to that: '<em>we</em> are'. We are Kalos kagathos; our fathers were the best men and we inherited their ἀρετὴ; we boast of being warriors and winners. Here is one characteristic of the good: it is that which gives <em>status</em>. But birth or boasting alone is not enough: a good man must be manly (ἀνδρεία) with all that implies: brave, dominant, steady (not going this way and that,
@@ -297,7 +298,7 @@ function autoversion($file)
     <hr>
     <ol id="footnotes">
         <li>Plato actually distinguishes two levels of 'the Good': the lower,
-          which is 'Spirit', and the higher, which is the highest Platonic Good,
+          which is 'Spirit', the declared aristocratic quality, and the higher, which is the highest Platonic Good,
           the source of everything. This one appropriates the place of Zeus.
         </li>
       <li>
@@ -307,7 +308,7 @@ function autoversion($file)
         "what it is about"
       </li>
       <li>
-        One of Agamemnon's daughters, promised to Achilles if he will come back to fight
+        One of Agamemnon's daughters, promised to Achilles if he will come back to fight (Il 9.287)
       </li>
       <li>As in the metaphor in Il 2.397 or 2.779</li>
         <li>One can have too much of it, it is also related to anger. It may lead to hubris (ὕβρις) and ἀγηνορίη, like the lion in Il 12.46, Achilles in Il 24.42, Hector in Il 22.457 or the suitors. <br>

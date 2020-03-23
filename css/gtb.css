@@ -21,7 +21,6 @@ body {
     display: table-row;
     height: auto;
     width: 100%;
-    color: black;
 }
 #tableheader1 {
     display: table-header-group;
@@ -47,19 +46,6 @@ body {
     width: 2%;
 }
 /**************************************************/
-span.gold {
-    color: goldenrod;
-}
-span.red {
-    color: red;
-}
-span.green {
-    color: green;
-}
-span.blue {
-    color: blue;
-}
-/******************************************************/
 .tablewrap {
     top: 0;
     left: 0;
@@ -79,7 +65,6 @@ span.blue {
     display: table-row;
     height: 4rem;
     width: 80%;
-    color: black;
 }
 #tableheader2 {
     display: table-header-group;

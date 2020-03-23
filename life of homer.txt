@@ -1,39 +1,27 @@
-﻿Life of Homer
-
-* Born first half 8th c. in Smyrna ("Melesigenes") into a branch of the Neleid family
-* these were a royal family from Pylos who claimed descendancy from Poseidon. They were very involved in the Ionian Migration (via Athens). [find ref in Hdt.]
-* father: 'king' of the city, occupant of the Big House in Smyrna (ref. Akurgal) (like Peleus)
-* grandfather: the man who stole the city from the Aeolians ("Lykorgos") ref.Herodotos
-* mother: a bought concubine (like Thetis) . Is the only son for many years. His father treats him as a successor.
-* Is from an early age (shield scene) a talented singer, kithara-player and speechmaker in his father's service. But military prowess counts for more.
-* younger halfbrother, born from the wedded wife (like Hera?) when H. was already at least a teenager ("Achilles") 
-* The younger brother is to become king ("Achilles is nobler than you") (Notos - theme)
-H. will be 'commander of the army'? (Diomedes vs. Aineias scene)
-* Quarrel with father & brother about politics: goes into exile (Phoenix' , Patroclus' story etc.)
-(they must have justified their capture of Smyrna by claiming that they would conquer "Troy" (Sardis) for the Greeks. They were not able to do this, in Homer's view.)
-* Ionia is by then 'full', with no prospect of growing larger. Economic crisis.
-* Swears off his name (deal with family?). Then 40 years old.
-* Goes to Kyme. Meets Hesiodos (there?) ("Aeolos") (ref. Life of Homer). 
-* Joins a kind of aristocratic reform movement trying to bring stability to Hellas. Connected to:  'Panhellenic Revival', Founding of Delphi; Olympic religion (body of texts); suspending the "Trojan War" & substituting westward emigration; Lykurgus' reforms in Sparta after the 1st  Messenian War?; Lelantine War? ; Phoenician influence (city states, temples)? (ref Hdt 2.52)
-* Sings (the Iliad or a precursor of it) for a large royal audience at "Amphidamas' funeral" in Chalkis (ref. "Contest of H.& H.")
-* Travels extensively, singing the Iliad everywhere
-* Finally settles in Chios (Volissos). Has a daughter. ("Nausikaa")
-* 'school forming' as with later philosophers. Becomes a kind of  teacher to admirers from all over Greece.
-* Founds the Guild of Singers, the Homeridae. Composes the Odyssee, meant to be performed by his pupils. 
-* sings at Delos? (-> Hymn to Apollo)
-* To facilitate training his rhapsodes, he creates written texts of both large poems (revising the Iliad?) (adapting the alfabet: creating long  and  for the purpose) 
-* Has problems with eyesight in old age. The one who marries his daughter will be leader of the Homeridae ("Who can string my bow?")
-* Dies: end 8th/early 7th c. ?
-
-
-What Homer wants
-
-1. To redefine the concept of "Hero" as one who fights and dies for his community and not (only) for his own glory.
-2. It is stressed that this glory, if it is to be real, entails his possible death.
-3. And he must obey his commander, even though this commander be no hero.
-4. But the commander must not be arrogant: he must seek advice from the council and put the matter before the Agora to vote yes or no.
-5. 
-
-
-
-
+﻿<h1>Hypothetical life of Homer</h1>
+<ul>
+<li> Born first half 8th c. in Smyrna ("Melesigenes") into a branch of the Neleid family</li>
+<li> these were a royal family from Pylos who claimed descent from Poseidon. They were very involved in the Ionian Migration (via Athens). [find ref in Hdt.]</li>
+<li> father: 'king' of the city, occupant of the Big House in Smyrna (ref. Akurgal) (like Peleus)</li>
+<li> grandfather: the man who stole the city from the Aeolians ("Lykorgos") ref.Herodotos</li>
+<li> mother: a bought concubine (like Thetis) . Is the only son for many years. His father treats him as a successor.</li>
+<li> Is from an early age (shield scene) a talented singer, kithara-player and speechmaker in his father's service. But military prowess counts for more.</li>
+<li> younger halfbrother, born from the wedded wife (like Hera?) when H. was already at least a teenager ("Achilles")</li>
+<li> The younger brother is to become king ("Achilles is nobler than you") (Notos - theme)</li>
+H. will be 'commander of the army'? (Diomedes vs. Aineias scene)</li>
+<li> Quarrel with father & brother about politics: goes into exile (Phoenix' , Patroclus' story etc.)</li>
+(they must have justified their capture of Smyrna by claiming that they would conquer "Troy" (Sardis) for the Greeks. They were not able to do this, in Homer's view.)</li>
+<li> Ionia is by then 'full', with no prospect of growing larger. Economic crisis.</li>
+<li> Swears off his name (deal with family?). Then 40 years old.</li>
+<li> Goes to Kyme. Meets Hesiodos (there?) ("Aeolos") (ref. Life of Homer). </li>
+<li> Joins a kind of aristocratic reform movement trying to bring stability to Hellas. Connected to:  'Panhellenic Revival', Founding of Delphi; Olympic religion (body of texts); suspending the "Trojan War" & substituting westward emigration; Lykurgus' reforms in Sparta after the 1st  Messenian War?; Lelantine War? ; Phoenician influence (city states, temples)? (ref Hdt 2.52)</li>
+<li> Sings (the Iliad or a precursor of it) for a large royal audience at "Amphidamas' funeral" in Chalkis (ref. "Contest of H.& H.")</li>
+<li> Travels extensively, singing the Iliad everywhere</li>
+<li> Finally settles in Chios (Volissos). Has a daughter. ("Nausikaa")</li>
+<li> 'school forming' as with later philosophers. Becomes a kind of  teacher to admirers from all over Greece.</li>
+<li> Founds the Guild of Singers, the Homeridae. Composes the Odyssee, meant to be performed by his pupils. </li>
+<li> sings at Delos? (-> Hymn to Apollo)</li>
+<li> To facilitate training his rhapsodes, he creates written texts of both large poems (revising the Iliad?) (adapting the alphabet: creating long  and  for the purpose) </li>
+<li> Has problems with eyesight in old age. The one who marries his daughter will be leader of the Homeridae ("Who can string my bow?")</li>
+<li> Dies: end 8th/early 7th c. ?</li>
+</ul>

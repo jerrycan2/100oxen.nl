@@ -8,9 +8,7 @@ a.refptr {
 }
 .foot-tooltip {
     background-color: #FCF6CF;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    padding-left: 1em;
+    padding: 0.5em 1em;
     opacity: 0;
 	-webkit-transition: opacity 0.3s linear;
 	-moz-transition: opacity 0.3s linear;

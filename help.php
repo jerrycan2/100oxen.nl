@@ -1,7 +1,6 @@
 <?php
 $lastModified=filemtime(__FILE__);
 header('Etag: '.'"'.$lastModified.'"');
-header('Cache-Control: no-cache');
 function autoversion($file)
 {
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
@@ -16,7 +15,7 @@ function autoversion($file)
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="Description" CONTENT="Helptext describing all functionalities">
-    <title>manual page</title>
+    <title>manual</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
 
           rel="stylesheet" type="text/css">
@@ -34,26 +33,35 @@ function autoversion($file)
         switches it off.</p>
     <p> From left to right:</p>
     <ol>
-        <li><span class="red">Tree:</span> collapsible list page - <br>
-            <span class="red">Pages:</span> switch between showing the tree view
-            and an overview of available (or not) pages.
+        <li><span class="red">Map:</span> collapsible list page. Mainly for the Iliad. The Odyssey
+            has a rudimentary map, the Hesiod texts none (yet).<br>
+            <span class="red">Pages:</span> three-way switch: showing the sitemap,
+            the latest page chosen, or none.
         </li>
         <li><span class="red">Il - Od - Theo - W+D</span>&nbsp; lets you switch
             between resp. Iliad, Odyssey, Hesiod's Theogony and Works &amp;
-            Days.&nbsp;
+            Days. You cannot deselect all of them.
         </li>
         <li><span class="red">Greek&nbsp;⇔ Trans</span>&nbsp;gives 2 columns:
             one with the above Greek text, the other with the English translation.
             Either, both or none can be visible. The double arrow switches between
             them.
         </li>
+        <li>
+            <span class="red">explanation - help</span>. Toggles one of those pages, or none. Themata
+            on the map with a "⊛", link to items on the explanation page (if visible).
+        </li>
     </ol>
     <p> Click/tap on a linenumber in the Greek or translation text, both textcolumns
-        and, if the ctrl key is pressed also the collapsible list will scroll to that linenr. Click/tap a linenumber in one of the
+        and, if tap-hold or if the ctrl key is pressed, also the collapsible list will scroll to that linenr. Click/tap a linenumber in one of the
         "pages" and the texts will load and scroll there.</p>
+    <p>
+        Click/tap on the "Thematic Structure" header to switch to a page with a proportional
+        view of the structure (size proportional to number of textlines). Click there on the header to go back.
+    </p>
     <p class="italic"> Column resize:</p>
     <p> On the right side of the displayed columns, except the rightmost one,
-        a whiteish line shows up on mouse hover. You can drag this line left or
+        a whitish line shows up on mouse hover. You can drag this line left or
         right and the column widths will be resized accordingly.<br>
         On tablets you can change the size of the left column by swiping in the
         header (the dark blue) left or right.<br>
@@ -83,8 +91,8 @@ function autoversion($file)
             Odyssey Greek text.
         </li>
         <li><span class="red">Show notes</span>: display the notepad.</li>
-        <li><span class="red">Show alfabet</span>: show a little screen with the
-            correspondences between Latin alfabet and Greek letters, for typing.
+        <li><span class="red">Show alphabet</span>: show a little screen with the
+            correspondences between Latin alphabet and Greek letters, for typing.
         </li>
         <li><span class="red">Save page state</span>: Normally the page state
             (which columns and texts are showing, fontsize, list expansion state
@@ -106,6 +114,10 @@ function autoversion($file)
         <li><span class="red">clear colors</span>: reset the color of the linenumbers in the texts</li>
         <li><span class="red">Editor</span>: An editor for the structure-tree. For now, useful
             only for the webmaster.</li>
+      <li><span class="red">Archaic Greek</span>: change the font of the Greek text to an Archaic font, lose the spacing and the punctuation and print it boustrophedon. This changes direction every hexameter,
+          starting right to left. Of the Iliad or Odyssey, only the book which is currently showing is
+          converted. If the conversion is active, the "show alphabet" menu item will give a chart of the archaic alphabet.
+      </li>
     </ol>
     <p><strong class="italic">search box </strong>and <img class="icon" src="images/lookup.gif"
 
@@ -124,7 +136,7 @@ function autoversion($file)
         It can also be typed in. For Greek use betacode (see below) or a Greek
         keyboard. Depending on its language and content, 'Lookup' will then give
         you the option of :</p>
-    <ol>
+    <ul>
         <li>going to that linenumber in the
             corresponding text, in this page or in the Perseus database. If you
             type in a linenumber, it has the following format: (square brackets
@@ -147,20 +159,27 @@ function autoversion($file)
         <li>searching for that piece of text in the corresponding poem here, or
             a word in the Perseus database. If you search here, all lines (of the
             currently showing poem) containing that text will be bookmarked and
-            will show up in the bookmark selector.&nbsp;English searches are case-sensitive.
+            will show up in the bookmark selector. Max. 500 bookmarks. English searches are case-sensitive.
             If you select '<strong>word study</strong>' you will be taken to the
             corresponding entry in the Perseus database's word study / dictionary section.
             Perseus word-searches are case-insensitive and diacritics are optional.
+
+            <h5>Using Regular Expressions</h5>
+            Regex patterns can be used for searching in the Greek text. Enter only the  pattern, not the "/". The syntax is the same as in Javascript,a short tutorial <a class="textlink" title="regex tutorial" target="_blank" href="https://www.w3schools.com/jsreF/jsref_obj_regexp.asp">here</a>, but I need to mention a few things:<br>
+            1. It works only in Greek, with or without diacritics. English searches are literal, case-sensitive.<br>
+            2. Because some special characters used in javascript regexes are the same as in betacode, these cannot be inserted in the pattern before the conversion to Greek letters. This concerns the characters / \ * + ( ) | these can only be inserted if the pattern is already in Greek.<br>
+            3. The text that is being searched, is HTML. This contains no newlines, no start-of-line and no end-of-line. If you want the first word of a hexameter, precede the word by two spaces, like "  μῆνιν". If you want the final word of a hexameter, append
+            "&lt;br&gt;" to it (like "Ἀχιλῆος&lt;br&gt;". Use all 4 chars, or there will be mutilation of the HTML. If that happens, just click menu item "reset all"). If the line may or may not contain punctuation, use [,.':;]? or \W?
         </li>
-    </ol>
-    <em>Betacode:</em>
-    <p style="margin-left: 20px;"> The grey beta-sign in the search box
-        switches the text from Latin alfabet to Greek and v.v. If you hold the
+    </ul>
+    <h5>Betacode:</h5>
+    <p> The grey beta-sign in the search box
+        switches the text from Latin alphabet to Greek and v.v. If you hold the
         mousebutton &gt; 0.5 sec., the diacritical marks and uppercase are discarded in
         the transformation.<br>
         The Greek texts here are in Unicode 'Extended Greek', which is polytonic
         Greek, while, for instance, Perseus works with 'betacode', an ascii-only lowercase-only
-        transcription of the Greek alfabet. To perform lookups (here or in Perseus), the unicode
+        transcription of the Greek alphabet. To perform lookups (here or in Perseus), the unicode
         is translated into betacode with or without diacritics.<br>
         For searching with accents, f.i. 'ἄλλα' or 'ἀλλὰ', enter 'a)/lla' resp.
         'a)lla\' and click the beta-button. If you are searching&nbsp;<em>with</em>&nbsp;diacritics,
@@ -171,19 +190,19 @@ function autoversion($file)
         Betacode: uses lowercase-letters only (we use the Perseus-dialect of
         betacode).&nbsp;<br>
         <em>In this order:</em><br>
-        <span style="color: rgb(255, 0, 0);">*</span>&nbsp;precedes a letter to
+        <span class="red">*</span>&nbsp;precedes a letter to
         be capitalized. If it is used, all the accents except '|' precede the
         letter, otherwise they follow it.<br>
-        <span style="color: rgb(255, 0, 0);">)</span>&nbsp;smooth
-        breathing,&nbsp;<span style="color: rgb(255, 0, 0);">(</span>&nbsp;rough
+        <span class="red">)</span>&nbsp;smooth
+        breathing,&nbsp;<span class="red">(</span>&nbsp;rough
         breathing<br>
-        <span style="color: rgb(255, 0, 0);">/</span>&nbsp;acute accent,&nbsp;<span
+        <span class="red">/</span>&nbsp;acute accent,&nbsp;<span
 
-                style="color: rgb(255, 0, 0);">\</span>&nbsp;grave accent,&nbsp;<span
+                class="red">\</span>&nbsp;grave accent,&nbsp;<span
 
-                style="color: rgb(255, 0, 0);">=</span>&nbsp;circumflex<br>
+                class="red">=</span>&nbsp;circumflex<br>
         <span class="red">+</span> diaeresis<br>
-        <span style="color: rgb(255, 0, 0);">|&nbsp;</span>iota subscriptum
+        <span class="red">|&nbsp;</span>iota subscriptum
         (always follows the letter)<br>
         The choice between 'σ' and 'ς' is made automatically.<br>
         Untranslatable characters are kept as they are, illegal
@@ -216,7 +235,7 @@ function autoversion($file)
         start linenumber. The color of the linenumbers belonging to the
         part you clicked, will toggle to its corresponding color. This can be
         reset biy clicking again or through the tools-menu.<br>
-        If a linenumber (in the list) shows light-blue on hover, clicking it
+        If a linenumber (in the list) is preceded by a "⊛", clicking it
         scrolls the explanation-column (only works if this column is visible) to that item.<br>
         Holding down the mousebutton &gt; 1 sec. on a linenumber scrolls it to the
         top, and lets that item be the top in subsequent expansions of the list.
@@ -226,7 +245,7 @@ function autoversion($file)
     <p> Enter any text into the notepad, it will be saved to browser storage
         and reloaded on startup automatically. There are 5 buttons:<br>
         <em>clear</em> will clear the notepad, without saving it.<br>
-        <em>beta</em> will convert to and from Greek alfabet, just as in the
+        <em>beta</em> will convert to and from Greek alphabet, just as in the
         searchbox. Either the selected text or, if there is no selection, the
         whole contents of the notepad.<br>
         <em>goto</em> will interpret selected text as a bookmark and load/scroll

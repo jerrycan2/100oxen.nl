@@ -3,11 +3,13 @@ html {
     font-size: 16px;
     font-family: "Noto Sans", sans-serif;
     height: 100%;
+    overflow: hidden;
 }
 body {
     margin: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 header {
     width: 100%;
@@ -25,12 +27,22 @@ h5{
     flex-wrap: wrap;
     height: auto;
 }
-#wrapper {
-    height: calc(100% - 3rem);
-    width: 85%;
+#wrapall {
+    /*height: calc(100% - 3rem);*/
+    height: 100%;
+    position: static;
+    top: 3rem;
+    width: 100%;
     margin: 0;
-    display: block;
+    display: inline-block;
     overflow: hidden;
+}
+#wrapper {
+    width: 80%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    float: left;
 }
 #hdrbtns button, #hdrbtns form {
     display: inline-block;
@@ -73,34 +85,33 @@ h5{
     display: none;
 }
 #sidebar {
-    height: calc(100% - 3rem);
-    width: 15%;
-    position: absolute;
+    height: 100%;
+    width: 20%;
+    float: left;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    left: 85%;
-    top: 3rem;
     background-color: lightgray;
+    font-size: 80%;
 }
 #showtext{
     /*display: inline-block;*/
     margin-left: 2rem;
 }
 #struct {
-    width: 98%;
-    height: calc((100% - 3rem - 365px) / 2);
+    width: 100%;
+    height: calc((100% - 365px) / 2);
     background-color: #f0dd9d;
-    overflow: auto;
     border-bottom: 2px solid gray;
+    overflow: scroll;
 }
 #edit {
-    width: 98%;
-    height: calc((100% - 3rem - 365px) / 2);
-    padding-left: 1.2rem;
+    width: 100%;
+    height: calc((100% - 365px) / 2);
+    /*padding-left: 1.2rem;*/
     background-color: #a1c8db;
-    overflow: auto;
     border-top: 2px solid gray;
+    overflow: scroll;
 }
 #pick {
     width: 98%;
@@ -125,13 +136,14 @@ h5{
     bottom: 0;
     height: 320px;
 }
-#frag ol {
-    list-style: none;
-}
+/*#frag ol {*/
+/*    list-style: none;*/
+/*}*/
 #struct ol, #edit ol {
     list-style: none;
     padding: 0 0 0 0.5rem;
     margin: 0;
+    width: 100%;
 }
 .tree span .ln,.lt{
     cursor: default;

@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en"><head><?php $lastModified=filemtime(__FILE__);
+<?php
+$lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+<!DOCTYPE html>
+<html lang="en"><head>    <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="Description" content="A dictionary of Homeric likenesses and Homer's use of them">
     
@@ -423,7 +426,7 @@ behind Zeus' power (Il 1.402-) in Homer as well as in Hesiod. </li>
                 1.261): is this a reference to 'ink' he used for writing?
             </li>
             <li>Helen's clever medicine which banishes all negative feelings. This
-                must be a comment on the cleverness of the 'Helen' myth. see <a class="textlink" title="Helen" href="women.php">Helen</a>
+                must be a comment on the cleverness of the 'Helen' myth. see <a class="textlink" title="about Helen" target="_self" href="<?php echo autoversion('/helen.php');?>">Helen</a>
             </li>
             <li>
                 pharmakos: the scapegoat-sacrifice. This sacrifice is performed to heal a
@@ -486,7 +489,7 @@ behind Zeus' power (Il 1.402-) in Homer as well as in Hesiod. </li>
     <li>phoenix
         <ul>
             <li>'phoenix' appears in many meanings in Homer, but not connected to
-                writing although the alfabet was called 'phoenician letters'. If it
+                writing although the alphabet was called 'phoenician letters'. If it
                 is true however that Homer and his Homeridae had a project of
                 writing down the poems, 'Phoenix' might well have been a nickname
                 for him.

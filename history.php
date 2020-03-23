@@ -1,12 +1,13 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -54,8 +55,7 @@ function autoversion($file)
     rulers in Pylos in the past and probably a "great house" dating back to
     Mycenean times, even claiming descendance from Poseidon. They found a new
     powerbase in Athens but they had branches everywhere. In the Iliad they
-    are represented by Nestor and <a class="textlink" target="_self"
-                                     title="Poseidon" href="poseidon.php">Poseidon</a>).
+    are represented by Nestor and <a class="textlink" title="Poseidon" target="_self" href="<?php echo autoversion('/poseidon.php');?>">Poseidon</a>).
 </p>
 <p>The aim of their policy was to increase the stability of the mainland by
     emigration (of landless younger sons of nobles and other 'superfluous'

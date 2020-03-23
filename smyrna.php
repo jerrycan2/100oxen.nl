@@ -1,12 +1,14 @@
 <?php
 $lastModified=filemtime(__FILE__);
+header('Etag: '.'"'.$lastModified.'"');
+
 function autoversion($file)
 {
-  global $lastModified;
   if(strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file))
     return $file;
 
-  return preg_replace('{\\.([^./]+)$}', ".$lastModified.\$1", $file);
+  $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+  return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 ?>
 <!DOCTYPE html>
@@ -99,8 +101,8 @@ function autoversion($file)
              width="80%"></a>
         <figcaption>from "Geometric Greece" by J.N. Coldstream.</figcaption>
     </figure>
-    <p> Smyrna's wall as it was rebuilt ca. 750 BC. Also a 'tholos', a round
-        building with a conical roof situated in the 'aule' (open court) used
+    <p> Smyrna's wall as it was rebuilt ca. 750 BC. Also a "tholos", a round
+        building with a conical roof situated in the "aule" (open court) used
         for storage and for hanging servant-girls, as mentioned in Od 22.459-
     </p>
 </section>
@@ -115,7 +117,7 @@ function autoversion($file)
         <figcaption>from "Alt Smyrna" by Ekrem Akurgal.</figcaption>
     </figure>
     <p>
-        Archaeological remains of the 'big house' in Smyrna. A cluster of huts round a courtyard, no doubt walled, where
+        Archaeological remains of the "big house" in Smyrna. A cluster of huts round a courtyard, no doubt walled, where
         in all
         probability the "king" of the city must have lived with his family, servants and slaves.
         It is impossible to date these relative to Homer's lifetime, but his life could very well
@@ -149,6 +151,39 @@ function autoversion($file)
         <figcaption>from "Alt Smyrna" by Ekrem Akurgal.</figcaption>
     </figure>
 </section>
+<br>
+<section>
+    <div class="indent"><p>“In the vineyards of the hill of Bayrakli a joint Turkish-British expedition (1948-I952) at long last
+        discovered
+        what archaeologists had so long sought in vain-a Greek settlement reaching back to the early Iron Age, perhaps
+        to iooo B.C. Here on a sea-girt peninsula in the innermost corner of the Bay of Izmir lay Old Smyrna. Although
+        only small parts of the hill were dug, the skill of the excavators retrieved the early village of scattered
+        little oval huts, already fortified with an impressive wall. Attributed to the eighth century before Christ,
+        “the four or five hundred family cottages,” as John M. Cook describes them, represent the earliest known example
+        of planned urban design in ancient Greece. Streets were laid out on a north-south axis. A powerful wall with
+        battlements was built. The excavators compare, both for the situation and major aspects of the layout, the city
+        of the Phaeacians which Odysseus admires in the Odyssey: 'the harbors on each side and a narrow road
+        between - there curved ships line the road ... the assembly ... constructed of blocks of stone
+        deeply embedded ... the long walls with battlements, a marvel to behold.'” <br>
+        [<i>If this is true then the mouth of the river that Odysseus swims into must be the Meles
+            (Od 5.441-).
+            Note the “κλῦθι, ἄναξ, ὅτις ἐσσί” - “Hear me, King, whoever you may be” as he addresses
+            the river in prayer. Homer's name was supposed to be Melesigenes - "born by the Meles".</i>]</p></div>
+    <p>also: </p>
+    <div class="indent"><p> “Smyrna always claimed that Homer was her native son. If he was truly an oral poet, he would have trodden her
+        streets during the earlier, modest phase of this urbanistic development, in the eighth century; for among the
+        finds made at Smyrna writing first appears during the early seventh century. From overall area, density, and
+        size of houses, the population of Old Smyrna has been estimated to have been about two thousand people. What is
+        very striking in this emergence of the Greek polis in architecturally recognizable form is the early application
+        of a <em>preconceived geometric pattern</em> to city planning. Whoever planned Old Smyrna had the same love for
+        abstract
+        overall pattern as distinguishes early Greek thought.”
+    </p></div>
+    <p>The above quotes from: Archaeology and the Origins of Greek Culture: Notes on Recent Work in Asia Minor <br>
+        Author: George M. A. Hanfmann <br>
+        Source: The Antioch Review, Vol. 25, 1965
+    </p>
+</section>
 <section>
     <h3>Overview of possible references</h3>
     <ul>
@@ -161,11 +196,11 @@ function autoversion($file)
                 <li>How the ships became a village Il 14.30-6</li>
                 <li>We were poor in Pylos... (Il 11.689)</li>
                 <li>Small χῶρος (territory), the Trojans occupying high ground (Il 10.160)`</li>
-                <li>Dividing a town's posessions (Il 18.511, 22.118)</li>
+                <li>Dividing a town's possessions (Il 18.511, 22.118)</li>
                 <li>Achilles' hut (Il 22.448)</li>
                 <li>the importance of and doubts about the wall (e.g. Il 7.338, 7.446-, 14.66, 6.433, 12.3-, 8.177, 9.349)
                 </li>
-                <li>they 'eat grains that they do not plant' but they do have wine (Od 9.108-). They trade grain for wine? </li>
+                <li>the cyclopes 'eat grains that they do not plant' but they do have wine (Od 9.108-). They trade grain for wine? </li>
                 <li>'σφιν ὄρος πόλει ἀμφικαλύψαι', 'wrap' their city in mountains (Od 13.152,158)</li>
                 <li>(unnamed) city of the Phaeacians (Od 6.262-)
                     <ul>
