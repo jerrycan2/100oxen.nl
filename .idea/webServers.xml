@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ce8ec85f-5f71-4ce3-935a-5e8cefffa15f" name="100oxen" url="https://100oxen.nl/">
+        <fileTransfer host="ftp.100oxen.nl" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="11a672c1-c782-452a-b6aa-d5b3377f8a82" name="apache" url="http://localhost:8080">
+        <fileTransfer port="0" mountedRoot="C:\Apache24\htdocs" accessType="MOUNT" />
+      </webServer>
+    </option>
+  </component>
+</project>

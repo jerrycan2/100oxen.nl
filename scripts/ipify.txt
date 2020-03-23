@@ -1,0 +1,8 @@
+        // $.ajax({
+        //     type: "GET",
+        //     datatype: "json",
+        //     url: "https://api.ipify.org?format=json"
+        // }).done(function (json) {
+        //     jbNS.usip = json.ip;
+        //     //if ("console" in window) console.log(jbNS.usip);
+        // });

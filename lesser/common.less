@@ -1,0 +1,414 @@
+@topcolor: #003388;
+@middlecolor: #77BEFF;
+@bottomcolor: green;
+@darkgrey: rgba(16, 16, 16, 0);
+@lightgrey: rgba(255, 255, 255, 1.0);
+@corner: 0.4rem;
+@textcolor: #000062; /*#003399;*/
+@inpcolor: top, @topcolor 5%, @middlecolor 20%, @middlecolor 85%, @bottomcolor 95%;
+
+@font-face {
+  font-family: "Archaic Greek";
+  src: url("../images/Archaic Greek.ttf");
+}
+
+.rounded {
+  border-radius: @corner;
+}
+
+#butlertext {
+  color: @textcolor;
+  margin-right: 1px;
+  font-style: italic;
+  background-color: rgba(0, 0, 40, 0.1);
+  .rounded;
+}
+
+#helptext {
+  color: @topcolor;
+  background-color: lightgrey;
+  .rounded;
+}
+
+#hundredoxen {
+  height: 100%;
+  width: 100%;
+  color: @topcolor;
+  padding-right: 3rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.contents {
+  //overflow-x: hidden;
+  padding: 0 0.3rem;
+  margin-right: 0.6rem;
+  position: static;
+}
+
+input {
+  font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  background-image: linear-gradient(to right, @darkgrey 10%, @lightgrey 50%, @darkgrey 90%);
+  //color: black;
+  text-shadow: 0 1px 0 white;
+  text-align: center;
+  box-shadow: 3px 3px 5px 2px @textcolor;
+  line-height: 150%;
+  margin: 1.2rem 10% 0.7rem 10%;
+  .rounded;
+}
+
+h1 {
+  font-size: 200%;
+}
+
+h2 {
+  font-size: 180%;
+}
+
+h3 {
+  font-size: 150%;
+}
+
+h4 {
+  font-size: 120%;
+}
+
+h5 {
+  font-size: 100%;
+}
+
+h6 {
+  font-size: 100%;
+  //text-shadow: 0 1px 0 white;
+  //text-align: center;
+  margin: 0.3rem 1rem;
+}
+
+.emph2 {
+  background-image: linear-gradient(to right, @darkgrey 10%, @lightgrey 50%, @darkgrey 90%);
+  outline: 2px solid darkblue;
+  //color: black;
+  padding: 0 0.5rem;
+  text-shadow: 0 1px 0 white;
+  text-align: center;
+  line-height: 140%;
+  //font-size: 120%;
+}
+
+em {
+  font-style: italic;
+  //font-weight: bold;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 2px solid @textcolor;
+  margin: 1em 0;
+  padding: 0;
+}
+
+#butlertext p {
+  margin: 0 0.5rem 0 0.2rem;
+}
+
+.greek, .latin {
+  font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.italic {
+  font-style: italic;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.gold {
+  color: goldenrod;
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}
+.blue {
+  color: blue;
+}
+
+:focus {
+  outline: 0;
+}
+
+figcaption {
+  text-align: center;
+  font-size: smaller;
+  color: darkblue;
+}
+
+figure {
+  text-align: center;
+  margin: 2rem 0;
+
+  img {
+    width: 60%;
+    border: 0.2rem groove @topcolor;
+    .rounded;
+  }
+}
+
+.textlink, .explink {
+  color: @textcolor;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: rgba(5, 5, 5, 0.2);
+  padding: 0 3px;
+  .rounded
+}
+
+/*only for greek & butler frame:*/
+.contents p a {
+  color: white;
+  padding: 0;
+  margin-right: 0.2rem;
+  display: inline-block; /*for the first-line selector*/
+  border: solid rgba(50, 50, 50, 0.2) thin;
+  .rounded;
+
+  //&:first-line {
+  background-color: rgba(5, 5, 5, 0.2);
+  //}
+}
+
+.latin {
+  color: @textcolor;
+  p {
+    margin: 0.5rem 1rem;
+  }
+}
+
+.greek p a, .latin p a {
+  border-width: 0 0.2rem;
+}
+
+.indent {
+  padding: 0.5rem 5rem 0.5rem 3rem;
+  background-color: rgba(200, 200, 0, 0.1);
+}
+
+.citation {
+  margin-left: 4rem;
+
+  .accordion {
+    background-color: rgba(0, 0, 0, 0.1);
+    outline: 1px dashed darkblue;
+    text-align: left;
+    padding-left: 2rem;
+    margin: 0 0 1rem 0;
+    width: auto;
+
+    &.en:before {
+      content: 'transl.:';
+    }
+
+    &.gr:before {
+      content: 'greek:';
+    }
+  }
+
+  .panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.4s;
+  }
+}
+
+.bmcolor {
+  color: red !important;
+}
+
+.icon {
+  height: 1.7rem;
+}
+
+button.accordion {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: black;
+  cursor: default;
+  padding: 0.5rem 1rem 0.5rem 0.3rem;
+  margin-top: 4px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+  font-size: 1rem;
+}
+
+button.accordion.active, button.accordion:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+//button.accordion:before {
+//    content: '\27AA';
+//    font-size: 120%;
+//    color: white;
+//    float: left;
+//    margin-right: 5px;
+//}
+
+.accordion:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  color: #777;
+  margin-left: 2rem;
+}
+
+button.accordion:after {
+  font-size: 120%;
+  float: right;
+}
+
+.accordion.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+div.panel {
+  padding-left: 1rem;
+  /*background-color: white;*/
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+  font-size: 1rem;
+
+  p {
+    margin: 0.5rem 1rem;
+  }
+}
+
+.nobullets {
+  list-style-type: none;
+  padding-left: 0;
+
+  li ul {
+    list-style-type: none;
+  }
+}
+
+#thegods {
+  header {
+    background: linear-gradient(to bottom, #77beff 90%, #008000);
+    display: table;
+    width: 100%;
+
+    #up {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+#zeus {
+  height: 8rem;
+  float: left;
+  margin-left: 20%;
+}
+
+#warrior {
+  height: 6rem;
+  margin-top: 2rem;
+  margin-right: 25%;
+  float: right;
+}
+
+#sendform {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    margin-bottom: 1rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+a.footptr {
+  vertical-align: super;
+  font-size: .83em;
+  text-decoration: none;
+}
+
+a.refptr {
+  text-decoration: none;
+}
+
+.foot-tooltip {
+  background-color: #FCF6CF;
+  padding: 0.5rem 1rem;
+  //opacity: 0;
+  //-webkit-transition: opacity 0.3s linear;
+  //-moz-transition: opacity 0.3s linear;
+  //-o-transition: opacity 0.3s linear;
+  //-ms-transition: opacity 0.3s linear;
+  //transition: opacity 0.3s linear;
+  .rounded;
+}
+
+li:target {
+  background-color: #BFEFFF;
+}
+
+ol#references {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 1.8em;
+  text-indent: -1.8em;
+
+  counter-reset: refcounter;
+}
+
+ol#references > li:before {
+  content: "[" counter(refcounter) "] ";
+  counter-increment: refcounter;
+}
+
+ol#footnotes {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 1.8em;
+  text-indent: -1.8em;
+
+  counter-reset: footcounter;
+}
+
+ol#footnotes > li:before {
+  content: "(" counter(footcounter) ") ";
+  counter-increment: footcounter;
+}
+
