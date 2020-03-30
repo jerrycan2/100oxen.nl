@@ -18,9 +18,6 @@ function autoversion($file)
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="Homer employs rhetoric on two levels at once: by pathos and by allusion">
     <title>Homer's Rhetoric</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
-
-          rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

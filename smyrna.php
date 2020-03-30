@@ -17,8 +17,6 @@ function autoversion($file)
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="Description" CONTENT="A view of the old town of Smyrna, hypothetically Homer's birthplace.">
     <title>The town of Old Smyrna</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

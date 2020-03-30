@@ -16,8 +16,9 @@ function autoversion($file)
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="Description" content="A dictionary of Homeric likenesses and Homer's use of them">
     
-    <title>Homeric likenesses</title><link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="%3C?=%20autoversion%28%27/css/common.css%27%29;?%3E"></head>
+    <title>Homeric likenesses</title>
+    <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
+</head>
 
 
 <body style="direction: ltr;" class="contents latin">

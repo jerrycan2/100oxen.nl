@@ -16,8 +16,6 @@ function autoversion($file)
     <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
     <meta name="Description" CONTENT="Block-representation of the structure tree. Each block's height is proportional to the number of Iliad lines it represents.">
     <title>Blocks</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/blocks.css');?>">
 

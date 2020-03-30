@@ -18,7 +18,6 @@ function autoversion($file)
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="What is myth">
     <title>Myth</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

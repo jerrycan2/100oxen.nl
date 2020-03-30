@@ -17,9 +17,6 @@ function autoversion($file)
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="Description" CONTENT="The politics of power in the ancient world">
     <title>Homer's Politeia</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=latin,greek,greek-ext"
-
-      rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
   <body class="latin contents">

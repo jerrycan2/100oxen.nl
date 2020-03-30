@@ -1,28 +1,22 @@
-import * as utils from '../scripts/myUtils.js?v=0.0.28';
+import * as utils from '../scripts/myUtils.js?v=0.1.6';
 import {beta2uni, uni2beta} from '../scripts/beta.js';
 //import {myAlert} from "../scripts/myUtils";
 
 'use strict';
 // lineID format: [Il|Od|Th|WD][:|space|nothing] Xnnn | mm.nnn | nnn where m,n are digits and X is a greek or latin letter (case insensitive)
 //region Site global var
-window.site100oxen = {
-    nolocalstorage: false,
-    forcereload: true,
-    global_flag_updating: false,
+// set pointers:
+window.parent.site100oxen = { // parent refers to itself
     XML: null, //here comes the XML parsetree
-    xml_loaded: false,
-    // ilXML: null,
-    // odXML: null,
+    ilXML: null,
+    odXML: null,
     showAndGotoAnyLine: null,
     loadAndGotoTextframeAnchor: null,
     init_tree: null,
-    createlist: null,
-    setnodeattributes: null,
-    find_xml_node: null,
     untouchable: true,
-    getNewIframeFile: null,
     configColumns: null,
     set_beginLine: null,
+    get_col_config: null,
     currentPage: "",
     startLevel: 0,
 };
@@ -38,8 +32,12 @@ window.site100oxen = {
      */
     let jbNS = {
         norm_window_width: 1920,
-        columns_config: [1, 1, 3, 0], // List/Page=bit0/bit1, Il/Od/Theo/W&D=1-4, GR/EN=bit0/bit1, Text/Help=bit0/bit1
+        columns_config: [1, 1, 3, 0],
+        // List/Page=bit0/bit1, Il/Od/Theo/W&D=1-4 (index+1), GR/EN=bit0/bit1, Text/Help=bit0/bit1
         width: [0, 0, 0, 0],
+        already_loaded: [false, false, false, false],
+        store_greek: [null, null, null, null],
+        store_butler: [null, null, null, null],
         oldcolnum: 0,
         prefixes: ["Il", "Od", "Th", "WD"], //bookmark prefix = prefixes[ columns_config[ 1 ] - 1 ]
         filenames: [
@@ -54,24 +52,13 @@ window.site100oxen = {
             ["1999.01.0134", "1999.01.0136", "1999.01.0130", "1999.01.0132"] //theo, wd
         ],
         perseus_url: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:",
-        pages_local: [
-            ["100oxen.php", "100 Oxen"],
-            ["editor.php", "editor"],
-            ["blocks.php", "Proportional View"],
-            ["send.php", "contact"],
-        ],
-        pages_extern: [
-            ["", ""],
-            ["http://www.perseus.tufts.edu/hopper/", "Perseus"],
-            ["http://digital.library.northwestern.edu/homer/", "The Chicago Homer"]
-        ],
         treeframe: $("#treeframe"),
         pageframe: $("#pageframe"),
         greekframe: $("#greekframe"),
         butlerframe: $("#butlerframe"),
         textframe: $("#textframe"),
         fileindex: -1,
-        pages_menu_expanded: false,
+        forcereload: true,
         basic_fontsize: 16, //px
         keepFontsize: false, //if true: fontsize remains same after window resize
         OL_level: null,
@@ -80,9 +67,6 @@ window.site100oxen = {
         greekanchors: null,
         butleranchors: null,
         treetop_el_index: 0,
-        previous_goto: "",
-        lastscroll: "",
-        line_id_fits_text: false,
         bookMarx: [
             ["---Il:--"],
             ["---Od:--"],
@@ -91,6 +75,7 @@ window.site100oxen = {
         ],
         parse_lineID: /((il|od|th|wd)?(\s|:)?)?(((\d+\.)|([a-zA-Z\u0391-\u03C9]))?(\d+))/i,
         // "il 14.100" "od:a200" "wd 50" ":50" "50" etc $1=all, $2=text, $3=greek/eng, $4=lineNR ($6=chap, $7 = letter, $8=line)
+        check_br: /(<br>)/g,
         bm_to_goto: "",
         selectBtnMessages: [
             [""],
@@ -108,16 +93,11 @@ window.site100oxen = {
         ],
         selectBtnChoice: 0,
         showonlyselection: false,
-        swcoldown: false,
         exp_state: "11",
-        editing: false,
-        scrollspeed: 600,
         touchcancel: false,
         dontSetColumns: false,
-        colResizeStep: 96,
         currentLevel: 2,
         newXML: true,
-        usip: "",
     };
     //endregion Page global
     //region Perseus
@@ -212,21 +192,14 @@ window.site100oxen = {
     function scrollgreek() {
         let begin, $top;
         begin = get_beginLine();
-        //begin = begin < 1 ? 0 : begin - 1; //top = the previous line
         if (!jbNS.greekanchors || !jbNS.greekanchors[begin] || jbNS.greekframe[0].style.visibility === "hidden") {
             return;
         }
         if (begin !== 0) {
             $top = jbNS.greekanchors.eq(begin);
-            //console.log($top.text());
             $top[0].scrollIntoView();
-            // if ($top.is("a")) {
-            //     $top[0].scrollIntoView();
-            // } else {
-            //     jbNS.greekanchors[begin].scrollIntoView();
-            // }
         } else {
-            jbNS.greekframe.contents().scrollTop(0);//.find("#greektext")
+            jbNS.greekframe.contents().scrollTop(0);
         }
     }
 
@@ -450,16 +423,35 @@ window.site100oxen = {
             bs = jbNS.greekframe.contents().find("b:first");
         }
         jbNS.greekanchors = jbNS.greekframe.contents().find("a");
+        bs = jbNS.butlerframe.contents().find("b:first");
+        while (bs.length > 0) {
+            t = bs.parent().html();
+            while (t.indexOf("<b>") >= 0) {
+                t = t.replace("<b>", "");
+                t = t.replace("</b>", "");
+            }
+            bs.parent().html(t);
+            bs = jbNS.butlerframe.contents().find("b:first");
+        }
+        jbNS.butleranchors = jbNS.butlerframe.contents().find("a");
     }
 
     /**
      * function textsearch()
      * search for the text or lineID in #textinput, in greek + english
      * it's counted greek if there is at least 1 greek char in it.
+     * it's counted Extended Greek if at least 1 char. has diacritics
      */
     function textsearch() {
-        let i, n, len, target, lines, flag, count, bmsel, inp, $frame, greekline, betapos,
-            betaline, found, greekpos, item, matches, matchlen, br_count;
+        function add_offset(lineID, offset) {
+            const arr = lineID.split(".");
+            const lnr = parseInt(arr[1], 10) + offset;
+            return `${arr[0]}.${lnr}`;
+        }
+
+        let i, n, len, target, lines, flag, count, bmsel, inp, $frame, pos, prefix,
+            found, item, matches;
+        let too_many_bm = false;
         const queue = [];
         inp = $("#textinput").val();
         if (inp.length < 2) {
@@ -467,37 +459,53 @@ window.site100oxen = {
             return;
         }
         //del_all_bm();
-        clear_search();
+        //clear_search();
         count = 0;
         flag = isGreekCode(inp);
         $frame = jbNS.greekframe;
         if (flag === 0) { //search in Butler text. No <b> tagging of found words here, only the bookmarks
-            jbNS.butlerframe.contents().find("p:contains('" + inp + "')").each(function (i, el) {
-                let bm;
-                bm = $(el).children("a:first").text();
-                count += 1;
-                if (setUnsetBookMark(bm, false, false)) {
-                    utils.myAlert("too many bookmarks! (max. 1000)", false, null);
-                    //abort!
+            //jbNS.butlerframe.contents().find("p:contains('" + inp + "')").each(function (i, el) {
+            jbNS.butleranchors.each(function (i, el) {
+                const content = el.parentElement.innerHTML;
+                const butlerpos = content.indexOf(inp);
+                if (butlerpos >= 0) {
+                    const bm = el.textContent;
+                    count += 1;
+                    if (setUnsetBookMark(bm, false, false) && !too_many_bm) {
+                        utils.myAlert("too many bookmarks! (max. 500)", false, null);
+                        too_many_bm = true; //abort!
+                    }
+                    el.parentElement.innerHTML = content.substring(0, butlerpos) +
+                        "<b>" + inp + "</b>" + content.substring(butlerpos + inp.length);
                 }
             });
+            jbNS.butleranchors = jbNS.butlerframe.contents().find("a");
         } else {
             lines = $frame.contents().find("p");
             len = lines.length;
+            target = new RegExp(uni2beta(inp, false));
             for (i = 0; i < len; i += 1) {
-                greekline = lines.eq(i).html();
+                let greekline = lines.eq(i).html();
+                pos = greekline.indexOf("</a>") + 4;
+                prefix = greekline.substring(0, pos);
+                greekline = greekline.substr(pos);
                 matches = null;
                 found = 0;
                 if (flag < 2) { // searching is done in betacode, without diacriticals
-                    betaline = uni2beta(greekline, false);
-                    target = new RegExp(uni2beta(inp, false));
-                    betapos = 0;
-                    greekpos = 0;
+                    const betaline = uni2beta(greekline, false);
+                    let betapos = 0;
+                    let greekpos = 0;
                     while ((matches = target.exec(betaline.substring(betapos))) !== null) {
                         item = matches[0];
-                        matchlen = item.length;
+                        const matchlen = item.length;
                         betapos = betapos + matches.index + matchlen;
                         greekpos += matches.index;
+                        const br_found = greekline.substring(0, greekpos).match(jbNS.check_br);
+                        let br_count = 0;
+                        if (br_found) {
+                            br_count = br_found.length;
+                        }
+                        queue.push(add_offset(lines.eq(i).children(":first").text(), br_count));
                         greekline = greekline.substr(0, greekpos) + "<b>" + // replace in greek unicode
                             greekline.substr(greekpos, matchlen) + "</b>" +
                             greekline.substr(greekpos + matchlen);
@@ -514,13 +522,18 @@ window.site100oxen = {
                             ustring += inp[x];
                         }
                     }
-                    //console.log(ustring);
                     target = new RegExp(ustring, "u");
-                    greekpos = 0;
+                    let greekpos = 0;
                     while ((matches = target.exec(greekline.substring(greekpos))) !== null) {
                         item = matches[0];
-                        matchlen = item.length;
+                        const matchlen = item.length;
                         greekpos += matches.index;
+                        const br_found = greekline.substring(0, greekpos).match(jbNS.check_br);
+                        let br_count = 0;
+                        if (br_found) {
+                            br_count = br_found.length;
+                        }
+                        queue.push(add_offset(lines.eq(i).children(":first").text(), br_count));
                         greekline = greekline.substr(0, greekpos) + "<b>" + item + "</b>"
                             + greekline.substr(greekpos + matchlen);
                         greekpos += matchlen + 7;
@@ -528,24 +541,23 @@ window.site100oxen = {
                     }
                 }
                 if (found > 0) {
-                    lines.eq(i).html(greekline);
-                    count += 1;
-                    queue.push(i);
+                    lines.eq(i).html(prefix + greekline);
+                    count += found;
 
-                    if (queue.length > 500) {
+                    if (!too_many_bm && count > 500) {
                         // 2nd parameter: don't toggle BM, just add
-                        utils.myAlert("too many bookmarks! (max. 500)", false, null);
-                        del_all_bm();
-                        clear_search();
-                        return; //abort!
+                        utils.myAlert("too many bookmarks (max. 500)! counting only...", false, null);
+                        too_many_bm = true;
                     }
                 }
             }
         }
         jbNS.greekanchors = $frame.contents().find("a"); // must refresh
-        while (queue.length) {
-            n = queue.shift();
-            setUnsetBookMark(lines.eq(n).children(":first").text(), false, true);
+        if (!too_many_bm) {
+            while (queue.length) {
+                n = queue.shift();
+                setUnsetBookMark(n, false, true);
+            }
         }
         cleanupBookMarx();
         //updateCounter();
@@ -559,7 +571,7 @@ window.site100oxen = {
             }).show().children(" div:last").text("" + count);
             setTimeout(function () {
                 $("#counter").fadeOut(5000);
-            }, 1000);
+            }, 3000);
         }
     }
 
@@ -609,13 +621,48 @@ window.site100oxen = {
         }
         // clean up bookmarx
         txt = 0;
+        let index = [0, 0, 0, 0, 0];
         for (i = 0; i < opt.options.length; i += 1) {
             tmp = opt.options[i].text;
             if (i > 0 && tmp.substr(0, 1) === "-") {
                 txt += 1;
+                index[txt] = i;
             }
             jbNS.bookMarx[txt][jbNS.bookMarx[txt].length] = tmp;
         }
+        for (i = 0; i < 4; i += 1) {
+            opt.options[index[i]].text = opt.options[index[i]].text.substr(0, 6) +
+                " " + (jbNS.bookMarx[i].length - 1);
+        }
+        adjustBMselector("");
+    }
+
+    /**
+     * function read_in_Bookmarx
+     * read bookmarks from localstorage
+     * @param s: string //comma-separated list of all bm
+     */
+    function read_in_Bookmarx(s) {
+        let arr, i, m, n, bm, nw, isgreek;
+        jbNS.bookMarx = [[], [], [], []];
+        arr = s.split(",");
+        m = 0;
+        n = -1;
+        for (i = 0; i < arr.length; i += 1) {
+            bm = arr[i];
+            nw = false;
+            if (bm.substr(0, 1) === "!") {
+                continue;
+            }
+            if (bm.substr(0, 1) === "-") {
+                m = 0;
+                n += 1;
+                nw = true;
+            }
+            jbNS.bookMarx[n][m] = bm;
+            m += 1;
+        }
+        cleanupBookMarx();
     }
 
     /**
@@ -630,7 +677,7 @@ window.site100oxen = {
             txt = jbNS.bookMarx[jbNS.columns_config[1] - 1][0];
         }
         for (i = 0; i < sel.options.length; i++) {
-            if (sel.options[i].value === txt) {
+            if (sel.options[i].value.substring(0, 6) === txt.substring(0, 6)) {
                 sel.selectedIndex = i;
             }
         }
@@ -645,14 +692,14 @@ window.site100oxen = {
      * @returns {number} : index to jbNS.greekanchors or -1
      */
     function bm_greek_search(lineNR, scroll, mark) {
-        let step, max, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
+        let step, i, groter, stepcount, tl, groter2, $lines;  // returns index of line
         $lines = jbNS.greekanchors; // $("a") array
         if ($lines.length) {
             i = $lines.length - 1;
         } else {
             return -1;
         }
-        max = i;
+        const max = i;
         step = i >> 1;
         stepcount = 0;
         while (true) {
@@ -674,6 +721,10 @@ window.site100oxen = {
                 if (groter === -1 && groter2 === 1) {
                     groter = 0;
                 }
+            } else {
+                if (groter === -1) {
+                    groter = 0;
+                }
             }
             if (groter === 0) {
                 if (mark === 1) {
@@ -685,7 +736,6 @@ window.site100oxen = {
                 }
                 if (scroll) {
                     set_beginLine(i);
-                    //console.log("greek search: " + i);
                     scrollgreek();
                 }
                 break;
@@ -716,12 +766,12 @@ window.site100oxen = {
      * @returns : number // index in array of anchors
      */
     function bm_butler_search(item, which) {   // which===1 or 2: beginline or "beginline of next section"
-        let i, step, max, groter, stepcount;   // 2 is only used for coloring
+        let i, step, groter, stepcount;   // 2 is only used for coloring
         if (!item || !jbNS.butleranchors.length) {
             return -1;
         }
         i = jbNS.butleranchors.length - 1;
-        max = i;
+        const max = i;
         step = i >> 1;
         stepcount = 0;
         while (true) {
@@ -733,6 +783,9 @@ window.site100oxen = {
                 return -1;
             }
             groter = compare_Butler_Anchors(i, item, which);
+            if (groter === -1 && i >= max - 1) {
+                groter = 0;
+            }
             if (groter === 0) {
                 break;
             }
@@ -766,12 +819,6 @@ window.site100oxen = {
             if ($("#butlerframe:visible").length) {
                 if (lineindex !== 0) {
                     jbNS.butleranchors[lineindex].scrollIntoView();
-                    // const $top = jbNS.butleranchors.eq(lineindex);
-                    // if ($top.is("a")) {
-                    //     $top[0].scrollIntoView();
-                    // } else {
-                    //     jbNS.greekanchors[lineindex].scrollIntoView();
-                    // }
                 } else {
                     jbNS.butlerframe.contents().scrollTop(0);//.find("#butlertext")
                 }
@@ -782,16 +829,20 @@ window.site100oxen = {
         return lineindex;
     }
 
+    function find_lnr_from_bm(bm) {
+        return bm.substring(0, 3) + jbNS.greekanchors[bm_greek_search(bm.substring(3), false, 2)].textContent;
+    }
+
     /**
      * function setUnsetBookMark
      * Create bookmark from a lineNR, set/unset bookmark marking & combobox select options
-     * @param bookmark : string // line number as string
+     * @param bookmark : string // line number as string. May or may not contain text & language
      * @param toggle : boolean // do/don't toggle bookmark (XOR / OR), do if alt-click, don't if 'select' by combobox
      * @param greek : boolean // if true: greek bookmark, false: butler
      * @return boolean // true if too many bookmarks
      */
     function setUnsetBookMark(bookmark, toggle, greek) {
-        let linenr, i, $target, currtxt, bms, hascolon, parsebm, txtindex;
+        let linenr, i, $target, currtxt, bms, hascolon, parsebm, txtindex, found;
         /* bookmark = lineID = [prefix +] lineNR */
         currtxt = jbNS.columns_config[1] - 1;
         if (currtxt < 0) {
@@ -805,9 +856,9 @@ window.site100oxen = {
         if (parsebm[3]) {
             hascolon = parsebm[3] === ":"; //possible switch to other language
         } else {
-            hascolon = !greek;
+            hascolon = !greek; // if no language ID, take parameter
         }
-        if (!parsebm[2]) {
+        if (!parsebm[2]) { //if no text ID in bookmark, take currently loaded text
             bookmark = jbNS.prefixes[currtxt] + (hascolon ? ":" : " ") + linenr;
         } else {
             txtindex = $.inArray(parsebm[2], jbNS.prefixes);
@@ -815,19 +866,43 @@ window.site100oxen = {
                 currtxt = txtindex;
             }
         }
-        if (greek && !hascolon) {
+        if (!hascolon) {
             $target = jbNS.greekanchors.eq(bm_greek_search(linenr, false, 2));
-        } else if (!greek && hascolon) {
-            $target = $(jbNS.butlerframe).contents().find("a:contains('" + linenr + "'):first");
         } else {
-            return false;
+            found = false;
+            jbNS.butleranchors.each(function (i, el) {
+                if (el.textContent === linenr) {
+                    $target = $(el);
+                    found = true;
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+            if (!found) {
+                utils.myAlert("butler bookmark not found", false);
+                return false;
+            }
         }
-        bms = jbNS.bookMarx[currtxt];
-        i = $.inArray(bookmark, bms);
-        if (i >= 0) {
+        bms = jbNS.bookMarx[currtxt]; //take the bm's for one text
+        let ix, bm, startline;
+        found = false;
+        for (ix = 1; ix < bms.length; ix += 1) {
+            bm = bms[ix];
+            if (!hascolon) {
+                startline = find_lnr_from_bm(bm);
+            } else {
+                startline = bm;
+            }
+            if (startline === bookmark) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
             if (toggle) {
                 $target.removeClass("bmcolor");
-                bms[i] = "";
+                bms[ix] = "";
             } else {
                 $target.addClass("bmcolor");
             }
@@ -838,14 +913,12 @@ window.site100oxen = {
             $target.addClass("bmcolor");
             bms[bms.length] = bookmark;
         }
-        cleanupBookMarx();
-        adjustBMselector("");
         return false;
     }
 
     /**
      * function putbackBookmarks
-     * set bookmarks after switching text or reload
+     * set bookmarks from bookmarx[][] into text and select element after switching text or reload
      * @param greek
      */
     function putbackBookmarks(greek) {
@@ -854,13 +927,22 @@ window.site100oxen = {
         if (currtxt < 0) {
             return;
         }
-        bm = jbNS.bookMarx[currtxt];
-        for (i = 0; i < bm.length; ++i) {
-            if (bm[i].substr(0, 1) !== "-") {
-                setUnsetBookMark(bm[i], false, greek);
+        if (jbNS.bookMarx[currtxt].length < 2) {
+            jbNS.greekanchors.removeClass("bmcolor");
+            jbNS.butleranchors.removeClass("bmcolor");
+            clear_search();
+        } else {
+            bm = jbNS.bookMarx[currtxt].slice();
+            jbNS.bookMarx[currtxt] = [];
+            for (i = 0; i < bm.length; ++i) {
+                if (bm[i].substr(0, 1) !== "-") {
+                    setUnsetBookMark(bm[i], false, greek);
+                } else {
+                    jbNS.bookMarx[currtxt][jbNS.bookMarx[currtxt].length] = bm[i];
+                }
             }
+            cleanupBookMarx();
         }
-        adjustBMselector("");
     }
 
     function del_all_bm() {
@@ -1073,56 +1155,6 @@ window.site100oxen = {
 
     //endregion
     //region user input
-    /**
-     * function gr_bu_MouseDown(event)
-     * event-handler for mousedown/touchend on greek and butlertexts
-     * measures time until mouseup. if it's a 'hold', send selected text to textinput or notes
-     * @param event
-     */
-    function gr_bu_MouseDown(event) {
-        let time1 = event.timeStamp;
-        event.stopImmediatePropagation();
-        //$(event.delegateTarget).off("mousedown touchstart");
-        $(event.delegateTarget).one("mouseup touchend", function (ev2) {
-            let notes, txt, time2, greek, parse;
-            ev2.preventDefault();
-            time2 = ev2.timeStamp - time1;
-            const holding = time2 > 500;
-            if (!holding) { // click/tap only
-                gr_bu_MouseUp(ev2, holding);
-            } else { //'hold'
-                txt = getSelectedText(ev2);
-                greek = ev2.view.name === "greekframe";
-                parse = txt.match(jbNS.parse_lineID);
-                if (parse && parse[4]) {
-                    if (!parse[2]) {
-                        if (greek) {
-                            txt = " " + txt;
-                        } else {
-                            txt = ":" + txt;
-                        }
-                        txt = jbNS.prefixes[jbNS.columns_config[1] - 1] + txt;
-                    }
-                }
-                if (txt !== "") {
-                    notes = $("#notes:visible");
-                    if (notes.length) {
-                        notes.val(notes.val() + txt);
-                    } else {
-                        if (txt.length < 100) {
-                            $("#textinput").val(txt);
-                            setSelButtonText();
-                        } else {
-                            $("#textinput").val("selection too large");
-                        }
-                    }
-                } else {
-                    gr_bu_MouseUp(ev2, holding);
-                }
-            }
-            //$(event.delegateTarget).on("mousedown touchstart", gr_bu_MouseDown);
-        });
-    }
 
     /**
      * function scrollTreeToLinenr
@@ -1133,7 +1165,7 @@ window.site100oxen = {
      */
     function scrollTreeToLinenr(linenr) {
         utils.maptree.line = linenr;
-        utils.maptree(window.site100oxen.XML, function (node) {
+        utils.maptree(window.parent.site100oxen.XML, function (node) {
             // if (utils.maptree.node) {
             //     return false;
             // }
@@ -1158,77 +1190,87 @@ window.site100oxen = {
     }
 
     /**
-     * function gr_bu_MouseUp
-     * clicked or selected in greek or butler text
+     * function gr_bu_MouseDown(event)
+     * event-handler for mousedown/touchend on greek and butlertexts
+     * measures time until mouseup. if it's a 'hold', send selected text to textinput or notes
      * @param event
-     * @param holding: boolean // true if mousedown time > 500ms
      */
-    function gr_bu_MouseUp(event, holding) {// set in iframeload()
-        let n, $t, greek, line, s, notes, bookmark, click_lnr, too_many_bm;
-        event.stopImmediatePropagation();
-        if (jbNS.touchcancel) {
-            jbNS.touchcancel = false;
-            return;
-        } // if it's a swipe, don't do anything here
-        click_lnr = false;
-        $t = $(event.target);
-        greek = event.view.name === "greekframe";
-        if ($t.is("a")) {
-            line = $t.text();
-            click_lnr = true;
-            /* click on linenr */
-        } else if ($t.is("p")) { /* or on line itself */
-            for (n = 0; n < 5; ++n) { // in Hesiod greek there is an <a> once in 5 <p>
+    function gr_bu_MouseDown(event) {
+        /**
+         * function gr_bu_MouseUp
+         * clicked or selected in greek or butler text
+         * @param event
+         */
+        function gr_bu_MouseUp(ev2) {
+            let n, $t, is_greek, line, s, notes, bookmark, click_lnr, too_many_bm;
+            const holding = (ev2.timeStamp - time1) > 500;
+            event.stopImmediatePropagation();
+            if (jbNS.touchcancel) {
+                jbNS.touchcancel = false;
+                return;
+            } // if it's a swipe, don't do anything here
+
+            click_lnr = false;
+            $t = $(event.target);
+            is_greek = event.view.name === "greekframe";
+            if ($t.is("a")) {
+                line = $t.text();
+                click_lnr = true;
+                /* click on linenr */
+            } else if ($t.is("p") || $t.parent().is("p")) { /* or on line itself */
                 line = $t.children("a").text();
-                if (line) {
-                    break;
-                }
-                $t = $t.prev("p");
-                if (!$t) {
-                    return;
-                } //can't happen here
+                click_lnr = false;
+            } // got lineNR. may not need it, if text selected
+            if (!line) {
+                return;
             }
-        } // got lineNR. may not need it, if text selected
-        if (!line) {
-            return;
-        }
-        if (greek) {
-            bookmark = " " + line;
-        } else {
-            bookmark = ":" + line;
-        }
-        bookmark = jbNS.prefixes[jbNS.columns_config[1] - 1] + bookmark;
-        s = getSelectedText(event);
-        if (s === line) {
-            s = bookmark;
-        }
-        if (s !== "") { // if selected something: copy to notes or textinput
-            notes = $("#notes:visible");
-            if (notes.length) {
-                notes.val(notes.val() + s);
+            if (is_greek) {
+                bookmark = " " + line;
             } else {
-                if (s.length < 100) {
-                    $("#textinput").val(s);
-                    setSelButtonText();
-                } else {
-                    $("#textinput").val("selection too large");
-                }
+                bookmark = ":" + line;
             }
-        } else {
-            if (click_lnr) {  // click on linenumber: let the other frame scroll there
-                jbNS.bm_to_goto = line;
-                butlerGotoBM(line);
-                bm_greek_search(line, true, 0);
-                if (event.ctrlKey || holding) {
-                    scrollTreeToLinenr(line);
+            bookmark = jbNS.prefixes[jbNS.columns_config[1] - 1] + bookmark;
+
+            s = getSelectedText(event);
+            if (s === line) {
+                s = bookmark;
+            }
+            if (s !== "") { // if selected something: copy to notes or textinput
+                notes = $("#notes:visible");
+                if (notes.length) {
+                    notes.val(notes.val() + s);
+                } else {
+                    if (s.length < 1000) {
+                        $("#textinput").val(s);
+                        change_textinput();
+                        setSelButtonText();
+                    } else {
+                        $("#textinput").val("selection too large");
+                    }
                 }
-            } else { //click in text, no selection: set bookmark
-                too_many_bm = setUnsetBookMark(bookmark, true, greek);
-                if (too_many_bm) {
-                    utils.myAlert("Too many bookmarks (max. 500). BM not set.", false, null);
+            } else {
+                if (click_lnr) {  // click on linenumber: let the other frame scroll there
+                    jbNS.bm_to_goto = line;
+                    butlerGotoBM(line);
+                    bm_greek_search(line, true, 0);
+                    if (event.ctrlKey || holding) {
+                        scrollTreeToLinenr(line);
+                    }
+                } else { //click in text, no selection: set bookmark
+                    too_many_bm = setUnsetBookMark(bookmark, true, is_greek);
+                    if (too_many_bm) {
+                        utils.myAlert("Too many bookmarks (max. 500). BM not set.", false, null);
+                    }
+                    cleanupBookMarx();
                 }
             }
         }
+
+        // mouseDown:
+        let time1 = event.timeStamp;
+        event.stopImmediatePropagation();
+        //$(event.delegateTarget).off("mousedown touchstart");
+        $(event.delegateTarget).one("mouseup touchend", gr_bu_MouseUp);
     }
 
     /**
@@ -1359,6 +1401,27 @@ window.site100oxen = {
         });
     }
 
+    function change_textinput() {
+        const $inbuf = $("#textinput");
+        if ($inbuf.val().length > 12) {
+            if ($("#inputfield").has("#textinput").length) {
+                $("#inputfield2").append($inbuf);
+                $inbuf.css("width", "100%")
+                $inbuf.focus();
+            }
+        } else {
+            if ($("#inputfield2").has("#textinput").length) {
+                $("#inputicon").before($inbuf);
+                $inbuf.css({
+                    "width": "12rem",
+                    "background-color": "#003388",
+                    "color": "white"
+                });
+                $inbuf.focus();
+            }
+        }
+    }
+
     /**
      * function clrinp
      * set #textinput to ""
@@ -1437,6 +1500,8 @@ window.site100oxen = {
         code = event.keyCode || event.charCode;
         if (code === 13) {
             executeBtnChoice(null);
+            event.target.blur();
+            return true;
         }
         if (code < 48) {
             return true;
@@ -1453,21 +1518,27 @@ window.site100oxen = {
      * @param event : object // (click)
      */
     function betaclick(event) {
-        let time1 = event.timeStamp;
+        const $trg = $(event.target);
+        let inp;
         event.stopImmediatePropagation();
-        $(event.currentTarget).one("mouseup", function (ev2) {
-            let time2, inp, keepdia;
-            event.stopImmediatePropagation();
-            time2 = ev2.timeStamp - time1;
-            keepdia = !(time2 > 500 || event.shiftKey); //click or hold
-            if ($(event.target).attr("id") === "beta") {
-                inp = document.getElementById("notes");
-            } else {
-                inp = document.getElementById("textinput");
-            }
-            inp.value = inp.value.toLowerCase();
-            enterInput(changeTextCoding(inp, keepdia), inp, true);
-        });
+        event.preventDefault();
+        if ($trg.attr("id") === "beta") {
+            inp = document.getElementById("notes");
+        } else {
+            inp = document.getElementById("textinput");
+        }
+        //inp.value = inp.value.toLowerCase();
+        enterInput(changeTextCoding(inp, true), inp, true);
+    }
+
+    function no_diacritics(event) {
+        let input_el;
+        if ($(event.target).is("#beta")) {
+            input_el = document.getElementById("notes");
+        } else {
+            input_el = document.getElementById("textinput");
+        }
+        enterInput(changeTextCoding(input_el, false), input_el, true);
     }
 
     /**
@@ -1481,6 +1552,7 @@ window.site100oxen = {
         $lst = $("#selectlist");
         if (!event) {
             index = 0;
+            $lst.toggle();
         } else {
             trg = $(event.target);
             if (trg[0].id === "select") {
@@ -1656,14 +1728,14 @@ window.site100oxen = {
      * @param doit : boolean //true = show
      */
     function showAlphabet(doit) {
-        if($("#archaic").text() === "Polytonic Greek") {
-            $("#tr2").find("td:not('.td2')").each(function (i,e) {
+        if ($("#archaic").text() === "Polytonic Greek") {
+            $("#tr2").find("td:not('.td2')").each(function (i, e) {
                 $(e).text($(e).text().toUpperCase());
                 $(e).css("font-family", "Archaic Greek");
                 $(".td2").css("visibility", "hidden");
             });
         } else {
-            $("#tr2").find("td:not('.td2')").each(function (i,e) {
+            $("#tr2").find("td:not('.td2')").each(function (i, e) {
                 $(e).text($(e).text().toLowerCase());
                 $(e).css("font-family", "Noto Sans");
                 $(".td2").css("visibility", "visible");
@@ -1750,6 +1822,7 @@ window.site100oxen = {
         event.stopImmediatePropagation();
         if ($(this).text() === "Archaic Greek") {
             $(this).text("Polytonic Greek");
+            jbNS.already_loaded[get_col_config(1) - 1] = null; //it's not already loaded
             let reverse = true;
             const acount = jbNS.greekanchors.length;
             if (jbNS.columns_config[1] > 2) { // if Theo or WD
@@ -2035,73 +2108,6 @@ window.site100oxen = {
 
     //endregion
     //region load content
-    function get_page_from_menu(ix) {
-        let txt;
-        if (ix < jbNS.pages_local.length) {
-            txt = jbNS.pages_local[ix][0];
-        } else {
-            txt = jbNS.pages_extern[ix - jbNS.pages_local.length][0];
-        }
-        if (jbNS.pageframe[0].src !== txt) {
-            jbNS.pageframe[0].src = txt;
-        }
-    }
-
-    function getNewIframeFile(url, targetframe) {
-        let getnew = true;
-        let cache$ = 'no-cache';
-        site100oxen.currentPage = url;
-        $.ajax({
-            type: "HEAD",
-            async: true,
-            cache: false,
-            datatype: "text",
-            url: url,
-        }).done(function (message, textStatus, jqXHR) {
-            const resp = jqXHR.getAllResponseHeaders();
-            const etag = resp.match(/etag: \"(.*)\"/i);
-            const here = localStorage.getItem(url);
-            if (here && here === etag[1]) {
-                getnew = false;
-                cache$ = 'max-age=1000';
-            }
-            if (getnew && etag) {
-                localStorage.setItem(url, etag[1]);
-            }
-            $.ajax({
-                type: "GET",
-                // headers: {
-                //     'Cache-Control': cache$
-                // },
-                async: true,
-                cache: true,
-                url: url,
-                dataType: 'html',
-            }).done(function (data, textStatus, jqXHR) {
-                let iframe = document.getElementById(targetframe);
-                iframe.srcdoc = data;
-                //if ("console" in window) console.log(url + " from cache: " + !getnew + "," + etag);
-            });
-        })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                utils.myAlert(errorThrown);
-            });
-    }
-
-    /**
-     * loadIframeToPage
-     * event handler: load external html into pageframe.
-     * @param event
-     */
-    function loadIframeToPage(event) {
-        let ix;
-        ix = $("#filesmenu li").index($(event.target).parent());
-        event.stopImmediatePropagation();
-        get_page_from_menu(ix);
-        hidemenuitems();
-        //let [c1, c2, c3, c4] = jbNS.columns_config;
-        configColumns(0, 2, true);
-    }
 
     /**
      * function fetchTexts
@@ -2110,6 +2116,7 @@ window.site100oxen = {
      */
     function fetchTexts(fileindex) {
         let deferred = $.Deferred();
+        let filestogo = 2; //nr of files to load
 
         /**
          * function iFrameLoad
@@ -2129,7 +2136,6 @@ window.site100oxen = {
                 iframe.src = result;
                 $(iframe).load(dfd.resolve);
                 dfd.done(function () {
-                    //if ("console" in window) console.log(src);
                     if (--filestogo === 0) {
                         deferred.resolve();
                     }
@@ -2137,20 +2143,19 @@ window.site100oxen = {
             }); // end iframeload
         }
 
-        let filestogo = 2; //nr of files to load
-        iFrameLoad("greekframe", jbNS.filenames[1][fileindex]);
-        iFrameLoad("butlerframe", jbNS.filenames[2][fileindex]);
-        deferred.done(function () { //what to do after both frames have been loaded:
+        function done_loading() { //what to do after both frames have been loaded:
+            jbNS.columns_config[1] = fileindex + 1;
             setColumns();
+            jbNS.store_greek[fileindex] = jbNS.greekframe.contents().find("#greektext");
+            jbNS.store_butler[fileindex] = jbNS.butlerframe.contents().find("#butlertext");
+            jbNS.already_loaded[fileindex] = true;
             jbNS.butleranchors = jbNS.butlerframe.contents().find("a");
             jbNS.greekanchors = jbNS.greekframe.contents().find("a"); //collect anchors (linenumbers)
-            //console.log(jbNS.greekframe.contents().find("p").length + "," + jbNS.butlerframe.contents().find("p").length);
+
             $("#selonly").text("Show only selection");
-            //if (jbNS.gr_beginLine > 0) {
-            //scrollgreek();
-            //}
+
             putbackBookmarks(true); // false = butler, true = greek
-            putbackBookmarks(false); // false = butler, true = greek
+            //putbackBookmarks(false); // false = butler, true = greek
             $("#greekframe,#butlerframe").contents().find("body").on({
                 //"touchhold": gr_bu_hold,
                 "mousedown": gr_bu_MouseDown,
@@ -2158,18 +2163,12 @@ window.site100oxen = {
                     jbNS.touchcancel = true;
                 }
             });
-            if (window.site100oxen.untouchable) {
+            if (window.parent.site100oxen.untouchable) {
                 createSplitter();
             }
-            //if ("console" in window) console.log("fetched");
-            adjustColWidth();
             if (!jbNS.bm_to_goto) {
-                //console.log("fetchtexts");
                 scrollgreek();
                 let begin = get_beginLine();
-                //begin = begin > 0 ? begin - 1 : 0;
-                // console.log("g"+jbNS.greekanchors[begin].textContent);
-                // console.log("b"+jbNS.butleranchors[begin].textContent);
 
                 if (jbNS.butleranchors.length) {
                     butlerGotoBM(jbNS.butleranchors[begin].textContent);
@@ -2177,7 +2176,20 @@ window.site100oxen = {
             } else {
                 goto_BM_on_load();
             }
-        });
+        }
+
+        /*****************/
+        if (jbNS.already_loaded[fileindex]) {
+            jbNS.greekframe.contents().find("#greektext").replaceWith(jbNS.store_greek[fileindex]);
+            jbNS.butlerframe.contents().find("#butlertext").replaceWith(jbNS.store_butler[fileindex]);
+            done_loading();
+        } else {
+            iFrameLoad("greekframe", jbNS.filenames[1][fileindex]);
+            iFrameLoad("butlerframe", jbNS.filenames[2][fileindex]);
+            deferred.done(function () {
+                done_loading();
+            });
+        }
     }
 
     //endregion
@@ -2342,10 +2354,16 @@ window.site100oxen = {
             wcurr = jbNS.width[col_ix];
         }
         if (col1 === 1) {
-            jbNS.treeframe.show().width(wcurr);
+            jbNS.treeframe.width(wcurr);
+            jbNS.treeframe.show();
+            const iframe = jbNS.pageframe[0];
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write("");
+            iframe.contentWindow.document.close();
             col_ix++;
         } else if (col1 === 2) {
-            jbNS.pageframe.show().width(wcurr);
+            jbNS.pageframe.width(wcurr);
+            jbNS.pageframe.show();
             col_ix++;
         }
         //greekframe - butlerframe
@@ -2353,17 +2371,16 @@ window.site100oxen = {
         jbNS.butlerframe.hide();
         left2 = col1 ? colwidth + 8 : 0;
         if (col2 && which) {
-            //left3 = left2 + ((which & 1) ? colwidth + 8 : 0);
             wcurr = doresize ? w2 : jbNS.width[col_ix];
             if (which & 1) {
-                //if(doresize) jbNS.greekframe.css("left", left2);
-                jbNS.greekframe.show().width(wcurr);
+                jbNS.greekframe.width(wcurr);
+                jbNS.greekframe.show();
                 col_ix++;
             }
             wcurr = doresize ? w2 : jbNS.width[col_ix];
             if (which & 2) {
-                //if(doresize) jbNS.butlerframe.css("left", left3);
-                jbNS.butlerframe.show().width(wcurr);
+                jbNS.butlerframe.width(wcurr);
+                jbNS.butlerframe.show();
                 col_ix++;
             }
         }
@@ -2376,7 +2393,8 @@ window.site100oxen = {
             if (doresize) {
                 jbNS.textframe.css("left", left4);
             }
-            jbNS.textframe.width(wcurr).show();
+            jbNS.textframe.width(wcurr);
+            jbNS.textframe.show();
         }
     }
 
@@ -2401,7 +2419,6 @@ window.site100oxen = {
             columns[n].left += n * deltaX;
             $(columns[n]).width(jbNS.width[n]);
         }
-        //console.log("left col");
         scrollgreek();
     }
 
@@ -2438,16 +2455,16 @@ window.site100oxen = {
             storeExpansionstate();
             localStorage.setItem("scrollpos", jbNS.beginLine.toString());
             const doload = jbNS.columns_config[1] - 1;
-            if (colnr === 1 && ix !== jbNS.columns_config[1] - 1) {
+            if (colnr === 1 && ix !== doload) {
                 configColumns(1, ix + 1, false); //-1
                 if (ix < 2) {
-                    //console.log("->" + jbNS.xml_names[ix]);
                     getXML(jbNS.xml_names[ix]).done(() => {
                         init_tree();
                     });
                 }
                 if (ix !== doload) {
                     fetchTexts(ix); // fetch greek & butler texts
+                    $("#archaic").text("Archaic Greek");
                 }
             }
             if (colnr === 2) {
@@ -2534,7 +2551,8 @@ window.site100oxen = {
      * @param ix : number // index of buttons. if undefined (absent), set everything acc. to columns_config
      * @param notoggle : boolean // if true: set, don't toggle default = false
      */
-    function configColumns(colnr, ix, notoggle) //colnr, index of buttons, notoggle=true: set, don't toggle
+    function configColumns(colnr, ix, notoggle) //colnr, index of buttons,
+    // notoggle=true: set, don't toggle
     {	// NB: index has 1 added so [0] can be 'none'
         let language_choice = 0, $allbuttons;
         if (typeof ix === "undefined") {
@@ -2584,13 +2602,17 @@ window.site100oxen = {
         }
         jbNS.dontSetColumns = false;
         setColumns(); //width, display
-        if (window.site100oxen.untouchable) {
+        if (window.parent.site100oxen.untouchable) {
             createSplitter();
         }
         if (colnr === 0 && ix === 0) {
             scrolltree(jbNS.treetop_el_index);
         }
         return jbNS.columns_config[colnr];
+    }
+
+    function get_col_config(n) {
+        return jbNS.columns_config[n];
     }
 
     //endregion
@@ -2656,7 +2678,6 @@ window.site100oxen = {
         $("html").css("font-size", size + "px");
         $("#setfontsize")[0].value = Math.round(size);
         setIframeFont(size);
-        //console.log("setfont");
         scrollgreek();
     }
 
@@ -2673,21 +2694,6 @@ window.site100oxen = {
 
     //endregion
     //region initialize
-    /**
-     * function hidemenuitems
-     * hide sliding menu
-     */
-    function hidemenuitems() {
-        let $fm = $("#filesmenu");
-        $fm.animate({
-            "left": "-" + $fm.width(),
-            "opacity": "0"
-        }, 800);
-        utils.cover(-8, 0.3);
-        jbNS.pages_menu_expanded = false;
-        //$("#switchColumns").on("mousedown touchstart", switchColMousedown);
-        $(".menuitems").css("background-color", "");
-    }
 
     /**
      * function setExpansionstate
@@ -2746,7 +2752,7 @@ window.site100oxen = {
     }
 
     function doReset() {
-        window.site100oxen.forcereload = true;
+        jbNS.forcereload = true;
         localStorage.clear();
         sessionStorage.clear();
         setTimeout(function () {
@@ -2761,11 +2767,11 @@ window.site100oxen = {
      */
     function savePageState() {
         let s;
-        if (window.site100oxen.forcereload) {
+        if (jbNS.forcereload) {
             return;
         }
         //1: save column config
-        store_colconf();
+        store_colconf_to_locstor();
         // 2: save bookmarks
         s = jbNS.bookMarx.toString();
         localStorage.setItem("bookmarks", s);
@@ -2784,45 +2790,17 @@ window.site100oxen = {
         localStorage.setItem("treetop", jbNS.treetop_el_index);
     }
 
-    function read_in_Bookmarx(s) {
-        let arr, i, m, n, bm, nw, isgreek;
-        jbNS.greekanchors = jbNS.greekframe.contents().find("a");
-        arr = s.split(",");
-        m = 0;
-        n = -1;
-        for (i = 0; i < arr.length; i += 1) {
-            bm = arr[i];
-            isgreek = (bm.indexOf(":") < 0);
-            nw = false;
-            if (bm.substr(0, 1) === "!") {
-                continue;
-            }
-            if (bm.substr(0, 1) === "-") {
-                m = 0;
-                n += 1;
-                nw = true;
-            }
-            if (!nw) {
-                setUnsetBookMark(bm, false, isgreek); // (n === 0 || n === 2)); // ?
-            }
-            m += 1;
-        }
-        //cleanupBookMarx();
-    }
-
-    function get_colconf() {
+    function get_colconf_from_locstor() {
         const s = localStorage.getItem("colconf") || "1,1,3,0";
-        //console.log("getconf " + s);
         const arr = s.split(",");
         for (let i = 0; i < 4; ++i) {
             jbNS.columns_config[i] = parseInt(arr[i]);
         }
     }
 
-    function store_colconf() {
+    function store_colconf_to_locstor() {
         const s = jbNS.columns_config.toString();
         localStorage.setItem("colconf", s);
-        //console.log('saveps ' + s);
     }
 
     /**
@@ -2851,12 +2829,11 @@ window.site100oxen = {
             jbNS.dontSetColumns = true; //this works only for 1 call
             configColumns(i, jbNS.columns_config[i], true);
         }
-        fetchTexts(jbNS.columns_config[1] - 1);
-        let s2 = jbNS.columns_config.toString();
-        //console.log("pagestate " + s2);
-        doResize();
         s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";
         read_in_Bookmarx(s);
+        fetchTexts(jbNS.columns_config[1] - 1);
+        //let s2 = jbNS.columns_config.toString();
+        doResize();
         jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
         jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name() + "_lvl")) || 1;
         //setHeaderContents(jbNS.basic_fontsize);
@@ -2885,15 +2862,11 @@ window.site100oxen = {
     }
 
     function init_tree() {
-        utils.createTreeFromXML(site100oxen.XML.firstChild, 'list');
+        utils.createTreeFromXML(window.parent.site100oxen.XML.firstChild, 'list');
         /* initialize */
         jbNS.OL_level = jbNS.treeframe.find('ol');
         jbNS.LI_elements = jbNS.treeframe.find('li');
         jbNS.treeframe.find(".ln").on({
-            // "mouseenter": tree_handleMouseEvents,
-            // "mouseleave": function (event) {
-            //     event.target.style.backgroundColor = "";
-            // },
             "mousedown": lineIDmousedown
         });
         setExpansionstate();
@@ -2918,18 +2891,6 @@ window.site100oxen = {
             $("#switchColumns").css("fontSize", "110%");
             $("#switchColumns ul li").css("margin", "0 0.5rem");
         }
-        // let uls = $("#switchColumns ul li ul");
-        // let lft = uls.eq(1).position().left + uls.eq(1).width();
-        // let rt = uls.eq(2).position().left;
-        // //utils.myAlert(Math.floor(rt - lft) + "," + w, true, null, null);
-        // if (rt - lft < 15) {
-        //     $("#switchColumns").css("fontSize", "90%");
-        //     $("#switchColumns ul li").css("margin", "0");
-        // } else {
-        //     $("#switchColumns").css("fontSize", "110%");
-        //     $("#switchColumns ul li").css("margin", "0 0.5rem");
-        // }
-        // utils.myAlert("w: " + window.innerWidth);
     }
 
     //endregion
@@ -2972,7 +2933,7 @@ window.site100oxen = {
                 drg_w = $selected.outerWidth(),
                 pos_y = $selected.offset().top + drg_h - e.pageY,
                 pos_x = $selected.offset().left + drg_w - e.pageX;
-            $(document).on("mousemove", function (e) {
+            $(document).on("mousemove touchmove", function (e) {
                 $selected.offset({
                     top: e.pageY + pos_y - drg_h,
                     left: e.pageX + pos_x - drg_w
@@ -3008,7 +2969,6 @@ window.site100oxen = {
     });
     $("#switchColumns").on({
         "mousedown touchstart": switchColMousedown
-        //"click": swcol_up
     });
     $("#bm_nav").on({
         "click": swcol_up
@@ -3024,11 +2984,12 @@ window.site100oxen = {
             jbNS.oldcolnum = -1;
             setColumns();
             adjustColWidth();
-            //console.log("resize");
             scrollgreek();
         },
         "beforeunload": function () {
             savePageState();
+            jbNS = null;
+            window.parent.site100oxen = null;
         },
         "blur": function () {
             savePageState();
@@ -3055,7 +3016,7 @@ window.site100oxen = {
         }
     });
     /* menu clicks */
-    // if (!window.site100oxen.untouchable) {
+    // if (!window.parent.site100oxen.untouchable) {
     //     $(window, ".viewport").on("swipeleft", shrinkLeftColumn);
     //     $(window, ".viewport").on("swiperight", growLeftColumn);
     // }
@@ -3113,7 +3074,7 @@ window.site100oxen = {
             cleanupBookMarx();
             jbNS.greekanchors.removeClass("bmcolor");
             jbNS.butleranchors.removeClass("bmcolor");
-            adjustBMselector("");
+            //adjustBMselector("");
             clear_search();
         }
     });
@@ -3140,6 +3101,7 @@ window.site100oxen = {
         arr = $("#notes")[0].value.split("\n");
         s = arr.join(",");
         read_in_Bookmarx(s);
+        putbackBookmarks(true);
     });
     $(".btn1 ul li").on({
         "click": function () {
@@ -3205,13 +3167,18 @@ window.site100oxen = {
         "keypress": keyboardInput,
         "keyup": setSelButtonText,
         "paste": function () {
-            setTimeout(setSelButtonText, 100);
+            setTimeout(function () {
+                change_textinput();
+                setSelButtonText();
+            }, 100);
         }, //delay because "paste" fires before the text is entered
         "click": function (event) {
             event.preventDefault();
             return false;
         },
-        "dblclick": clrinp
+        "dblclick": no_diacritics,
+
+        "keydown": change_textinput
     });
     $("#selonly").click(toggleSelOnly);
     $("#shownotes").click(showNotes);
@@ -3243,16 +3210,16 @@ window.site100oxen = {
     $("#savestate").click(savePageState);
     $("#loadstate").click(function () {
         getXML(jbNS.xml_names[jbNS.columns_config[1] - 1]).done(() => { //xml load what is in localStorage or iliad.xml
-            get_colconf();
+            get_colconf_from_locstor();
             init_all();
         })
             .fail((msg) => {
                 utils.myAlert(msg, true);
             });
     });
-    $("#beta, #betaswitch").on("mousedown", betaclick);
-    $("#betaswitch").click(function () {
-        return false;
+    $("#beta, #betaswitch").on({
+        "click": betaclick,
+        "dblclick": no_diacritics
     });
     $("#goto").click(gotoclick);
     $("#who, #dunnit").click(function (event) {
@@ -3355,7 +3322,6 @@ window.site100oxen = {
         }
         localStorage.setItem('textToLoad', filename);
         jbNS.newXML = true;
-        //if ("console" in window) console.log("loading " + filename);
         $.ajax({
             type: "HEAD",
             async: true,
@@ -3377,37 +3343,50 @@ window.site100oxen = {
                     dataType: "text",
                     success: function (xmlstring) {
                         localStorage.setItem(`${filename}.txt`, xmlstring);
-                        //if ("console" in window) console.log(`${filename} downloaded`);
                         try {
-                            window.site100oxen.XML = $.parseXML(xmlstring);
+                            window.parent.site100oxen.XML = $.parseXML(xmlstring);
+                            if (fileindex === 0) {
+                                window.parent.site100oxen.ilXML = window.parent.site100oxen.XML;
+                            } else if (fileindex === 1) {
+                                window.parent.site100oxen.odXML = window.parent.site100oxen.XML;
+                            }
                         } catch (e) {
                             dfr.reject(e);
                         }
-                        //if ("console" in window) console.log(`${filename} from cache: ${!jbNS.newXML}`);
                         dfr.resolve();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        window.site100oxen.xml_loaded = false;
+                        //window.parent.site100oxen.xml_loaded = false;
                         dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
                     }
                 });
             } else {
+                if (fileindex === 0) {
+                    const temp = window.parent.site100oxen.ilXML;
+                    if (temp !== null) {
+                        window.parent.site100oxen.XML = temp;
+                        dfr.resolve();
+                        return dfr.promise();
+                    }
+                } else if (fileindex === 1) {
+                    const temp = window.parent.site100oxen.odXML;
+                    if (temp !== null) {
+                        window.parent.site100oxen.XML = temp;
+                        dfr.resolve();
+                        return dfr.promise();
+                    }
+                }
                 const xml = localStorage.getItem(`${filename}.txt`);
                 if (!xml) {
                     utils.myAlert("please do full reset", true);
                     return;
                 }
-                //if ("console" in window) console.log(`${filename} from localStorage`);
-                window.site100oxen.XML = $.parseXML(xml);
-                if (filename === "iliad.xml") { // save a ref
-                    window.site100oxen.ilXML = window.site100oxen.XML;
-                    //configColumns(1, 1, true);
-                } else if (filename === "odyssey.xml") {
-                    window.site100oxen.odXML = window.site100oxen.XML;
-                    //configColumns(1, 2, true);
+                window.parent.site100oxen.XML = $.parseXML(xml);
+                if (fileindex === 0) { // save a ref
+                    window.parent.site100oxen.ilXML = window.parent.site100oxen.XML;
+                } else if (fileindex === 1) {
+                    window.parent.site100oxen.odXML = window.parent.site100oxen.XML;
                 }
-                //get_colconf()
-                //init_all();
                 dfr.resolve();
             }
             $.ajax({
@@ -3428,15 +3407,14 @@ window.site100oxen = {
 
     //endregion
     //region active part
+
     function init_all() {
-        //console.log(document.compatMode);
-        window.site100oxen.forcereload = false;
-        window.site100oxen.xml_loaded = true;
-        console.log('init_all');
+        jbNS.forcereload = false;
+        //window.parent.site100oxen.xml_loaded = true;
         init_tree();
-        window.site100oxen.untouchable = // are we on a touch device?
+        window.parent.site100oxen.untouchable = // are we on a touch device?
             !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-        if (window.site100oxen.untouchable) {
+        if (window.parent.site100oxen.untouchable) {
             jbNS.treeframe.niceScroll({
                 cursorcolor: "#888",
                 cursorwidth: "7px",
@@ -3452,15 +3430,15 @@ window.site100oxen = {
     }
 
     // set globals
-    window.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
-    window.site100oxen.init_tree = init_tree;
-    window.site100oxen.getNewIframeFile = getNewIframeFile;
-    window.site100oxen.configColumns = configColumns;
-    window.site100oxen.set_beginLine = set_beginLine;
-    window.site100oxen.loadAndGotoTextframeAnchor = loadAndGotoTextframeAnchor;
+    window.parent.site100oxen.showAndGotoAnyLine = showAndGotoAnyLine;
+    window.parent.site100oxen.init_tree = init_tree;
+    window.parent.site100oxen.configColumns = configColumns;
+    window.parent.site100oxen.set_beginLine = set_beginLine;
+    window.parent.site100oxen.get_col_config = get_col_config;
+    window.parent.site100oxen.loadAndGotoTextframeAnchor = loadAndGotoTextframeAnchor;
 
     getXML().done(() => { //xml load what is in localStorage or iliad.xml
-        get_colconf();
+        get_colconf_from_locstor();
         init_all();
     })
         .fail((msg) => {

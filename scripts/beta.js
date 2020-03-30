@@ -1,4 +1,4 @@
-import {LatinGreek} from '../scripts/myUtils.js?v=0.0.28';
+import {LatinGreek} from '../scripts/myUtils.js?v=0.1.6';
 /**
  * function beta2uni
  * convert ASCI-string (betacode) to unicode extended-greek and normalize the greek
@@ -172,7 +172,7 @@ export function beta2uni(string) { //beta code to unicode extended Greek
                 }
             }
         }
-        unichar = LatinGreek.norm_1F_to_03(unichar); //normalize
+        unichar = LatinGreek.norm_1F_to_03(unichar); //normalize !
         result += String.fromCharCode(unichar);
     }
     return result;

@@ -10,19 +10,6 @@ foreach ($xml->url as $url) {
     } else {
         $url->addchild('lastmod', $date);
     }
-    echo $fname . ';' . $date, PHP_EOL;
 }
 $xml->asXML('sitemap.xml');
-foreach ($alt->url as $url) {
-    $fname = pathinfo($url->loc, PATHINFO_BASENAME);
-    $mtime = filemtime($fname);
-    $date = date('D d M Y', $mtime);
-    if (isset($url->lastmod)){
-        $url->lastmod = $date;
-    } else {
-        $url->addchild('lastmod', $date);
-    }
-    echo $date;
-}
-$alt->asXML('altmap.xml');
 ?>

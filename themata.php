@@ -19,8 +19,6 @@ function autoversion($file)
     <meta name="Description"
             content="Thematic structure and ring composition, the basic plan of the Iliad.">
     <title>Thematic structure</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext" rel="stylesheet"
-            type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

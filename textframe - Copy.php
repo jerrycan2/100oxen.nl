@@ -14,8 +14,6 @@ function autoversion($file)
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <title>Explanation</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="css/common.css" type="text/css">
 </head>
 <body>
@@ -31,7 +29,7 @@ function autoversion($file)
         by likeness and contrast) are emphasized by color and to show that they
         form <em>ring-structures</em> and <em>catalogues</em> all through the poem
         and on many levels (see <a class="textlink" target="pageframe" href="themata.php"
-                                   onclick="parent.site100oxen.configColumns(0, 2, true)">ring.html</a>
+                                   onclick="window.parent.site100oxen.configColumns(0, 2, true)">ring.html</a>
         for more details).<br>
         What exactly constitutes a 'theme' and how best to formulate it, is of
         course not a self-evident matter. It cannot be separated from

@@ -3,10 +3,6 @@
   font-family: "Archaic Greek";
   src: url("../images/Archaic Greek.ttf");
 }
-@font-face {
-  font-family: "reverse";
-  src: url("../images/reverse.ttf");
-}
 .rounded {
   border-radius: 0.4rem;
 }
@@ -56,23 +52,27 @@ h5 {
   text-align: center;
   box-shadow: 3px 3px 5px 2px #000062;
   line-height: 150%;
-  margin: 1.2rem 10% 0.7rem 10%;
   border-radius: 0.4rem;
 }
 h1 {
   font-size: 200%;
+  margin: 1.2rem 16% 0.7rem 16%;
 }
 h2 {
   font-size: 180%;
+  margin: 1.2rem 20% 0.7rem 20%;
 }
 h3 {
   font-size: 150%;
+  margin: 1.2rem 20% 0.7rem 20%;
 }
 h4 {
   font-size: 120%;
+  margin: 1.2rem 25% 0.7rem 25%;
 }
 h5 {
   font-size: 100%;
+  margin: 1.2rem 25% 0.7rem 25%;
 }
 h6 {
   font-size: 100%;

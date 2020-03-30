@@ -19,8 +19,6 @@ function autoversion($file)
     <meta name="Description"
             CONTENT="The Neleid clan, their descendance from Poseidon and their role in the Ionian migration">
     <title>Poseidon</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-            type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

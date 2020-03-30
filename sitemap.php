@@ -16,8 +16,6 @@ function autoversion($file)
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="Description" CONTENT="Links to all pages on 100oxen.nl">
     <title>sitemap</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext"
-            rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/sitemap.css');?>">
 </head>
@@ -149,37 +147,10 @@ function autoversion($file)
 <script src="scripts/jquery.nicescroll.min.js" type="text/javascript"></script>
 <script src="<?= autoversion('/scripts/iframes.js');?>"></script>
 <script>
-    function read_altmap(xml) { // write updated altmap into DOM
-        const $pages = $(".textlink");
-        let txt, ref, filename;
-        const page = /([a-z0-9_]+)\.[0-9]+(\.php)/;
-        $pages.each(function () {
-            txt = $(this).attr("href").substring(1);
-            // console.log(txt);
-            ref = page.exec(txt);
-            filename = ref[1]+ref[2];
-            //console.log("fn: "+filename);
-            let a = `loc:contains('${filename}')`;
-            let pg = $(xml).find(a);
-            let date = pg.siblings("lastmod").text();
-            // $(this).next('span').remove();
-            // $(this).after(`<span> (update ${date})</span>`);
-            $(this).attr("title", `updated: ${date}`);
-        });
-    }
-    $.ajax({ //creates new altmap
+    $.ajax({ //creates new sitemap.xml
         type: "GET",
         datatype: "text",
         url: "setmap.php"
-    });
-
-    $.ajax({
-        type: "GET",
-        datatype: "xml",
-        cache: false,
-        url: "altmap.xml"
-    }).done(function (xml) {
-        read_altmap(xml);
     });
 </script>
 </body>

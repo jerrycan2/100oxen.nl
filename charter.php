@@ -17,8 +17,6 @@ function autoversion($file)
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="The myth of Helen of Troy as a political tool and Homer's opposition to it">
     <title>Charter Myth</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

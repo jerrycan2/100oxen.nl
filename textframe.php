@@ -16,13 +16,11 @@ function autoversion($file)
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <title>Explanation of themata</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext" rel="stylesheet"
-          type="text/css">
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body style="direction: ltr;">
 <div id="expltext" class="latin">
-    <h1>Interpretation</h1>
+    <h1>Inter&#8203;pretation</h1>
     <h3>The Chimaera Model</h3>
     <p>The Iliad divides into three<a class="ptr">(1)</a> battle parts: the immortal hero - the plan of Zeus - the mortal
         hero. An apt metaphor for the top level structure is the Chimaera<a class="ptr">(2)</a>

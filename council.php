@@ -17,8 +17,6 @@ function autoversion($file)
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="Characterization of the 8 major Greek heroes in the Iliad">
     <title>Agamemnon's council</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

@@ -17,7 +17,6 @@ function autoversion($file)
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="Description" CONTENT="A description of the important women in Iliad and Odyssey">
     <title>Achaean Women</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
   </head>
   <body class="latin contents">

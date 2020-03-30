@@ -19,8 +19,6 @@ function autoversion($file)
     <meta name="Description"
           CONTENT="a list of references from Iliad and Odyssey where the poem refers to itself, to the poet or to the world he lives in">
     <title>Self-reflection</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-          type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
 </head>
 <body class="latin contents">

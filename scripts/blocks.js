@@ -1,12 +1,11 @@
-import {LatinGreek} from '../scripts/myUtils.js?v=0.0.28';
+import {LatinGreek, myAlert} from '../scripts/myUtils.js?v=0.1.6';
+
 "use strict";
 /**
  * Created by WinJeroen on 29-10-2014.
  */
 
-var pg1Namespace = {
-    chaplength: [611, 877, 461, 544, 909, 529, 482, 561, 713, 579, 848, 471, 837, 522, 746, 867, 761, 616, 424, 503, 611, 515, 897, 804],
-    XML: "",
+let pg1Namespace = {
     xmlLoaded: false,
     COLHEIGHT: 45, //see also css
     ColNames: ["#col2", "#col3"],
@@ -15,76 +14,6 @@ var pg1Namespace = {
     index: -1,
     prefixes: ["Il", "Od", "Th", "WD"],
 };
-
-/**********************************************************************/
-/*! XML    it's not normally loaded here anymore                      */
-
-/**********************************************************************/
-
-/**
- * getXML: fetch it if possible from l.s., otherwise from the website
- * @param name = url
- */
-function getXML(name) {
-    var str, loaded;
-
-    loaded = localStorage.getItem("list_xml_loaded");
-    if (loaded === "true") {
-        str = localStorage.getItem("list_xml");
-        saveXML(str);
-        return "local";
-    }
-    //localstorage not available and/or list not loaded and/or forced reload
-
-    $.ajax({
-        type: "GET",
-        url: name,
-        dataType: "text", //don't parse, save xml as one long string
-        success: saveXML,
-        cache: true,
-        error: function () { //} jqXHR, textStatus, errorThrown ){
-            //console.log( textStatus + "," + errorThrown );
-            alert("Can't load " + name);
-            //do something here to fail gracefully
-        }
-    });
-    return null;
-}	//non-error exit always goes through saveXML
-
-/**
- * saveXML
- * @param str: the iliad xml file, 1 string without CR's
- * saves the xml to the global object and if possible to localStorage
- * then move on to the parsing
- */
-function saveXML(str) {
-    try {
-        pg1Namespace.XML = $.parseXML(str);
-    }
-    catch (e) {
-        window.parent.site100oxen.myAlert(e, true, null);
-        return;
-    }
-    localStorage.setItem("list_xml", str);
-    localStorage.setItem("list_xml_loaded", "true");
-    if (parent.site100oxen) {
-        parent.site100oxen.XML = pg1Namespace.XML;
-        parent.site100oxen.xml_loaded = true;
-        pg1Namespace.xmlLoaded = true;
-        /* create new collapsible list in parent page */
-        if (parent.site100oxen.global_flag_updating) {
-            parent.site100oxen.global_flag_updating = false;
-            parent.site100oxen.createlist(pg1Namespace.XML);
-        }
-    }
-    createBlocks();
-}
-
-function createBlocks() {
-    //equalLevels( $( pg1Namespace.XML ).find( "book" ) );
-    drawBlocks(null, pg1Namespace.COLHEIGHT, 0); //setup 'xml loaded' event for remote fetch
-}
-
 
 function getelementnode(n) {
     while (n && n.nodeType !== 1) {
@@ -109,15 +38,11 @@ function getlinenr(node) {
     return node ? node.getAttribute("lnr") : "";
 }
 
-/**********************************************************************/
-/*! XML                                                               */
-/**********************************************************************/
-
-/*
+/**
  * drawBlocks: create the block representation of the structure
  * @param: xml node
  *
-*/
+ */
 function drawBlocks($node, colheight, recursion) {
     // recursion == 0: draw col1&col2  recursion=1: recursive call to draw col3 (for every subdiv in col2)
     let $col1, $col2div2, moving_copy, targetblock, totalEm, scale, has_children,
@@ -125,15 +50,14 @@ function drawBlocks($node, colheight, recursion) {
 
     function draw() {
         let bg, fg, text, count, before, len, chap, som, diff, t, c1, $trg;
-            // nextbg, prevbg,
+        // nextbg, prevbg,
 
         if (!recursion) {
             $(".subdiv2, .subdiv3").remove();
         }
         if (has_children) {
             $trg = $node.children();
-        }
-        else {
+        } else {
             $trg = $node; // filler for shorter branches
         }
         $trg.each(function () {
@@ -144,7 +68,9 @@ function drawBlocks($node, colheight, recursion) {
             fg = $this.attr("f") || "000000";
             if (has_children) {
                 bg = $this.attr("c");
-                if(!bg || bg === "000000") {bg = "c0b0a0";}
+                if (!bg || bg === "000000") {
+                    bg = "c0b0a0";
+                }
             } else {
                 bg = "c0c0c0"; // filler
             }
@@ -197,8 +123,7 @@ function drawBlocks($node, colheight, recursion) {
             $("#lines").text($node.attr("sz") + " lines");
             text = "";
             for (let i = 1; i <= 24; ++i) { //draw col1 book divisions
-                //chap = pg1Namespace.chaplength[i - 1];
-                chap = LatinGreek.getchaplen(parent.site100oxen.configColumns(1)-1, i);
+                chap = LatinGreek.getchaplen(window.parent.site100oxen.get_col_config(1) - 1, i);
                 som += chap;
                 if (som <= before) {
                     continue;
@@ -210,29 +135,24 @@ function drawBlocks($node, colheight, recursion) {
                         t = som - (before + len);
                         if (t === 0) {
                             text = 1 + chap - (som - before) + "-";
-                        }
-                        else {
+                        } else {
                             text = (1 + chap - (som - before)) + "-" + (chap - t);
                         }
-                    }
-                    else {//end: first part of a book
+                    } else {//end: first part of a book
                         diff = chap - (som - (before + len));
                         ++count;
                         if (diff === chap) {
                             text = chap;
-                        }
-                        else {
+                        } else {
                             text = "-" + diff;
                         }
                     }
-                }
-                else {
+                } else {
                     if (count === 0) {
                         diff = som - before; //beginning: last part of a book
                         if (diff === chap) {
                             text = diff;
-                        }
-                        else {
+                        } else {
                             text = (1 + chap - diff) + "-";
                         }
                         ++count;
@@ -255,8 +175,11 @@ function drawBlocks($node, colheight, recursion) {
                 } //last box drawn
             }
             c1 = $node.attr("c");
-            if(!c1 || c1 === "000000") {c1 = "rgba(200,200,200,0)";}
-            else { c1 = "#" + c1; } //col1 start-color = transparent
+            if (!c1 || c1 === "000000") {
+                c1 = "rgba(200,200,200,0)";
+            } else {
+                c1 = "#" + c1;
+            } //col1 start-color = transparent
             if (pg1Namespace.index >= 0) {
                 $col1.css({
                     "color": "#" + ($node.attr("f") || "003388")
@@ -279,7 +202,7 @@ function drawBlocks($node, colheight, recursion) {
     /* DRAWBLOCKS: */ //execution starts here
     /***************/
     if (!$node) {
-        $node = $(pg1Namespace.XML).find('book');
+        $node = $(window.parent.site100oxen.XML).find('book');
     }
     $col1 = $("#col1");
     has_children = $node.children("line").length === 0;
@@ -329,8 +252,7 @@ function drawBlocks($node, colheight, recursion) {
             newwidth = targetblock.width();
             if (pg1Namespace.index > 0) {
                 moving_copy.insertAfter($col2div2.eq(pg1Namespace.index - 1));
-            }
-            else if (pg1Namespace.index === 0) {
+            } else if (pg1Namespace.index === 0) {
                 moving_copy.insertBefore($col2div2.eq(0));
             }
             targetblock.css("visibility", "hidden");
@@ -379,7 +301,7 @@ function columnclick(e) {
         tmp = txt.substr(txt.indexOf(" ") + 1);
         lnr = txt.substr(0, txt.indexOf(" "));
         s = '[d="' + tmp + '"]';
-        $trg = $(pg1Namespace.XML).find(s);
+        $trg = $(window.parent.site100oxen.XML).find(s);
         if ($trg.length > 1) {
             $trg.each(function (i, node) {
                 if (lnr === getlinenr(node)) {
@@ -389,17 +311,16 @@ function columnclick(e) {
             });
         }
         if (parent) {
-            parent.site100oxen.showAndGotoAnyLine(
-                pg1Namespace.prefixes[parent.site100oxen.configColumns[1]] + " " + getlinenr($trg[0]), false);
+            window.parent.site100oxen.showAndGotoAnyLine(
+                pg1Namespace.prefixes[window.parent.site100oxen.get_col_config(1) - 1] + " " + getlinenr($trg[0]), false);
         }
         if (!$trg[0].firstChild || $trg[0].firstChild.nodeName === "line") {
             return;
         }
-    }
-    else if ($t.parents("div#col1").length) {
+    } else if ($t.parents("div#col1").length) {
         txt = $(".subdiv2").eq(0).text();
         lnr = txt.substr(0, txt.indexOf(" "));
-        $x = $(pg1Namespace.XML).find('[d="' + $("#parenttitle").text() + '"]');
+        $x = $(window.parent.site100oxen.XML).find('[d="' + $("#parenttitle").text() + '"]');
         if ($x.length > 1) {
             $x.each(function (i, node) {
                 if (lnr === getlinenr(node)) {
@@ -411,29 +332,27 @@ function columnclick(e) {
         $node = $x.parent();
         if (parent) {
             if ($node.is("lvl0")) {
-                parent.site100oxen.showAndGotoAnyLine("1.1", false);
-            }
-            else {
+                window.parent.site100oxen.showAndGotoAnyLine("1.1", false);
+            } else {
                 s = $node.attr("d");
                 if (!s) {
                     if ($t.is("span")) {
                         $t = $t.parent();
                     }
                     booknr = $t.index() + 1;
-                    parent.site100oxen.showAndGotoAnyLine(
-                        pg1Namespace.prefixes[parent.site100oxen.configColumns[1]] + " " + booknr + ".1", false);
+                    window.parent.site100oxen.showAndGotoAnyLine(
+                        pg1Namespace.prefixes[window.parent.site100oxen.get_col_config(1) - 1] + " " + booknr + ".1", false);
                     return;
                 } else {
                     s = '[d="' + s + '"]';
-                    $trg = $(pg1Namespace.XML).find(s);
+                    $trg = $(window.parent.site100oxen.XML).find(s);
                 }
-                parent.site100oxen.showAndGotoAnyLine(
-                    pg1Namespace.prefixes[parent.site100oxen.configColumns[1]] + " " + getlinenr($node[0]), false);
+                window.parent.site100oxen.showAndGotoAnyLine(
+                    pg1Namespace.prefixes[window.parent.site100oxen.get_col_config(1) - 1] + " " + getlinenr($node[0]), false);
             }
         }
         pg1Namespace.index = $node.children().index($x);//going back/right, which col2 subdiv is now in col1?
-    }
-    else {
+    } else {
         return;
     }
 
@@ -446,8 +365,8 @@ function columnclick(e) {
 $(document).ready(function () {
     var from;
 
-    $("#blocks_header").click(function(){
-        parent.site100oxen.configColumns(0, 1, false);
+    $("#blocks_header").click(function () {
+        window.parent.site100oxen.configColumns(0, 1, false);
     });
 
     $("html").niceScroll({
@@ -459,36 +378,14 @@ $(document).ready(function () {
         zindex: 2,
         horizrailenabled: true
     });
-
-    // $(".radiobtn").on("change", function () {
-    //     localStorage.setItem("list_xml_loaded", "false");
-    //     if( $("#get_od")[0].checked) {
-    //         getXML("odyssey.xml");
+    // $(window).on({
+    //     "beforeunload": function () {
+    //         //pg1Namespace = null;
     //     }
-    //     else {
-    //         getXML("iliad.xml");
-    //     }
-    //     createBlocks();
     // });
-
     $("#wrap").on("click", columnclick);
-    //$(document).ajaxComplete(createBlocks);
+    drawBlocks(null, pg1Namespace.COLHEIGHT, 0);
 
-    if (parent.site100oxen) {
-        if (parent.site100oxen.forcereload || !parent.site100oxen.xml_loaded) {
-            from = getXML("iliad.xml"); //fetch from the web (async, callback) or localStorage
-           if (from === "local") {
-                createBlocks();
-            }
-        }
-        else {
-            pg1Namespace.XML = parent.site100oxen.XML;
-            createBlocks();
-        }
-    }
-    else {
-        getXML("iliad.xml");
-    }
 });
 /* end of 'ready' */
 

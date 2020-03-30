@@ -18,8 +18,6 @@ function autoversion($file)
     <meta http-equiv="Content-Language" content="en-us">
     <meta name="Description" CONTENT="The role of Zeus and justice in ancient poetry and philosophy">
     <title>Zeus and Justice</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet'
-            type='text/css'>
     <link rel="stylesheet" href="<?= autoversion('/css/common.css');?>">
     <link rel="stylesheet" href="<?= autoversion('/css/table.css');?>">
 </head>

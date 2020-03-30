@@ -1,4 +1,4 @@
-import * as utils from './myUtils.js?v=0.0.28';
+import * as utils from './myUtils.js?v=0.1.6';
 
 /**
  * Created by jeroe on 07-Aug-18.
@@ -151,7 +151,7 @@ import * as utils from './myUtils.js?v=0.0.28';
         const ids = utils.element2lineIDs($element.next());
         const bg = ids.beginning;
         const lvl = parseInt($element.parent().parent().attr("class").substring(3), 10)
-            + parent.site100oxen.startLevel;
+            + window.parent.site100oxen.startLevel;
         const anchor = lvl + ":" + bg;
         found = utils.gotoAnchor(anchor, false); // 2nd par: false = don't go, just check existence
         if ($element.is(".hasrem")) {
@@ -457,7 +457,7 @@ import * as utils from './myUtils.js?v=0.0.28';
                 }
             } else {
                 if (currnr[1] === 1 && prevnr[1] !== utils.LatinGreek.getchaplen(
-                    parent.site100oxen.configColumns(1) - 1, prevnr[0])) {
+                    window.parent.site100oxen.configColumns(1) - 1, prevnr[0])) {
                     line_err = true;
                 }
             }
@@ -666,7 +666,11 @@ import * as utils from './myUtils.js?v=0.0.28';
     //endregion Checks and Tests
     //region Events
     $(window).on({
-        "unload": savePageState
+        "unload": function () {
+            savePageState();
+            glob = null;
+            utils.myAlert("exiting", false);
+        }
     });
     $("#checks,#result").on({
         "click": function () {
@@ -1052,41 +1056,28 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
      * turn off color on top level (below 'line') nodes that are all colored the same
      * color attributes of the xml get removed
      */
-    // $("#test").on({
-    //     "click": function () {
-    //         utils.maptree(glob.XML, function(node) {
-    //                 let match, fg, bg, sib;
-    //
-    //                 if(node.firstChild && node.firstChild.nodeName === "line") {
-    //                     fg = node.getAttribute('f');
-    //                     bg = node.getAttribute('c');
-    //                     sib = utils.getelementnode(node.nextSibling);
-    //                     match = false;
-    //                     while (sib) {
-    //                         match = (sib.getAttribute('f') === fg && sib.getAttribute('c') === bg
-    //                             && sib.firstChild.nodeName === "line");
-    //                         sib = utils.getelementnode(sib.nextSibling);
-    //                         if (!match) {
-    //                             break;
-    //                         }
-    //                     }
-    //                     if (match) {
-    //                         sib = utils.getelementnode(node);
-    //                         while (sib) {
-    //                             sib.removeAttribute('f');
-    //                             sib.removeAttribute('c');
-    //                             sib = utils.getelementnode(sib.nextSibling);
-    //                         }
-    //                         return false;
-    //                     }
-    //                 }
-    //                 return true;
-    //             }
-    //         );
-    //         parent.site100oxen.XML = glob.XML;
-    //         parent.site100oxen.init_tree();
-    //     }
-    // });
+    $("#test").on({
+        "click": function () {
+            utils.maptree.counter = 0;
+            utils.maptree(glob.XML, function(node) {
+                const classname = node.nodeName;
+                let c = "", str = "";
+                if (classname === "line") {
+                    let txt = node.innerHTML;
+                    let i;
+                    for (i = 0; i < txt.length; i += 1 ) {
+                        str += String.fromCharCode(utils.LatinGreek.norm_1F_to_03(txt.charCodeAt(i)));
+                    }
+                    node.firstChild.nodeValue = str;
+                    utils.maptree.counter += 1;
+                }
+                return true;
+            });
+            window.parent.site100oxen.XML = glob.XML;
+            window.parent.site100oxen.init_tree();
+            utils.myAlert("fin. " + utils.maptree.counter, false);
+        }
+    });
     //endregion Events
     //region Tree Events
     /**
@@ -1351,10 +1342,10 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
         //}
     }
 
-    if (parent.site100oxen) {
+    if (window.parent.site100oxen) {
         $("#struct").children().remove().end()
             .append($("#list", parent.document).find("ol:first").clone());
-        glob.XML = parent.site100oxen.XML;
+        glob.XML = window.parent.site100oxen.XML;
         loadPageState(); // from localStorage
         utils.setnodeattributes("struct");
         //utils.check_expansion("struct");

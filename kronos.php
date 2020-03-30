@@ -17,7 +17,6 @@ function autoversion($file)
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta name="Description" CONTENT="The Titans, Kronos, the divine succession myth and unequal marriages">
         <title>Kronos</title>
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,greek,greek-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/common.css">
 </head>
 <body class="latin contents">
