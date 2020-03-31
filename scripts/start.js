@@ -634,7 +634,6 @@ window.parent.site100oxen = { // parent refers to itself
             opt.options[index[i]].text = opt.options[index[i]].text.substr(0, 6) +
                 " " + (jbNS.bookMarx[i].length - 1);
         }
-        adjustBMselector("");
     }
 
     /**
@@ -675,10 +674,16 @@ window.parent.site100oxen = { // parent refers to itself
         sel = $("#BMselector")[0];
         if (txt === "") {
             txt = jbNS.bookMarx[jbNS.columns_config[1] - 1][0];
-        }
-        for (i = 0; i < sel.options.length; i++) {
-            if (sel.options[i].value.substring(0, 6) === txt.substring(0, 6)) {
-                sel.selectedIndex = i;
+            for (i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].value.substring(0, 6) === txt.substring(0, 6)) {
+                    sel.selectedIndex = i;
+                }
+            }
+        } else {
+            for (i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].value === txt) {
+                    sel.selectedIndex = i;
+                }
             }
         }
     }
@@ -729,7 +734,7 @@ window.parent.site100oxen = { // parent refers to itself
             if (groter === 0) {
                 if (mark === 1) {
                     if (tl.className === "bmcolor") {
-                        tl.className = "";
+                        tl.removeClass("bmcolor");
                     } else {
                         tl.className = "bmcolor";
                     }
@@ -1044,6 +1049,9 @@ window.parent.site100oxen = { // parent refers to itself
      * @param loadtext: boolean //load the text if it is not showing
      */
     function showAndGotoAnyLine(bookmark, loadtext) {
+        if (!bookmark) {
+            return;
+        }
         let i, textindex, prefix, parsebm, lang;
         if (loadtext === false &&
             (jbNS.columns_config[1] === 0 || jbNS.columns_config[2] === 0)) {
@@ -1201,18 +1209,22 @@ window.parent.site100oxen = { // parent refers to itself
          * clicked or selected in greek or butler text
          * @param event
          */
-        function gr_bu_MouseUp(ev2) {
-            let n, $t, is_greek, line, s, notes, bookmark, click_lnr, too_many_bm;
+        let time1 = event.timeStamp;
+        event.stopImmediatePropagation();
+        // event.preventDefault();
+        $(event.target).one("mouseup", function (ev2) {
+
+            let $t, is_greek, line, s, notes, bookmark, click_lnr, too_many_bm;
             const holding = (ev2.timeStamp - time1) > 500;
-            event.stopImmediatePropagation();
+            ev2.stopImmediatePropagation();
             if (jbNS.touchcancel) {
                 jbNS.touchcancel = false;
                 return;
             } // if it's a swipe, don't do anything here
 
             click_lnr = false;
-            $t = $(event.target);
-            is_greek = event.view.name === "greekframe";
+            $t = $(ev2.target);
+            is_greek = ev2.view.name === "greekframe";
             if ($t.is("a")) {
                 line = $t.text();
                 click_lnr = true;
@@ -1253,7 +1265,7 @@ window.parent.site100oxen = { // parent refers to itself
                     jbNS.bm_to_goto = line;
                     butlerGotoBM(line);
                     bm_greek_search(line, true, 0);
-                    if (event.ctrlKey || holding) {
+                    if (ev2.ctrlKey || holding) {
                         scrollTreeToLinenr(line);
                     }
                 } else { //click in text, no selection: set bookmark
@@ -1264,13 +1276,7 @@ window.parent.site100oxen = { // parent refers to itself
                     cleanupBookMarx();
                 }
             }
-        }
-
-        // mouseDown:
-        let time1 = event.timeStamp;
-        event.stopImmediatePropagation();
-        //$(event.delegateTarget).off("mousedown touchstart");
-        $(event.delegateTarget).one("mouseup touchend", gr_bu_MouseUp);
+        });
     }
 
     /**
@@ -3074,7 +3080,7 @@ window.parent.site100oxen = { // parent refers to itself
             cleanupBookMarx();
             jbNS.greekanchors.removeClass("bmcolor");
             jbNS.butleranchors.removeClass("bmcolor");
-            //adjustBMselector("");
+            adjustBMselector("");
             clear_search();
         }
     });
