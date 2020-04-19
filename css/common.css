@@ -3,11 +3,42 @@
   font-family: "Archaic Greek";
   src: url("../images/Archaic Greek.ttf");
 }
+@font-face {
+  font-family: "reverse";
+  src: url("../images/reverse.ttf");
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans'), local('NotoSans'), url(https://fonts.gstatic.com/s/notosans/v9/o-0IIpQlx3QUlC5A4PNr6TRAW_0.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans'), local('NotoSans'), url(https://fonts.gstatic.com/s/notosans/v9/o-0IIpQlx3QUlC5A4PNr5jRAW_0.woff2) format('woff2');
+  unicode-range: U+0370-03FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans'), local('NotoSans'), url(https://fonts.gstatic.com/s/notosans/v9/o-0IIpQlx3QUlC5A4PNr5TRA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+html {
+  height: 100%;
+  font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
 .rounded {
   border-radius: 0.4rem;
 }
 #butlertext {
-  color: #000062;
   margin-right: 1px;
   font-style: italic;
   background-color: rgba(0, 0, 40, 0.1);
@@ -27,20 +58,11 @@
 button {
   cursor: pointer;
 }
-html {
-  height: 100%;
-}
-body {
-  margin: 0;
-  padding: 0;
-}
-.contents {
+.contents,
+.bookcontents {
   padding: 0 0.3rem;
   margin-right: 0.6rem;
   position: static;
-}
-input {
-  font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 h1,
 h2,
@@ -48,6 +70,7 @@ h3,
 h4,
 h5 {
   background-image: linear-gradient(to right, rgba(16, 16, 16, 0) 10%, #ffffff 50%, rgba(16, 16, 16, 0) 90%);
+  color: #000062;
   text-shadow: 0 1px 0 white;
   text-align: center;
   box-shadow: 3px 3px 5px 2px #000062;
@@ -104,10 +127,6 @@ hr {
 #butlertext p {
   margin: 0 0.5rem 0 0.2rem;
 }
-.greek,
-.latin {
-  font-family: "Noto Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-}
 .underline {
   text-decoration: underline;
 }
@@ -135,7 +154,7 @@ strong {
 figcaption {
   text-align: center;
   font-size: smaller;
-  color: darkblue;
+  color: #000062;
 }
 figure {
   text-align: center;
@@ -156,13 +175,9 @@ figure img {
   border-radius: 0.4rem;
 }
 /*only for greek & butler frame:*/
-.contents p a {
+.bookcontents p a {
   color: white;
-  padding: 0;
-  margin-right: 0.2rem;
-  display: inline-block;
-  /*for the first-line selector*/
-  border: solid rgba(50, 50, 50, 0.2) thin;
+  padding: 0 0.3rem 0 0.2rem;
   border-radius: 0.4rem;
   background-color: rgba(5, 5, 5, 0.2);
 }
@@ -172,13 +187,9 @@ figure img {
 .latin p {
   margin: 0.5rem 1rem;
 }
-.greek p a,
-.latin p a {
-  border-width: 0 0.2rem;
-}
 .indent {
   padding: 0.5rem 5rem 0.5rem 3rem;
-  background-color: rgba(200, 200, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .citation {
   margin-left: 4rem;
@@ -323,4 +334,11 @@ ol#footnotes {
 ol#footnotes > li:before {
   content: "(" counter(footcounter) ") ";
   counter-increment: footcounter;
+}
+#swiffycontainer {
+  width: 328px;
+  height: 80px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

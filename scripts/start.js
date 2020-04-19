@@ -19,6 +19,7 @@ window.parent.site100oxen = { // parent refers to itself
     get_col_config: null,
     currentPage: "",
     startLevel: 0,
+    reg: null,
 };
 //endregion Site global vars endregion
 (function ($) {
@@ -44,7 +45,7 @@ window.parent.site100oxen = { // parent refers to itself
             ["", ""],
             [`gr_il`, `gr_od`, `gr_th`, `gr_wd`],
             [`en_il`, `en_od`, `en_th`, `en_wd`],
-            ["textframe.php", "help.php"]
+            ["textframe.html", "help.html"]
         ],
         xml_names: ["iliad.xml", "odyssey.xml", "", ""],
         perseus_names: [
@@ -94,7 +95,6 @@ window.parent.site100oxen = { // parent refers to itself
         selectBtnChoice: 0,
         showonlyselection: false,
         exp_state: "11",
-        touchcancel: false,
         dontSetColumns: false,
         currentLevel: 2,
         newXML: true,
@@ -167,20 +167,6 @@ window.parent.site100oxen = { // parent refers to itself
         result = result.replace(/hi/, "h|"); //(->Perseus beta code)
         url = 'http://www.perseus.tufts.edu/hopper/morph?l=' + result + '&la=greek';
         window.open(url);
-        // $("#pageframe")[0].src = url;
-        // try {
-        //     history.pushState(null, "", url);
-        // } catch (ignore) {
-        // }
-        // configColumns(0, 2, true);
-    }
-
-    /**
-     * goto Alpheios word-study with word in #textinput
-     */
-    function WS_search() {
-        $("#hiddendiv").show();
-        $("#alphtext").text($("#textinput").val());
     }
 
     //endregion Perseus
@@ -197,6 +183,10 @@ window.parent.site100oxen = { // parent refers to itself
         }
         if (begin !== 0) {
             $top = jbNS.greekanchors.eq(begin);
+            const arr = $top.text().split(".").pop();
+            if (arr === "1") {
+                $top = $top.parent("p").prev("h4");
+            }
             $top[0].scrollIntoView();
         } else {
             jbNS.greekframe.contents().scrollTop(0);
@@ -466,9 +456,11 @@ window.parent.site100oxen = { // parent refers to itself
         if (flag === 0) { //search in Butler text. No <b> tagging of found words here, only the bookmarks
             //jbNS.butlerframe.contents().find("p:contains('" + inp + "')").each(function (i, el) {
             jbNS.butleranchors.each(function (i, el) {
-                const content = el.parentElement.innerHTML;
-                const butlerpos = content.indexOf(inp);
-                if (butlerpos >= 0) {
+
+                if (el.parentElement.textContent.includes(inp)) {
+                    el.className = "bmcolor";
+                    const content = el.parentElement.innerHTML;
+                    const butlerpos = content.indexOf(inp);
                     const bm = el.textContent;
                     count += 1;
                     if (setUnsetBookMark(bm, false, false) && !too_many_bm) {
@@ -734,7 +726,7 @@ window.parent.site100oxen = { // parent refers to itself
             if (groter === 0) {
                 if (mark === 1) {
                     if (tl.className === "bmcolor") {
-                        tl.removeClass("bmcolor");
+                        tl.removeAttribute("class");
                     } else {
                         tl.className = "bmcolor";
                     }
@@ -823,9 +815,14 @@ window.parent.site100oxen = { // parent refers to itself
         if (lineindex >= 0) {
             if ($("#butlerframe:visible").length) {
                 if (lineindex !== 0) {
-                    jbNS.butleranchors[lineindex].scrollIntoView();
+                    let $top = jbNS.butleranchors.eq(lineindex);
+                    const arr = $top.text().split(".").pop();
+                    if (arr === "1") {
+                        $top = $top.parent("p").prev("h4");
+                    }
+                    $top[0].scrollIntoView();
                 } else {
-                    jbNS.butlerframe.contents().scrollTop(0);//.find("#butlertext")
+                    jbNS.butlerframe.contents().scrollTop(0);
                 }
             }
         } else {
@@ -906,7 +903,7 @@ window.parent.site100oxen = { // parent refers to itself
         }
         if (found) {
             if (toggle) {
-                $target.removeClass("bmcolor");
+                $target[0].removeAttribute("class");
                 bms[ix] = "";
             } else {
                 $target.addClass("bmcolor");
@@ -957,8 +954,12 @@ window.parent.site100oxen = { // parent refers to itself
         }
         localStorage.setItem("bookmarks", "---Il:--,---Od:--,---Th:--,---WD:--");
         cleanupBookMarx();
-        jbNS.greekanchors.removeClass("bmcolor");
-        jbNS.butleranchors.removeClass("bmcolor");
+        jbNS.greekanchors.each(function (i, e) {
+            e.removeAttribute("class");
+        });
+        jbNS.butleranchors.each(function (i, e) {
+            e.removeAttribute("class");
+        });
         adjustBMselector("");
     }
 
@@ -1123,41 +1124,19 @@ window.parent.site100oxen = { // parent refers to itself
      * @param event
      */
     function getSelectedText(event) {
-        let txt, rng, idoc, doc, ifr = false;
+        let txt, idoc, doc;
         //find selected text, in an iframe or input/contenteditable element
         txt = "";
         if (event && event.view.name === "greekframe") {
             doc = jbNS.greekframe[0];
-            ifr = true;
         } else if (event && event.view.name === "butlerframe") {
             doc = jbNS.butlerframe[0];
-            ifr = true;
-        } else if (event && event.view.name === "pageframe") {
-            doc = jbNS.pageframe[0];
-            ifr = true;
-        } else if (event && event.view.name === "textframe") {
-            doc = jbNS.textframe[0];
-            ifr = true;
         } else {
-            doc = document;
+            return "";
         }
-        idoc = doc || doc.contentDocument || doc.contentWindow.document;
-        if (window.getSelection) { //webkit
-            if (ifr) {
-                txt = $.trim(doc.contentWindow.getSelection().toString());
-            } else {
-                txt = $.trim(doc.getSelection().toString());
-            }
-        } else if (document.getSelection) {
-            if (ifr) {
-                txt = $.trim(doc.contentWindow.getSelection().toString());
-            } else {
-                txt = $.trim(idoc.getSelection().toString());
-            }
-        } else if (document.selection) { //IE?
-            rng = idoc.selection.createRange();
-            txt = $.trim(rng.text);
-        }
+
+        idoc = doc.contentDocument || doc.contentWindow.document;
+        txt = $.trim(idoc.getSelection().toString());
         return txt;
     }
 
@@ -1209,18 +1188,10 @@ window.parent.site100oxen = { // parent refers to itself
          * clicked or selected in greek or butler text
          * @param event
          */
-        let time1 = event.timeStamp;
-        event.stopImmediatePropagation();
-        // event.preventDefault();
-        $(event.target).one("mouseup", function (ev2) {
+        function gr_bu_mouseUp(ev2) {
 
             let $t, is_greek, line, s, notes, bookmark, click_lnr, too_many_bm;
             const holding = (ev2.timeStamp - time1) > 500;
-            ev2.stopImmediatePropagation();
-            if (jbNS.touchcancel) {
-                jbNS.touchcancel = false;
-                return;
-            } // if it's a swipe, don't do anything here
 
             click_lnr = false;
             $t = $(ev2.target);
@@ -1233,6 +1204,7 @@ window.parent.site100oxen = { // parent refers to itself
                 line = $t.children("a").text();
                 click_lnr = false;
             } // got lineNR. may not need it, if text selected
+
             if (!line) {
                 return;
             }
@@ -1243,11 +1215,12 @@ window.parent.site100oxen = { // parent refers to itself
             }
             bookmark = jbNS.prefixes[jbNS.columns_config[1] - 1] + bookmark;
 
-            s = getSelectedText(event);
+            s = getSelectedText(ev2);
             if (s === line) {
                 s = bookmark;
             }
             if (s !== "") { // if selected something: copy to notes or textinput
+                swcol_up();
                 notes = $("#notes:visible");
                 if (notes.length) {
                     notes.val(notes.val() + s);
@@ -1257,7 +1230,7 @@ window.parent.site100oxen = { // parent refers to itself
                         change_textinput();
                         setSelButtonText();
                     } else {
-                        $("#textinput").val("selection too large");
+//                        $("#textinput").val("selection too large");
                     }
                 }
             } else {
@@ -1276,7 +1249,15 @@ window.parent.site100oxen = { // parent refers to itself
                     cleanupBookMarx();
                 }
             }
-        });
+        }
+
+        let time1 = event.timeStamp;
+        event.stopImmediatePropagation();
+        if (window.parent.site100oxen.untouchable) {
+            $(event.target).one("mouseup", gr_bu_mouseUp);
+        } else {
+            $(event.target).one("touchend", gr_bu_mouseUp);
+        }
     }
 
     /**
@@ -1960,8 +1941,14 @@ window.parent.site100oxen = { // parent refers to itself
             } else if ($trg.is(".plm")) { /*click on + or - */
                 const plm = $trg.text();
                 if (plm === "⊕") {
+                    if (jbNS.currentLevel < 9) {
+                        jbNS.currentLevel += 1;
+                    }
                     $trg.text("⊖");
                 } else {
+                    if (jbNS.currentLevel > 1) {
+                        jbNS.currentLevel -= 1;
+                    }
                     $trg.text("⊕");
                 }
                 $ol = $trg.closest("li").children("ol").eq(0);
@@ -2132,26 +2119,21 @@ window.parent.site100oxen = { // parent refers to itself
          * @returns {*}
          */
         function iFrameLoad(id, src) {
-            $.ajax({
-                type: "GET",
-                datatype: "text",
-                url: "getmtime.php?file=" + src, //get filename (with modified-date built in)
-            }).done(function (result) {
-                let iframe = document.getElementById(id),
-                    dfd = $.Deferred();
-                iframe.src = result;
-                $(iframe).load(dfd.resolve);
-                dfd.done(function () {
-                    if (--filestogo === 0) {
-                        deferred.resolve();
-                    }
-                });
-            }); // end iframeload
+            src += ".html";
+            let iframe = document.getElementById(id),
+                dfd = $.Deferred();
+            iframe.src = src;
+            $(iframe).load(dfd.resolve);
+            dfd.done(function () {
+                if (--filestogo === 0) {
+                    deferred.resolve();
+                }
+            });
         }
 
         function done_loading() { //what to do after both frames have been loaded:
             jbNS.columns_config[1] = fileindex + 1;
-            setColumns();
+            //setColumns();
             jbNS.store_greek[fileindex] = jbNS.greekframe.contents().find("#greektext");
             jbNS.store_butler[fileindex] = jbNS.butlerframe.contents().find("#butlertext");
             jbNS.already_loaded[fileindex] = true;
@@ -2161,24 +2143,19 @@ window.parent.site100oxen = { // parent refers to itself
             $("#selonly").text("Show only selection");
 
             putbackBookmarks(true); // false = butler, true = greek
-            //putbackBookmarks(false); // false = butler, true = greek
+
             $("#greekframe,#butlerframe").contents().find("body").on({
                 //"touchhold": gr_bu_hold,
                 "mousedown": gr_bu_MouseDown,
-                "touchmove": function () {
-                    jbNS.touchcancel = true;
-                }
             });
+
             if (window.parent.site100oxen.untouchable) {
                 createSplitter();
             }
             if (!jbNS.bm_to_goto) {
-                scrollgreek();
                 let begin = get_beginLine();
-
-                if (jbNS.butleranchors.length) {
-                    butlerGotoBM(jbNS.butleranchors[begin].textContent);
-                }
+                const bookmark = jbNS.greekanchors[begin].textContent;
+                showAndGotoAnyLine(bookmark, false);
             } else {
                 goto_BM_on_load();
             }
@@ -2309,6 +2286,7 @@ window.parent.site100oxen = { // parent refers to itself
         colnum += col2 && (which & 2 ? 1 : 0);
         //textframe - other:
         colnum += jbNS.columns_config[3] ? 1 : 0;
+
         if (colnum === jbNS.oldcolnum) {
             doresize = false; //no resize after column switch if nr. of columns remains the same
             $(".viewport:visible").each(function (i) {
@@ -2362,10 +2340,6 @@ window.parent.site100oxen = { // parent refers to itself
         if (col1 === 1) {
             jbNS.treeframe.width(wcurr);
             jbNS.treeframe.show();
-            const iframe = jbNS.pageframe[0];
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write("");
-            iframe.contentWindow.document.close();
             col_ix++;
         } else if (col1 === 2) {
             jbNS.pageframe.width(wcurr);
@@ -2403,42 +2377,6 @@ window.parent.site100oxen = { // parent refers to itself
             jbNS.textframe.show();
         }
     }
-
-    /**
-     * function resizeLeftColumn
-     * for tablets: resize left column (swipe in header) and adapt the others
-     * @param amount : number //pixels, + or -
-     */
-    function resizeLeftColumn(amount) {
-        let n, colnum, deltaX, columns;
-        colnum = jbNS.oldcolnum;
-        if (colnum < 1) {
-            return;
-        }
-        columns = $(".viewport:visible");
-        jbNS.width[0] = $(columns[0]).width() + amount;
-        deltaX = amount / (colnum - 1);
-        for (n = 1; n < colnum; n += 1) {
-            jbNS.width[n] = $(columns[n]).width() - deltaX;
-        }
-        for (n = 0; n < colnum; n += 1) {
-            columns[n].left += n * deltaX;
-            $(columns[n]).width(jbNS.width[n]);
-        }
-        scrollgreek();
-    }
-
-    // function growLeftColumn() {
-    //     utils.myAlert("right");
-    //     resizeLeftColumn(jbNS.colResizeStep);
-    //     return true;
-    // }
-    //
-    // function shrinkLeftColumn() {
-    //     utils.myAlert("left");
-    //     resizeLeftColumn(-jbNS.colResizeStep);
-    //     return true;
-    // }
 
     /**
      * function switchColMousedown
@@ -2501,9 +2439,9 @@ window.parent.site100oxen = { // parent refers to itself
                     break;
                 case 2:
                     if (ix === 1) {
-                        if (site100oxen.currentPage !== 'sitemap.php') {
-                            jbNS.pageframe[0].src = 'sitemap.php';
-                            site100oxen.currentPage = 'sitemap.php';
+                        if (site100oxen.currentPage !== 'sitemap.html') {
+                            jbNS.pageframe[0].src = 'sitemap.html';
+                            site100oxen.currentPage = 'sitemap.html';
                             configColumns(0, 2, true);
                         } else {
                             configColumns(0, 0, true);
@@ -2529,6 +2467,10 @@ window.parent.site100oxen = { // parent refers to itself
                 "opacity": 0
             }, 400, "swing", function () {
                 $that.hide();
+                $("header").css({
+                    "height": "6rem",
+                    "top": "0"
+                });
             });
         });
     }
@@ -2546,7 +2488,14 @@ window.parent.site100oxen = { // parent refers to itself
             "height": "6rem",
             "font-size": "1rem",
             "opacity": 1
-        }, 400, "swing");
+        }, 400, "swing", function () {
+            const hdr = document.getElementById("topdiv");
+            const nav = $("#switchColumns ul")[0];
+            console.log(hdr.scrollHeight + "," + nav.scrollHeight);
+            if (hdr.scrollHeight < nav.scrollHeight) {
+                $("header").css("height", nav.scrollHeight + "px");
+            }
+        });
     }
 
     /**
@@ -2666,7 +2615,7 @@ window.parent.site100oxen = { // parent refers to itself
      * try to set font size of iframe
      */
     function setIframeFont(size) {
-        $(".viewport:visible").each(function () { //hier
+        $(".viewport").each(function () { //hier
             try {
                 $(this).contents().find("html").css("font-size", size + "px");
             } catch (ignore) {
@@ -2682,9 +2631,9 @@ window.parent.site100oxen = { // parent refers to itself
     function setfont(size) {
         setHeaderContents(size);
         $("html").css("font-size", size + "px");
-        $("#setfontsize")[0].value = Math.round(size);
+        $("#setfontsize")[0].value = size;
         setIframeFont(size);
-        scrollgreek();
+        // scrollgreek();
     }
 
     /**
@@ -2695,7 +2644,7 @@ window.parent.site100oxen = { // parent refers to itself
         let size, diff;
         size = jbNS.basic_fontsize;
         diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
-        setfont(size - diff);
+        setfont(Math.round(size - diff));
     }
 
     //endregion
@@ -2796,12 +2745,17 @@ window.parent.site100oxen = { // parent refers to itself
         localStorage.setItem("treetop", jbNS.treetop_el_index);
     }
 
+    /**
+     * function get_colconf_from_locstor
+     * read in columns configuration and set it, before doing anything else
+     */
     function get_colconf_from_locstor() {
         const s = localStorage.getItem("colconf") || "1,1,3,0";
         const arr = s.split(",");
         for (let i = 0; i < 4; ++i) {
             jbNS.columns_config[i] = parseInt(arr[i]);
         }
+        setColumns();
     }
 
     function store_colconf_to_locstor() {
@@ -2818,14 +2772,13 @@ window.parent.site100oxen = { // parent refers to itself
         let s, i, tf, fs = 16;
         jbNS.keepFontsize = localStorage.getItem("keepfontsize") === "1";
         jbNS.basic_fontsize = fs; //can be set different
-        if (window.location.href !== parent.location.href) { // if the page is loaded outside index.php
+        if (window.location.href !== parent.location.href) { // if the page is loaded outside index.html
             jbNS.keepFontsize = false;
         }
         if (jbNS.keepFontsize) {
             jbNS.basic_fontsize = parseInt(localStorage.getItem("fontsize")) || fs;
         }
         $("#keepfs")[0].checked = !jbNS.keepFontsize; //"auto"
-        zoominout();
 
         tf = jbNS.columns_config[3];
         if (tf) {
@@ -2835,14 +2788,15 @@ window.parent.site100oxen = { // parent refers to itself
             jbNS.dontSetColumns = true; //this works only for 1 call
             configColumns(i, jbNS.columns_config[i], true);
         }
+        // zoominout();
+        //setColumns();
         s = localStorage.getItem("bookmarks") || "---Il:--,---Od:--,---Th:--,---WD:--";
         read_in_Bookmarx(s);
         fetchTexts(jbNS.columns_config[1] - 1);
         //let s2 = jbNS.columns_config.toString();
-        doResize();
         jbNS.treetop_el_index = parseInt(localStorage.getItem("treetop")) || 0;
         jbNS.currentLevel = parseInt(localStorage.getItem(get_exp_state_name() + "_lvl")) || 1;
-        //setHeaderContents(jbNS.basic_fontsize);
+
         loadNotes();
         s = localStorage.getItem("splash") || "";
         if (s !== "hide") {
@@ -2850,16 +2804,18 @@ window.parent.site100oxen = { // parent refers to itself
         } else {
             $("#splash").hide();
         }
-        // if (localStorage.getItem("messages") === $("#messages span").text()
-        //     && localStorage.getItem("showmsg") === "false") {
-        $("#messages").hide();
-        // } else {
-        //     localStorage.setItem("showmsg", "true");
-        //     $("#messages").show();
-        // }
+        s = $("#messages span").text();
+        if ((s === "" || localStorage.getItem("messages") === s)
+            && localStorage.getItem("showmsg") !== "true") {
+            $("#messages").hide();
+        } else {
+            localStorage.setItem("showmsg", "true");
+            $("#messages").show();
+        }
         setSelButtonText();
-        site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.php";
+        site100oxen.currentPage = localStorage.getItem("currentpage") || "sitemap.html";
         jbNS.pageframe[0].src = site100oxen.currentPage;
+
         let s1 = localStorage.getItem("scrollpos") || "0,0,0,0";
         let arr1 = s1.split(",");
         for (let i = 0; i < 4; ++i) {
@@ -2974,7 +2930,7 @@ window.parent.site100oxen = { // parent refers to itself
         }
     });
     $("#switchColumns").on({
-        "mousedown touchstart": switchColMousedown
+        "click": switchColMousedown
     });
     $("#bm_nav").on({
         "click": swcol_up
@@ -3008,24 +2964,10 @@ window.parent.site100oxen = { // parent refers to itself
     });
     $("iframe").on({
         "load": function () {
-            try {
-                const diff = jbNS.keepFontsize ? 0 : calcFontsizeDiff();
-                $(this).contents().find("html").css("font-size",
-                    (jbNS.basic_fontsize - diff) + "px");
-            } catch (ignore) {
-            }
-            const frame = $("#pageframe").contents();
-            const hash = frame.get(0).location.hash;
-            if (hash !== "") {
-                frame.scrollTop(frame.find(hash)[0].offsetTop);
-            }
+            zoominout();
+            doResize();
         }
     });
-    /* menu clicks */
-    // if (!window.parent.site100oxen.untouchable) {
-    //     $(window, ".viewport").on("swipeleft", shrinkLeftColumn);
-    //     $(window, ".viewport").on("swiperight", growLeftColumn);
-    // }
     $("#BMselector").on({
         "change": changebm,
         "click": function (event) {
@@ -3084,14 +3026,6 @@ window.parent.site100oxen = { // parent refers to itself
             clear_search();
         }
     });
-    // $("#goback").click(function (event) {
-    //     let tmp;
-    //     event.stopImmediatePropagation();
-    //     tmp = jbNS.gr_beginLine;
-    //     jbNS.gr_beginLine = jbNS.gr_previousLine;
-    //     jbNS.gr_previousLine = tmp;
-    //     scrollgreek();
-    // });
     $("#to_pad").click(function () {
         $("#shownotes").trigger("click");
         let m = "!BM\n" + jbNS.bookMarx[0].join('\n') + '\n';
@@ -3111,8 +3045,6 @@ window.parent.site100oxen = { // parent refers to itself
     });
     $(".btn1 ul li").on({
         "click": function () {
-            //event.stopImmediatePropagation();
-            //utils.myAlert("notok", false);
             $(".btn1 ul").hide();
         }
     });
@@ -3263,8 +3195,8 @@ window.parent.site100oxen = { // parent refers to itself
         }
     });
     $("#editor").click(function () {
-        jbNS.pageframe[0].src = 'editor.php';
-        site100oxen.currentPage = 'editor.php';
+        jbNS.pageframe[0].src = 'editor.html';
+        site100oxen.currentPage = 'editor.html';
         configColumns(0, 2, true);
     });
     $("#clearcolors").click(function () {
@@ -3278,8 +3210,8 @@ window.parent.site100oxen = { // parent refers to itself
         localStorage.setItem("messages", $("#messages span").text());
     });
     $("#struct_header").click(function () {
-        if (!jbNS.pageframe[0].src.includes("blocks.php")) {
-            jbNS.pageframe[0].src = "blocks.php";
+        if (!jbNS.pageframe[0].src.includes("blocks.html")) {
+            jbNS.pageframe[0].src = "blocks.html";
         }
         configColumns(0, 2, false);
     });
@@ -3307,9 +3239,9 @@ window.parent.site100oxen = { // parent refers to itself
                 filename = 'iliad.xml';
             }
         }
-        if (!localStorage.getItem(`${filename}.txt`)) {
-            localStorage.setItem(filename, "");
-        }
+        // if (!localStorage.getItem(`${filename}.txt`)) {
+        //     localStorage.setItem(filename, "");
+        // }
         let fileindex = jbNS.xml_names.indexOf(filename);
         let dfr = $.Deferred();
         if (jbNS.fileindex === fileindex) {
@@ -3327,86 +3259,45 @@ window.parent.site100oxen = { // parent refers to itself
             jbNS.columns_config[1] = fileindex + 1;
         }
         localStorage.setItem('textToLoad', filename);
-        jbNS.newXML = true;
-        $.ajax({
-            type: "HEAD",
-            async: true,
-            cache: false,
-            url: filename,
-        }).done(function (message, textStatus, jqXHR) {
-            const resp = jqXHR.getAllResponseHeaders();
-            const etag = resp.match(/etag: "(.*)"/i);
-            const here = localStorage.getItem(filename);
-            if (here && here === etag[1]) {
-                jbNS.newXML = false;
+        if (fileindex === 0) {
+            const temp = window.parent.site100oxen.ilXML;
+            if (temp !== null) { //is parsed XML already there?
+                window.parent.site100oxen.XML = temp;
+                dfr.resolve();
+                return dfr.promise();
             }
-            if (jbNS.newXML) {
-                localStorage.setItem(filename, etag[1]);
-                $.ajax({
-                    type: "GET",
-                    url: filename,
-                    cache: false,
-                    dataType: "text",
-                    success: function (xmlstring) {
-                        localStorage.setItem(`${filename}.txt`, xmlstring);
-                        try {
-                            window.parent.site100oxen.XML = $.parseXML(xmlstring);
-                            if (fileindex === 0) {
-                                window.parent.site100oxen.ilXML = window.parent.site100oxen.XML;
-                            } else if (fileindex === 1) {
-                                window.parent.site100oxen.odXML = window.parent.site100oxen.XML;
-                            }
-                        } catch (e) {
-                            dfr.reject(e);
-                        }
-                        dfr.resolve();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        //window.parent.site100oxen.xml_loaded = false;
-                        dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
+        } else if (fileindex === 1) {
+            const temp = window.parent.site100oxen.odXML;
+            if (temp !== null) {
+                window.parent.site100oxen.XML = temp;
+                dfr.resolve();
+                return dfr.promise();
+            }
+        }
+        // XML not yet there: GET it
+        $.ajax({
+            type: "GET",
+            url: filename,
+            //cache: false,
+            dataType: "text",
+            success: function (xmlstring) {
+                //localStorage.setItem(`${filename}.txt`, xmlstring);
+                try {
+                    window.parent.site100oxen.XML = $.parseXML(xmlstring);
+                    if (fileindex === 0) {
+                        window.parent.site100oxen.ilXML = window.parent.site100oxen.XML;
+                    } else if (fileindex === 1) {
+                        window.parent.site100oxen.odXML = window.parent.site100oxen.XML;
                     }
-                });
-            } else {
-                if (fileindex === 0) {
-                    const temp = window.parent.site100oxen.ilXML;
-                    if (temp !== null) {
-                        window.parent.site100oxen.XML = temp;
-                        dfr.resolve();
-                        return dfr.promise();
-                    }
-                } else if (fileindex === 1) {
-                    const temp = window.parent.site100oxen.odXML;
-                    if (temp !== null) {
-                        window.parent.site100oxen.XML = temp;
-                        dfr.resolve();
-                        return dfr.promise();
-                    }
-                }
-                const xml = localStorage.getItem(`${filename}.txt`);
-                if (!xml) {
-                    utils.myAlert("please do full reset", true);
-                    return;
-                }
-                window.parent.site100oxen.XML = $.parseXML(xml);
-                if (fileindex === 0) { // save a ref
-                    window.parent.site100oxen.ilXML = window.parent.site100oxen.XML;
-                } else if (fileindex === 1) {
-                    window.parent.site100oxen.odXML = window.parent.site100oxen.XML;
+                } catch (e) {
+                    dfr.reject(e);
                 }
                 dfr.resolve();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                //window.parent.site100oxen.xml_loaded = false;
+                dfr.reject(`can't load ${filename}; ${textStatus}; ${errorThrown}`);
             }
-            $.ajax({
-                type: "POST",
-                url: 'xml_modified.php',
-                dataType: 'text',
-                data: {data: filename},
-                success: function (txt) {
-                    $("#mtime").text(txt);
-                }
-            });
-
-        }).fail((xhr) => {
-            utils.myAlert(`${xhr.status} ${xhr.statusText}`, true);
         });
         return dfr.promise();
     }
@@ -3417,6 +3308,7 @@ window.parent.site100oxen = { // parent refers to itself
     function init_all() {
         jbNS.forcereload = false;
         //window.parent.site100oxen.xml_loaded = true;
+        loadPageState(); // from localStorage if possible. also gets the greek & butler texts
         init_tree();
         window.parent.site100oxen.untouchable = // are we on a touch device?
             !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
@@ -3431,7 +3323,6 @@ window.parent.site100oxen = { // parent refers to itself
                 horizrailenabled: true
             });
         }
-        loadPageState(); // from localStorage if possible
 
     }
 
@@ -3443,6 +3334,19 @@ window.parent.site100oxen = { // parent refers to itself
     window.parent.site100oxen.get_col_config = get_col_config;
     window.parent.site100oxen.loadAndGotoTextframeAnchor = loadAndGotoTextframeAnchor;
 
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister()
+            }}).catch(function(err) {
+            console.log('Service Worker unregistration failed: ', err);
+        });
+    }
+
+    // if ('serviceWorker' in navigator) {
+    //     navigator.serviceWorker.register('sw.js').catch(function(err) {
+    //             console.log('Service Worker registration failed: ', err);;
+    // }
     getXML().done(() => { //xml load what is in localStorage or iliad.xml
         get_colconf_from_locstor();
         init_all();

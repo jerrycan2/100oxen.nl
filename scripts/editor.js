@@ -748,7 +748,7 @@ paragraphs in Butler, not in Greek:<br>\n ${result2} <br>\n`;
                             $.ajax({
                                 type: "GET",
                                 datatype: "text",
-                                url: `updatedate.php?text=${filename}`
+                                url: `updatedate.html?text=${filename}`
                             }).done(function (data) {
                                 $("#page").append("updated " + data);
                                 sessionStorage.removeItem('altmap');

@@ -15,6 +15,12 @@
 .bgtop {
   background-image: linear-gradient(to bottom, #003388 10%, #77BEFF 90%);
 }
+html {
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  overflow: hidden;
+}
 body {
   overflow: hidden;
   height: 100%;
@@ -44,19 +50,12 @@ ul {
 /* header styles   */
 /********************/
 header {
-  display: -ms-flexbox;
-  /* TWEENER - IE 10 */
-  display: -webkit-flex;
-  /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   position: relative;
   height: 6rem;
   width: 100%;
-}
-header img {
-  border: 0;
 }
 .lrpic {
   padding-top: 0.6rem;
@@ -96,7 +95,7 @@ header img {
 #menu1 {
   margin-top: 1rem;
   color: white;
-  z-index: 1;
+  z-index: 5;
   width: 50%;
 }
 #menu1 li:hover {
@@ -262,7 +261,7 @@ div#colwrap {
   float: left;
   display: block;
   position: relative;
-  left: -1.5rem;
+  left: -1rem;
   background-color: rgba(0, 0, 0, 0);
   cursor: pointer;
 }
@@ -303,23 +302,6 @@ div#colwrap {
 }
 #treeframe li li {
   margin-left: 1.5rem;
-}
-#treeframe #messages {
-  border-radius: 0.4rem;
-  padding: 3px;
-  background-color: #3fafff;
-  color: white;
-}
-#treeframe #messages span {
-  background-color: #0069aa;
-}
-#treeframe #messages label {
-  border-radius: 0.4rem;
-  float: right;
-  display: inline-block;
-}
-#treeframe #messages label button {
-  border-radius: 0.4rem;
 }
 .lt {
   padding: 0 0.3rem;
@@ -382,7 +364,7 @@ figure > * {
   background-image: linear-gradient(to bottom, #003388 10%, #77BEFF 90%);
   opacity: 0;
   font-size: 0.1rem;
-  z-index: 5;
+  z-index: 6;
 }
 #switchColumns ul,
 #bm_nav ul {
@@ -458,34 +440,6 @@ figure > * {
 .switchselect {
   color: red !important;
 }
-#filesmenu {
-  position: absolute;
-  top: 4rem;
-  left: -45rem;
-  width: auto;
-  height: auto;
-  background-color: beige;
-  color: black;
-  border: 2px solid #003388;
-  padding: 1rem;
-  border-radius: 0.4rem;
-  z-index: 10;
-}
-.menuitems {
-  display: block;
-  position: relative;
-  z-index: 6;
-  text-align: center;
-}
-.menuitems a {
-  z-index: 6;
-}
-.menuitems a:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-.menuitems span {
-  color: #7F0000;
-}
 /**********/
 /* utils  */
 /**********/
@@ -542,25 +496,6 @@ figure > * {
   background-color: beige;
 }
 /* popups */
-#hiddendiv {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  height: auto;
-  width: 200px;
-  background-color: #8C796D;
-  color: black;
-  display: none;
-}
-#hiddendiv div {
-  padding: 1rem 0;
-}
-#hiddendiv h4 {
-  font-size: 1rem;
-}
-#alphtext {
-  text-align: center;
-}
 #notediv {
   position: absolute;
   top: 10rem;
@@ -672,38 +607,30 @@ figure > * {
   display: block;
   color: #BD0202;
 }
-.v0 {
+ol {
   background-color: rgba(0, 0, 0, 0);
 }
-.v1 {
-  background-color: rgba(0, 0, 0, 0.015);
+ol ol {
+  background-color: rgba(0, 0, 0, 0.02);
 }
-.v2 {
-  background-color: rgba(0, 0, 0, 0.03);
+ol ol ol {
+  background-color: rgba(0, 0, 0, 0.04);
 }
-.v3 {
-  background-color: rgba(0, 0, 0, 0.045);
-}
-.v4 {
+ol ol ol ol {
   background-color: rgba(0, 0, 0, 0.06);
 }
-.v5 {
-  background-color: rgba(0, 0, 0, 0.075);
+ol ol ol ol ol {
+  background-color: rgba(0, 0, 0, 0.08);
 }
-.v6 {
-  background-color: rgba(0, 0, 0, 0.09);
+ol ol ol ol ol ol {
+  background-color: rgba(0, 0, 0, 0.1);
 }
-.v7 {
-  background-color: rgba(0, 0, 0, 0.105);
-}
-.v8 {
+ol ol ol ol ol ol ol {
   background-color: rgba(0, 0, 0, 0.12);
 }
-html {
-  width: 100%;
-  height: 100%;
-  font-size: 16px;
-  overflow: hidden;
-  visibility: visible;
-  opacity: 1;
+ol ol ol ol ol ol ol ol {
+  background-color: rgba(0, 0, 0, 0.14);
+}
+ol ol ol ol ol ol ol ol ol {
+  background-color: rgba(0, 0, 0, 0.16);
 }
